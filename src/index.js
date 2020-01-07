@@ -1,9 +1,17 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (global = global || self, factory(global.Tags = {}));
-}(this, (function (exports) { 'use strict';
+var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
+function unwrapExports (x) {
+	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x['default'] : x;
+}
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var src = createCommonjsModule(function (module, exports) {
+(function (global, factory) {
+     factory(exports) ;
+}(commonjsGlobal, (function (exports) {
     function noop() { }
     function run(fn) {
         return fn();
@@ -595,5 +603,58 @@
     exports.Tags = Tags;
 
     Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+});
+
+var index = unwrapExports(src);
+
+export default index;
+r = placeholder || "");
+	    		}
+	    	};
+
+	    	return [
+	    		placeholder,
+	    		tags,
+	    		tag,
+	    		setTag,
+	    		removeTag,
+	    		addKeys,
+	    		maxTags,
+	    		onlyUnique,
+	    		removeKeys,
+	    		dispatch,
+	    		addTag,
+	    		click_handler,
+	    		input_input_handler
+	    	];
+	    }
+
+	    class Tags extends SvelteComponent {
+	    	constructor(options) {
+	    		super();
+	    		if (!document.getElementById("svelte-1gi6y6e-style")) add_css();
+
+	    		init(this, options, instance, create_fragment, safe_not_equal, {
+	    			addKeys: 5,
+	    			maxTags: 6,
+	    			onlyUnique: 7,
+	    			removeKeys: 8,
+	    			placeholder: 0
+	    		});
+	    	}
+	    }
+
+	    exports.Tags = Tags;
+
+	    Object.defineProperty(exports, '__esModule', { value: true });
+
+	})));
+	});
+
+	var index = unwrapExports(src);
+
+	return index;
 
 })));
