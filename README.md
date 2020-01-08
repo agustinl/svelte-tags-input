@@ -94,5 +94,6 @@ e.g. `placeholder={"Svelte Tags Input"}`
 <a href="https://svelte-tags-input-example.now.sh/svelte-tags-input-css.css" download>Download CSS file</a>
 
 ---
-Inspired in [react-tagsinput](https://github.com/olahol/react-tagsinput) 
+Inspired in [react-tagsinput](https://github.com/olahol/react-tagsinput)
+
 Copyright © 2020 [agustinl](https://www.agustinl.dev/)
