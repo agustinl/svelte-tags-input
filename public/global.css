@@ -1,0 +1,69 @@
+body {
+    font-family: 'Overpass', sans-serif;
+    line-height: 1.4;
+    color: #000;
+    max-width: 40rem;
+    padding: 2rem;
+    margin: auto;
+    background: #F6F6F6;
+}
+
+h1 {
+    font-size:3em;
+    margin-bottom: 10px;
+    text-transform:uppercase;
+    font-weight: 700;
+}
+
+h2 {
+    font-size:1.5em;
+    margin-bottom: 40px;
+    font-weight: 400;
+}
+
+h3 {
+    font-size:1.2em;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    font-weight: 600;
+    border-bottom: solid 1px #ccc;
+}
+
+pre {
+  -moz-tab-size:2;
+  -o-tab-size:2;
+  tab-size:2;
+}
+
+code {
+    display:block;
+    margin: 30px 0 50px;
+    background: #f3f3f3;
+    border: solid 1px #ccc;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+h4 {
+    font-size:1em;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+p {    
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    font-size: .9em;
+}
+
+samp {
+    margin: 30px 0 50px;
+    background: #f3f3f3;
+    border: solid 1px #ccc;
+    border-radius: 5px;
+    padding: 3px 8px;
+}
+
+article {
+    margin-left: 20px;
+    margin-bottom: 50px;
+}
