@@ -1,1 +1,3 @@
-export { default as Tags } from './Tags.svelte';
+import Tags from './Tags.svelte';
+
+export default Tags;
