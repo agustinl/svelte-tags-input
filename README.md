@@ -99,4 +99,6 @@ e.g. `placeholder={"Svelte Tags Input"}`
 
 Inspired in [react-tagsinput](https://github.com/olahol/react-tagsinput)
 
-Copyright © 2020 [agustinl](https://www.agustinl.dev/)
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
