@@ -1,13 +1,13 @@
 # 🏷️ svelte-tags-input
 
-<a href="https://www.npmjs.com/package/svelte-tags-input"><img src="https://img.shields.io/npm/v/svelte-tags-input.svg" /></a>
-<a href="https://www.npmjs.com/package/svelte-tags-input"><img src="https://img.shields.io/npm/l/svelte-tags-input.svg" /></a>
+[![License: MIT](https://img.shields.io/npm/v/svelte-tags-input.svg)](https://www.npmjs.com/package/svelte-tags-input)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > Svelte tags input is a component to use with [Svelte](https://svelte.dev/) and easily enter tags and customize some functions.
 
 ## Example
 
-[Live Demo](https://svelte-tags-input-example.now.sh/)
+### [Live Demo](https://svelte-tags-input-example.now.sh/)
 
 ## Install
 
@@ -92,6 +92,12 @@ e.g. `placeholder={"Svelte Tags Input"}`
 ## CSS
 
 <a href="https://svelte-tags-input-example.now.sh/svelte-tags-input-css.css" download>Download CSS file</a>
+
+---
+
+## Author
+
+[Agustínl](https://www.agustinl.dev/)
 
 ---
 Inspired in [react-tagsinput](https://github.com/olahol/react-tagsinput)
