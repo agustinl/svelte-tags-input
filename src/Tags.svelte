@@ -19,7 +19,7 @@ $: placeholder = placeholder || "";
 
 function setTag(event) {
     
-    const currentTag = event.target.value;
+    const currentTag = event.target.valuez;
 
     if (event.keyCode === 13) {
         addTag(currentTag);
@@ -71,6 +71,8 @@ function setTag(event) {
 }
 
 function addTag(currentTag) {
+
+    currentTag = currentTag.trim();
 
     if (currentTag == "") return;
     if (maxTags && tags.length == maxTags) return;
