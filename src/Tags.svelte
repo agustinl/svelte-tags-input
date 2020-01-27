@@ -19,7 +19,7 @@ $: placeholder = placeholder || "";
 
 function setTag(event) {
     
-    const currentTag = event.target.valuez;
+    const currentTag = event.target.value;
 
     if (event.keyCode === 13) {
         addTag(currentTag);
