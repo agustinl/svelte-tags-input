@@ -72,6 +72,8 @@ function setTag(event) {
 
 function addTag(currentTag) {
 
+    currentTag = currentTag.trim();
+
     if (currentTag == "") return;
     if (maxTags && tags.length == maxTags) return;
     
