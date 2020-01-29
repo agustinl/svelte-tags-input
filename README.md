@@ -78,6 +78,22 @@ e.g. `placeholder={"Svelte Tags Input"}`
 ##### **default: empty**
 ---
 
+#### addOnPaste
+Allow add tag paste on input.
+
+e.g. `addOnPaste={false}`
+
+##### **default: true**
+---
+
+#### addOnDrop
+Allow add tag paste on drop text.
+
+e.g. `addOnDrop={false}`
+
+##### **default: true**
+---
+
 ```javascript
 <Tags
     on:tags={handleTagProperties}

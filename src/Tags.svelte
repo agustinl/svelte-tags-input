@@ -10,12 +10,16 @@ export let maxTags;
 export let onlyUnique;
 export let removeKeys;
 export let placeholder;
+export let addOnPaste;
+export let addOnDrop;
 
 $: addKeys = addKeys || false;
 $: maxTags = maxTags || false;
 $: onlyUnique = onlyUnique || false;
 $: removeKeys = removeKeys || false;
 $: placeholder = placeholder || "";
+$: addOnPaste = addOnPaste || true;
+$: addOnDrop = addOnDrop || true;
 
 function setTag(event) {
     
@@ -101,6 +105,15 @@ function removeTag(i) {
 	});
 
 }
+
+function onPaste(e){
+    if(!addOnPaste) e.preventDefault();
+}
+
+function onDrop(e){
+    if(!addOnDrop) e.preventDefault();
+}
+
 </script>
 
 <div class="svelte-tags-input-layout">
@@ -109,7 +122,7 @@ function removeTag(i) {
             <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> ×</span></span>
         {/each}
     {/if}
-    <input type="text" bind:value={tag} on:keydown={setTag} class="svelte-tags-input" placeholder={placeholder}>
+    <input type="text" bind:value={tag} on:keydown={setTag} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
 </div>
 
 <style>
