@@ -54,6 +54,31 @@ e.g. `removeKeys={[9]}` or `removeKeys={[9,188]}`
 ##### **default: 8 (backspace)**
 ---
 
+#### allowPaste
+You can paste an tag or group of tags.
+
+e.g. `allowPaste={true}`
+
+##### **default: false**
+---
+
+#### allowDrop
+You can drop an tag or group of tags.
+
+e.g. `allowDrop={true}`
+
+##### **default: false**
+---
+
+#### splitWith
+You can choose what character split you group of tags (on paster or drop).
+*Work only if allowDrop or allowPaste are true*
+
+e.g. `splitWith={"/"}`
+
+##### **default: split with ,**
+---
+
 #### maxTags
 You can set maximum number of tags.
 
@@ -83,6 +108,9 @@ e.g. `placeholder={"Svelte Tags Input"}`
     on:tags={handleTagProperties}
     addKeys={[9]} // TAB Key
     maxTags={3}
+    allowPaste={true}
+    allowDrop={true}
+    splitWith={"/"}
     onlyUnique={true}
     removeKeys={[27]} // ESC Key
     placeholder={"Svelte Tags Input"}

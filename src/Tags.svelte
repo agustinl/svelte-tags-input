@@ -10,12 +10,18 @@ export let maxTags;
 export let onlyUnique;
 export let removeKeys;
 export let placeholder;
+export let allowPaste;
+export let allowDrop;
+export let splitWith;
 
 $: addKeys = addKeys || false;
 $: maxTags = maxTags || false;
 $: onlyUnique = onlyUnique || false;
 $: removeKeys = removeKeys || false;
 $: placeholder = placeholder || "";
+$: allowPaste = allowPaste || false;
+$: allowDrop = allowDrop || false;
+$: splitWith = splitWith || ",";
 
 function setTag(event) {
     
@@ -101,6 +107,46 @@ function removeTag(i) {
 	});
 
 }
+
+function onPaste(e){
+
+    if(!allowPaste) return;
+
+    e.preventDefault();
+
+    const data = getClipboardData(e);
+    const tags = splitTags(data).map(tag => addTag(tag));
+    
+}
+
+function onDrop(e){
+
+    if(!allowDrop) return;
+
+    e.preventDefault();
+
+    const data = e.dataTransfer.getData("Text");
+    const tags = splitTags(data).map(tag => addTag(tag));
+
+}
+
+function getClipboardData(e) {
+
+    if (window.clipboardData) {
+        return window.clipboardData.getData('Text')
+    }
+
+    if (e.clipboardData) {
+        return e.clipboardData.getData('text/plain')
+    }
+
+    return ''
+}
+
+function splitTags(data) {
+    return data.split(splitWith).map(d => d.trim());    
+}
+
 </script>
 
 <div class="svelte-tags-input-layout">
@@ -109,7 +155,7 @@ function removeTag(i) {
             <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> ×</span></span>
         {/each}
     {/if}
-    <input type="text" bind:value={tag} on:keydown={setTag} class="svelte-tags-input" placeholder={placeholder}>
+    <input type="text" bind:value={tag} on:keydown={setTag} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
 </div>
 
 <style>
