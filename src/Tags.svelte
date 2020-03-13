@@ -4,6 +4,7 @@ import { createEventDispatcher } from 'svelte';
 const dispatch = createEventDispatcher();
 let tags = [];
 let tag;
+let arrelementsmatch = [];
 
 export let addKeys;
 export let maxTags;
@@ -13,6 +14,7 @@ export let placeholder;
 export let allowPaste;
 export let allowDrop;
 export let splitWith;
+export let matchElements;
 
 $: addKeys = addKeys || false;
 $: maxTags = maxTags || false;
@@ -22,6 +24,7 @@ $: placeholder = placeholder || "";
 $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
+$: matchElements = matchElements || false;
 
 function setTag(event) {
     
@@ -58,7 +61,7 @@ function setTag(event) {
                 }
             }
         });
-    }    
+    }
     
     if (removeKeys) {
         removeKeys.forEach(function(key) {
@@ -147,6 +150,25 @@ function splitTags(data) {
     return data.split(splitWith).map(d => d.trim());    
 }
 
+function getMatchElements(e) {
+
+    if(!matchElements) return;
+    
+    var x = e.target.value;
+    
+    if (x == "") {
+        arrelementsmatch = [];
+        return;
+    }
+
+    var matchs = matchElements.filter(e =>e.toLowerCase().includes(x.toLowerCase()));
+
+    /*if (arrelementsmatch.includes(data[0])) return;*/
+    /*arrelementsmatch.push(data[0]);*/
+
+    arrelementsmatch = matchs;
+}
+
 </script>
 
 <div class="svelte-tags-input-layout">
@@ -155,8 +177,17 @@ function splitTags(data) {
             <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> ×</span></span>
         {/each}
     {/if}
-    <input type="text" bind:value={tag} on:keydown={setTag} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
+    <input type="text" bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
+    
 </div>
+
+{#if matchElements && arrelementsmatch.length > 0}
+    <ul class="svelte-tags-input-matchs">
+        {#each arrelementsmatch as element, i}
+            <li value="element" on:click={() => addTag(element)}>{element}</li>
+        {/each}
+    </ul>
+{/if}
 
 <style>
 /* main */
@@ -217,5 +248,26 @@ function splitTags(data) {
 
 .svelte-tags-input-tag-remove {
     cursor:pointer;
+}
+
+/* svelte-tags-input-matchs */
+
+.svelte-tags-input-matchs {
+    margin:3px 0;
+    padding: 0px;
+    border: solid 1px #CCC;
+    border-radius: 2px;
+}
+
+.svelte-tags-input-matchs li {
+    list-style:none;
+    padding:5px;
+    border-radius: 2px;
+    cursor:pointer;
+}
+
+.svelte-tags-input-matchs li:hover {
+    background:#000;
+    color:#FFF;
 }
 </style>
