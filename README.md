@@ -18,13 +18,6 @@ npm install svelte-tags-input --save
 ```javascript
 import Tags from "svelte-tags-input";
 
-// If on:tags is defined
-let tag = "";
-
-function handleTags(event) {
-    tag = event.detail.tags;
-}		
-
 <Tags />
 ```
 
@@ -103,7 +96,40 @@ e.g. `placeholder={"Svelte Tags Input"}`
 ##### **default: empty**
 ---
 
+#### autoComplete
+You can set an array of elements to create a autocomplete dropdown.
+
+e.g. `autoComplete={myArrayOfElements}`
+
+##### **default: false**
+---
+
+## Full example
+
 ```javascript
+import Tags from "svelte-tags-input";
+
+// If on:tags is defined
+let tag = "";
+
+function handleTags(event) &#123;
+		tag = event.detail.tags;
+&#125;
+
+const countryList = [
+		"Afghanistan",
+		"Albania",
+		"Algeria",
+		"American Samoa",
+		"Andorra",
+		"Angola",
+		"Anguilla",
+		"Antarctica",
+		"Antigua and Barbuda",
+		"Argentina"
+		...
+];
+
 <Tags
     on:tags={handleTagProperties}
     addKeys={[9]} // TAB Key
@@ -113,7 +139,8 @@ e.g. `placeholder={"Svelte Tags Input"}`
     splitWith={"/"}
     onlyUnique={true}
     removeKeys={[27]} // ESC Key
-    placeholder={"Svelte Tags Input"}
+    placeholder={"Svelte Tags Input full example"}
+    autoComplete={countryList}
 />
 ```
 

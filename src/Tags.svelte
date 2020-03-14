@@ -14,7 +14,7 @@ export let placeholder;
 export let allowPaste;
 export let allowDrop;
 export let splitWith;
-export let matchElements;
+export let autoComplete;
 
 $: addKeys = addKeys || false;
 $: maxTags = maxTags || false;
@@ -24,7 +24,7 @@ $: placeholder = placeholder || "";
 $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
-$: matchElements = matchElements || false;
+$: autoComplete = autoComplete || false;
 
 function setTag(event) {
     
@@ -152,7 +152,7 @@ function splitTags(data) {
 
 function getMatchElements(e) {
 
-    if(!matchElements) return;
+    if(!autoComplete) return;
     
     var x = e.target.value;
     
@@ -161,10 +161,7 @@ function getMatchElements(e) {
         return;
     }
 
-    var matchs = matchElements.filter(e =>e.toLowerCase().includes(x.toLowerCase()));
-
-    /*if (arrelementsmatch.includes(data[0])) return;*/
-    /*arrelementsmatch.push(data[0]);*/
+    var matchs = autoComplete.filter(e =>e.toLowerCase().includes(x.toLowerCase()));
 
     arrelementsmatch = matchs;
 }
@@ -181,7 +178,7 @@ function getMatchElements(e) {
     
 </div>
 
-{#if matchElements && arrelementsmatch.length > 0}
+{#if autoComplete && arrelementsmatch.length > 0}
     <ul class="svelte-tags-input-matchs">
         {#each arrelementsmatch as element, i}
             <li value="element" on:click={() => addTag(element)}>{element}</li>
@@ -202,9 +199,14 @@ function getMatchElements(e) {
 /* svelte-tags-input-layout */
 
 .svelte-tags-input-layout {
+    display:-webkit-box;
+    display:-ms-flexbox;
     display:flex;
-    flex-wrap:wrap;
-    align-items:center;
+    -ms-flex-wrap:wrap;
+        flex-wrap:wrap;
+    -webkit-box-align:center;
+        -ms-flex-align:center;
+            align-items:center;
     padding: 0px 5px 5px 5px;
     border: solid 1px #CCC;
     background: #FFF;
@@ -219,7 +221,9 @@ function getMatchElements(e) {
 /* svelte-tags-input */
 
 .svelte-tags-input {
-    flex: 1; 
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1; 
     margin: 0;
     margin-top: 5px;
     border:none;
@@ -232,6 +236,8 @@ function getMatchElements(e) {
 /* svelte-tags-input-tag */
 
 .svelte-tags-input-tag {
+    display:-webkit-box;
+    display:-ms-flexbox;
     display:flex;
     white-space: nowrap;
     list-style:none;
@@ -257,6 +263,9 @@ function getMatchElements(e) {
     padding: 0px;
     border: solid 1px #CCC;
     border-radius: 2px;
+    max-height:310px;
+    overflow:scroll;
+    overflow-x:hidden;
 }
 
 .svelte-tags-input-matchs li {
