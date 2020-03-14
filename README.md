@@ -112,22 +112,22 @@ import Tags from "svelte-tags-input";
 // If on:tags is defined
 let tag = "";
 
-function handleTags(event) &#123;
+function handleTags(event) {
 		tag = event.detail.tags;
-&#125;
+}
 
 const countryList = [
-	"Afghanistan",
-	"Albania",
-	"Algeria",
-	"American Samoa",
-	"Andorra",
-	"Angola",
-	"Anguilla",
-	"Antarctica",
-	"Antigua and Barbuda",
-	"Argentina"
-	...
+"Afghanistan",
+"Albania",
+"Algeria",
+"American Samoa",
+"Andorra",
+"Angola",
+"Anguilla",
+"Antarctica",
+"Antigua and Barbuda",
+"Argentina",
+...
 ];
 
 <Tags
