@@ -113,7 +113,7 @@ import Tags from "svelte-tags-input";
 let tag = "";
 
 function handleTags(event) {
-		tag = event.detail.tags;
+    tag = event.detail.tags;
 }
 
 const countryList = [
