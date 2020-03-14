@@ -4,6 +4,7 @@ import { createEventDispatcher } from 'svelte';
 const dispatch = createEventDispatcher();
 let tags = [];
 let tag;
+let arrelementsmatch = [];
 
 export let addKeys;
 export let maxTags;
@@ -13,6 +14,7 @@ export let placeholder;
 export let allowPaste;
 export let allowDrop;
 export let splitWith;
+export let autoComplete;
 
 $: addKeys = addKeys || false;
 $: maxTags = maxTags || false;
@@ -22,6 +24,7 @@ $: placeholder = placeholder || "";
 $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
+$: autoComplete = autoComplete || false;
 
 function setTag(event) {
     
@@ -58,7 +61,7 @@ function setTag(event) {
                 }
             }
         });
-    }    
+    }
     
     if (removeKeys) {
         removeKeys.forEach(function(key) {
@@ -147,6 +150,22 @@ function splitTags(data) {
     return data.split(splitWith).map(d => d.trim());    
 }
 
+function getMatchElements(e) {
+
+    if(!autoComplete) return;
+    
+    var x = e.target.value;
+    
+    if (x == "") {
+        arrelementsmatch = [];
+        return;
+    }
+
+    var matchs = autoComplete.filter(e =>e.toLowerCase().includes(x.toLowerCase()));
+
+    arrelementsmatch = matchs;
+}
+
 </script>
 
 <div class="svelte-tags-input-layout">
@@ -155,8 +174,17 @@ function splitTags(data) {
             <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> ×</span></span>
         {/each}
     {/if}
-    <input type="text" bind:value={tag} on:keydown={setTag} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
+    <input type="text" bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
+    
 </div>
+
+{#if autoComplete && arrelementsmatch.length > 0}
+    <ul class="svelte-tags-input-matchs">
+        {#each arrelementsmatch as element, i}
+            <li value="element" on:click={() => addTag(element)}>{element}</li>
+        {/each}
+    </ul>
+{/if}
 
 <style>
 /* main */
@@ -171,9 +199,14 @@ function splitTags(data) {
 /* svelte-tags-input-layout */
 
 .svelte-tags-input-layout {
+    display:-webkit-box;
+    display:-ms-flexbox;
     display:flex;
-    flex-wrap:wrap;
-    align-items:center;
+    -ms-flex-wrap:wrap;
+        flex-wrap:wrap;
+    -webkit-box-align:center;
+        -ms-flex-align:center;
+            align-items:center;
     padding: 0px 5px 5px 5px;
     border: solid 1px #CCC;
     background: #FFF;
@@ -188,7 +221,9 @@ function splitTags(data) {
 /* svelte-tags-input */
 
 .svelte-tags-input {
-    flex: 1; 
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1; 
     margin: 0;
     margin-top: 5px;
     border:none;
@@ -201,6 +236,8 @@ function splitTags(data) {
 /* svelte-tags-input-tag */
 
 .svelte-tags-input-tag {
+    display:-webkit-box;
+    display:-ms-flexbox;
     display:flex;
     white-space: nowrap;
     list-style:none;
@@ -217,5 +254,29 @@ function splitTags(data) {
 
 .svelte-tags-input-tag-remove {
     cursor:pointer;
+}
+
+/* svelte-tags-input-matchs */
+
+.svelte-tags-input-matchs {
+    margin:3px 0;
+    padding: 0px;
+    border: solid 1px #CCC;
+    border-radius: 2px;
+    max-height:310px;
+    overflow:scroll;
+    overflow-x:hidden;
+}
+
+.svelte-tags-input-matchs li {
+    list-style:none;
+    padding:5px;
+    border-radius: 2px;
+    cursor:pointer;
+}
+
+.svelte-tags-input-matchs li:hover {
+    background:#000;
+    color:#FFF;
 }
 </style>

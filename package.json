@@ -34,5 +34,8 @@
   "homepage": "https://svelte-tags-input-example.now.sh/",
   "bugs": {
     "url": "https://github.com/agustinl/svelte-tags-input/issues"
+  },
+  "dependencies": {
+    "acorn": "^7.1.1"
   }
 }
