@@ -151,12 +151,10 @@ const countryList = [
 
 #### How to override tag styles?
 
-```javascript
-<script> 
-    <div  class="my-custom-class"> 
-        <Tags /> 
-    </div>
-</script>
+```html
+<div  class="my-custom-class"> 
+    <Tags /> 
+</div>
 
 ```
 ```css
