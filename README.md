@@ -17,11 +17,9 @@ npm install svelte-tags-input --save
 ```
 
 ```javascript
-<script>
-    import Tags from "svelte-tags-input";
+import Tags from "svelte-tags-input";
 
-    <Tags />
-</script>
+<Tags />
 ```
 
 ## Props
@@ -110,43 +108,41 @@ e.g. `autoComplete={myArrayOfElements}`
 ## Full example
 
 ```javascript
-<script>
-    import Tags from "svelte-tags-input";
+import Tags from "svelte-tags-input";
 
-    // If on:tags is defined
-    let tag = "";
+// If on:tags is defined
+let tag = "";
 
-    function handleTags(event) &#123;
-        tag = event.detail.tags;
-    &#125;
+function handleTags(event) {
+    tag = event.detail.tags;
+}
 
-    const countryList = [
-        "Afghanistan",
-        "Albania",
-        "Algeria",
-        "American Samoa",
-        "Andorra",
-        "Angola",
-        "Anguilla",
-        "Antarctica",
-        "Antigua and Barbuda",
-        "Argentina"
-        ...
-    ];
+const countryList = [
+    "Afghanistan",
+    "Albania",
+    "Algeria",
+    "American Samoa",
+    "Andorra",
+    "Angola",
+    "Anguilla",
+    "Antarctica",
+    "Antigua and Barbuda",
+    "Argentina"
+    ...
+];
 
-    <Tags
-        on:tags={handleTagProperties}
-        addKeys={[9]} // TAB Key
-        maxTags={3}
-        allowPaste={true}
-        allowDrop={true}
-        splitWith={"/"}
-        onlyUnique={true}
-        removeKeys={[27]} // ESC Key
-        placeholder={"Svelte Tags Input full example"}
-        autoComplete={countryList}
-    />
-</script>
+<Tags
+    on:tags={handleTagProperties}
+    addKeys={[9]} // TAB Key
+    maxTags={3}
+    allowPaste={true}
+    allowDrop={true}
+    splitWith={"/"}
+    onlyUnique={true}
+    removeKeys={[27]} // ESC Key
+    placeholder={"Svelte Tags Input full example"}
+    autoComplete={countryList}
+/>
 ```
 
 ## CSS
@@ -155,12 +151,10 @@ e.g. `autoComplete={myArrayOfElements}`
 
 #### How to override tag styles?
 
-```javascript
-<script> 
-    <div  class="my-custom-class"> 
-        <Tags /> 
-    </div>
-</script>
+```html
+<div  class="my-custom-class"> 
+    <Tags /> 
+</div>
 
 ```
 ```css
