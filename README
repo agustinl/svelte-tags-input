@@ -1,0 +1,37 @@
+# 🏷️ svelte-tags-input
+
+[![License: MIT](https://img.shields.io/npm/v/svelte-tags-input.svg)](https://www.npmjs.com/package/svelte-tags-input)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/2151-shield.svg)](https://madewithsvelte.com/p/svelte-tags-input/shield-link)
+
+> Svelte tags input is a component to use with [Svelte](https://svelte.dev/) and easily enter tags and customize some functions.
+
+
+## Example 
+
+### [Live Demo](https://svelte-tags-input-example.now.sh/) 
+ 
+ 
+## Install
+
+```bash
+npm install svelte-tags-input --save
+```
+
+```svelte
+<script>
+		import Tags from "svelte-tags-input";
+
+		<Tags />
+</script>
+```
+
+### [Full Documentation](https://github.com/agustinl/svelte-tags-input) 
+
+## Author
+
+[Agustínl](https://www.agustinl.dev/)
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
