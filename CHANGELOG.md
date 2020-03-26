@@ -1,7 +1,11 @@
 # svelte-tags-input changelog
 
+## 2.0.1
+* Added CSS override instructions to documentation
+* Added link to modify the current list of tags ([#5](https://github.com/agustinl/svelte-tags-input/pull/5)) to documentation 
+
 ## 2.0.0
-* Added auto complete feature
+* Added auto complete feature ([#4](https://github.com/agustinl/svelte-tags-input/pull/4))
 * Added vendor prefixes to CSS
 
 ## 1.0.16

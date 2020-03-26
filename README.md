@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/npm/v/svelte-tags-input.svg)](https://www.npmjs.com/package/svelte-tags-input)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/2151-shield.svg)](https://madewithsvelte.com/p/svelte-tags-input/shield-link)
 
 > Svelte tags input is a component to use with [Svelte](https://svelte.dev/) and easily enter tags and customize some functions.
 
@@ -15,16 +16,18 @@
 npm install svelte-tags-input --save
 ```
 
-```javascript
-import Tags from "svelte-tags-input";
+```svelte
+<script>
+		import Tags from "svelte-tags-input";
 
-<Tags />
+		<Tags />
+</script>
 ```
 
 ## Props
 
 #### on:tags
-To get the values.
+To get the values. [How to modify the current list of tags?](https://github.com/agustinl/svelte-tags-input/pull/5)
 
 e.g. `on:tags={handleTags}` or `on:tags={getTags}`
 
@@ -106,53 +109,75 @@ e.g. `autoComplete={myArrayOfElements}`
 
 ## Full example
 
-```javascript
-import Tags from "svelte-tags-input";
+```svelte
+<script>
+	import Tags from "svelte-tags-input";
 
-// If on:tags is defined
-let tag = "";
+	// If on:tags is defined
+	let tag = "";
 
-function handleTags(event) &#123;
-		tag = event.detail.tags;
-&#125;
+	function handleTags(event) &#123;
+			tag = event.detail.tags;
+	&#125;
 
-const countryList = [
-		"Afghanistan",
-		"Albania",
-		"Algeria",
-		"American Samoa",
-		"Andorra",
-		"Angola",
-		"Anguilla",
-		"Antarctica",
-		"Antigua and Barbuda",
-		"Argentina"
-		...
-];
+	const countryList = [
+			"Afghanistan",
+			"Albania",
+			"Algeria",
+			"American Samoa",
+			"Andorra",
+			"Angola",
+			"Anguilla",
+			"Antarctica",
+			"Antigua and Barbuda",
+			"Argentina"
+			...
+	];
 
-<Tags
-    on:tags={handleTagProperties}
-    addKeys={[9]} // TAB Key
-    maxTags={3}
-    allowPaste={true}
-    allowDrop={true}
-    splitWith={"/"}
-    onlyUnique={true}
-    removeKeys={[27]} // ESC Key
-    placeholder={"Svelte Tags Input full example"}
-    autoComplete={countryList}
-/>
+	<Tags
+		on:tags={handleTagProperties}
+		addKeys={[9]} // TAB Key
+		maxTags={3}
+		allowPaste={true}
+		allowDrop={true}
+		splitWith={"/"}
+		onlyUnique={true}
+		removeKeys={[27]} // ESC Key
+		placeholder={"Svelte Tags Input full example"}
+		autoComplete={countryList}
+	/>
+</script>
 ```
 
 ## CSS
 
 <a href="https://svelte-tags-input-example.now.sh/svelte-tags-input-css.css" download>Download CSS file</a>
 
+#### How to override tag styles?
+
+```svelte
+<script> 
+	<div  class="my-custom-class"> 
+		<Tags /> 
+	</div>
+</script>
+
+```
+```css
+<style>
+.my-custom-class :global(.svelte-tags-input-tag) {
+    background:blue;
+}
+
+.my-custom-class :global(.svelte-tags-input-layout) {
+    background:yellow;
+}
+</style>
+```
+
 ## Author
 
 [Agustínl](https://www.agustinl.dev/)
-
-Inspired in [react-tagsinput](https://github.com/olahol/react-tagsinput)
 
 ## License
 
