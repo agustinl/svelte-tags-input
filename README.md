@@ -16,11 +16,11 @@
 npm install svelte-tags-input --save
 ```
 
-```svelte
+```javascript
 <script>
-		import Tags from "svelte-tags-input";
+    import Tags from "svelte-tags-input";
 
-		<Tags />
+    <Tags />
 </script>
 ```
 
@@ -109,43 +109,43 @@ e.g. `autoComplete={myArrayOfElements}`
 
 ## Full example
 
-```svelte
+```javascript
 <script>
-	import Tags from "svelte-tags-input";
+    import Tags from "svelte-tags-input";
 
-	// If on:tags is defined
-	let tag = "";
+    // If on:tags is defined
+    let tag = "";
 
-	function handleTags(event) &#123;
-			tag = event.detail.tags;
-	&#125;
+    function handleTags(event) &#123;
+        tag = event.detail.tags;
+    &#125;
 
-	const countryList = [
-			"Afghanistan",
-			"Albania",
-			"Algeria",
-			"American Samoa",
-			"Andorra",
-			"Angola",
-			"Anguilla",
-			"Antarctica",
-			"Antigua and Barbuda",
-			"Argentina"
-			...
-	];
+    const countryList = [
+        "Afghanistan",
+        "Albania",
+        "Algeria",
+        "American Samoa",
+        "Andorra",
+        "Angola",
+        "Anguilla",
+        "Antarctica",
+        "Antigua and Barbuda",
+        "Argentina"
+        ...
+    ];
 
-	<Tags
-		on:tags={handleTagProperties}
-		addKeys={[9]} // TAB Key
-		maxTags={3}
-		allowPaste={true}
-		allowDrop={true}
-		splitWith={"/"}
-		onlyUnique={true}
-		removeKeys={[27]} // ESC Key
-		placeholder={"Svelte Tags Input full example"}
-		autoComplete={countryList}
-	/>
+    <Tags
+        on:tags={handleTagProperties}
+        addKeys={[9]} // TAB Key
+        maxTags={3}
+        allowPaste={true}
+        allowDrop={true}
+        splitWith={"/"}
+        onlyUnique={true}
+        removeKeys={[27]} // ESC Key
+        placeholder={"Svelte Tags Input full example"}
+        autoComplete={countryList}
+    />
 </script>
 ```
 
@@ -155,11 +155,11 @@ e.g. `autoComplete={myArrayOfElements}`
 
 #### How to override tag styles?
 
-```svelte
+```javascript
 <script> 
-	<div  class="my-custom-class"> 
-		<Tags /> 
-	</div>
+    <div  class="my-custom-class"> 
+        <Tags /> 
+    </div>
 </script>
 
 ```
