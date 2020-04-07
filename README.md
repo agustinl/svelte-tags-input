@@ -108,7 +108,7 @@ e.g. `autoComplete={myArrayOfElements}`
 ## FAQ
 
 #### Reset tags input
-In response to the request ([(#7)](https://github.com/agustinl/svelte-tags-input/issues/7)) for a way to reset the input after submitting a form, for example:
+In response to the request [(#7)](https://github.com/agustinl/svelte-tags-input/issues/7) for a way to reset the input after submitting a form, for example:
 
 ```javascript
 import Tags from "svelte-tags-input";
