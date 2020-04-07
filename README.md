@@ -105,6 +105,40 @@ e.g. `autoComplete={myArrayOfElements}`
 ##### **default: false**
 ---
 
+## FAQ
+
+##### Reset tags input
+In response to the request [(#7)](https://github.com/agustinl/svelte-tags-input/issues/7) for a way to reset the input after submitting a form, for example:
+
+```javascript
+import Tags from "svelte-tags-input";
+
+let tags = [];
+
+function submitForm(event) {
+	tags = [];
+}
+
+<Tags
+    tags={tags}
+/>
+
+<button on:click={submitForm}>Submit</button>
+
+```
+
+##### Initialize with tags
+
+```javascript
+import Tags from "svelte-tags-input";
+
+let tags = ["start", "with", "this", "tags"];
+
+<Tags
+    tags={tags}
+/>
+```
+
 ## Full example
 
 ```javascript

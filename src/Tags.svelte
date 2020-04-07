@@ -2,10 +2,10 @@
 import { createEventDispatcher } from 'svelte';
 
 const dispatch = createEventDispatcher();
-let tags = [];
 let tag;
 let arrelementsmatch = [];
 
+export let tags;
 export let addKeys;
 export let maxTags;
 export let onlyUnique;
@@ -16,6 +16,7 @@ export let allowDrop;
 export let splitWith;
 export let autoComplete;
 
+$: tags = tags || [];
 $: addKeys = addKeys || false;
 $: maxTags = maxTags || false;
 $: onlyUnique = onlyUnique || false;
