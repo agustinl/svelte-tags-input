@@ -17,7 +17,9 @@ npm install svelte-tags-input --save
 ```
 
 ```javascript
-import Tags from "svelte-tags-input";
+<style>
+    import Tags from "svelte-tags-input";
+</style>
 
 <Tags />
 ```
@@ -111,13 +113,15 @@ e.g. `autoComplete={myArrayOfElements}`
 In response to the request [(#7)](https://github.com/agustinl/svelte-tags-input/issues/7) for a way to reset the input after submitting a form, for example:
 
 ```javascript
-import Tags from "svelte-tags-input";
+<style>
+    import Tags from "svelte-tags-input";
 
-let tags = [];
+    let tags = [];
 
-function submitForm(event) {
-    tags = [];
-}
+    function submitForm(event) {
+        tags = [];
+    }
+</style>
 
 <Tags
     tags={tags}
@@ -130,7 +134,9 @@ function submitForm(event) {
 #### Initialize with tags
 
 ```javascript
-import Tags from "svelte-tags-input";
+<style>
+    import Tags from "svelte-tags-input";
+</style>
 
 let tags = ["start", "with", "this", "tags"];
 
@@ -139,31 +145,60 @@ let tags = ["start", "with", "this", "tags"];
 />
 ```
 
+#### Keep 2 components in sync
+
+```javascript
+<style>
+    import Tags from "svelte-tags-input";
+
+    let tags = [];
+    $: tags2 = [];
+
+    function changeTags2(event) {
+        var tmp_tags = event.detail.tags;
+            tmp_tags = tmp_tags.toString().split(',').map(d => d.trim());
+        
+        tags2 = tmp_tags;
+    }
+<style>
+
+<Tags
+    on:tags={changeTags2}
+    tags={tags}
+/>
+		 
+<Tags
+    tags={tags2}
+/>
+```
+
 ## Full example
 
 ```javascript
-import Tags from "svelte-tags-input";
+<style>
+    import Tags from "svelte-tags-input";
 
-// If on:tags is defined
-let tag = "";
+    // If on:tags is defined
+    let tag = "";
 
-function handleTags(event) {
-    tag = event.detail.tags;
-}
+    function handleTags(event) {
+        tag = event.detail.tags;
+    }
 
-const countryList = [
-    "Afghanistan",
-    "Albania",
-    "Algeria",
-    "American Samoa",
-    "Andorra",
-    "Angola",
-    "Anguilla",
-    "Antarctica",
-    "Antigua and Barbuda",
-    "Argentina"
-    ...
-];
+    const countryList = [
+        "Afghanistan",
+        "Albania",
+        "Algeria",
+        "American Samoa",
+        "Andorra",
+        "Angola",
+        "Anguilla",
+        "Antarctica",
+        "Antigua and Barbuda",
+        "Argentina"
+        ...
+    ];
+<style>
 
 <Tags
     on:tags={handleTagProperties}
