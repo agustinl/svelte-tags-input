@@ -17,9 +17,9 @@ npm install svelte-tags-input --save
 ```
 
 ```javascript
-<style>
+<script>
     import Tags from "svelte-tags-input";
-</style>
+</script>
 
 <Tags />
 ```
@@ -113,7 +113,7 @@ e.g. `autoComplete={myArrayOfElements}`
 In response to the request [(#7)](https://github.com/agustinl/svelte-tags-input/issues/7) for a way to reset the input after submitting a form, for example:
 
 ```javascript
-<style>
+<script>
     import Tags from "svelte-tags-input";
 
     let tags = [];
@@ -121,7 +121,7 @@ In response to the request [(#7)](https://github.com/agustinl/svelte-tags-input/
     function submitForm(event) {
         tags = [];
     }
-</style>
+</script>
 
 <Tags
     tags={tags}
@@ -134,9 +134,9 @@ In response to the request [(#7)](https://github.com/agustinl/svelte-tags-input/
 #### Initialize with tags
 
 ```javascript
-<style>
+<script>
     import Tags from "svelte-tags-input";
-</style>
+</script>
 
 let tags = ["start", "with", "this", "tags"];
 
@@ -148,7 +148,7 @@ let tags = ["start", "with", "this", "tags"];
 #### Keep 2 components in sync
 
 ```javascript
-<style>
+<script>
     import Tags from "svelte-tags-input";
 
     let tags = [];
@@ -160,7 +160,7 @@ let tags = ["start", "with", "this", "tags"];
         
         tags2 = tmp_tags;
     }
-<style>
+<script>
 
 <Tags
     on:tags={changeTags2}
@@ -175,7 +175,7 @@ let tags = ["start", "with", "this", "tags"];
 ## Full example
 
 ```javascript
-<style>
+<script>
     import Tags from "svelte-tags-input";
 
     // If on:tags is defined
