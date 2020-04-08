@@ -25,7 +25,7 @@ import Tags from "svelte-tags-input";
 ## Props
 
 #### on:tags
-To get the values. [How to modify the current list of tags?](https://github.com/agustinl/svelte-tags-input/pull/5)
+To get the values.
 
 e.g. `on:tags={handleTags}` or `on:tags={getTags}`
 
@@ -139,6 +139,31 @@ let tags = ["start", "with", "this", "tags"];
 />
 ```
 
+#### Keep 2 components in sync
+
+```javascript
+import Tags from "svelte-tags-input";
+
+let tags = [];
+$: tags2 = [];
+
+function changeTags2(event) {
+    var tmp_tags = event.detail.tags;
+        tmp_tags = tmp_tags.toString().split(',').map(d => d.trim());
+        
+    tags2 = tmp_tags;
+}
+
+<Tags
+    on:tags={changeTags2}
+    tags={tags}
+/>
+		 
+<Tags
+    tags={tags2}
+/>
+```
+
 ## Full example
 
 ```javascript
@@ -186,7 +211,7 @@ const countryList = [
 #### How to override tag styles?
 
 ```html
-<div  class="my-custom-class"> 
+<div class="my-custom-class"> 
     <Tags /> 
 </div>
 
