@@ -25,7 +25,7 @@ import Tags from "svelte-tags-input";
 ## Props
 
 #### on:tags
-To get the values. [How to modify the current list of tags?](https://github.com/agustinl/svelte-tags-input/pull/5)
+To get the values.
 
 e.g. `on:tags={handleTags}` or `on:tags={getTags}`
 
