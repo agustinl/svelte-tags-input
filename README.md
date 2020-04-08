@@ -17,9 +17,7 @@ npm install svelte-tags-input --save
 ```
 
 ```javascript
-<script>
-    import Tags from "svelte-tags-input";
-</script>
+import Tags from "svelte-tags-input";
 
 <Tags />
 ```
@@ -113,15 +111,13 @@ e.g. `autoComplete={myArrayOfElements}`
 In response to the request [(#7)](https://github.com/agustinl/svelte-tags-input/issues/7) for a way to reset the input after submitting a form, for example:
 
 ```javascript
-<script>
-    import Tags from "svelte-tags-input";
+import Tags from "svelte-tags-input";
 
-    let tags = [];
+let tags = [];
 
-    function submitForm(event) {
-        tags = [];
-    }
-</script>
+function submitForm(event) {
+    tags = [];
+}
 
 <Tags
     tags={tags}
@@ -134,9 +130,7 @@ In response to the request [(#7)](https://github.com/agustinl/svelte-tags-input/
 #### Initialize with tags
 
 ```javascript
-<script>
-    import Tags from "svelte-tags-input";
-</script>
+import Tags from "svelte-tags-input";
 
 let tags = ["start", "with", "this", "tags"];
 
@@ -148,19 +142,17 @@ let tags = ["start", "with", "this", "tags"];
 #### Keep 2 components in sync
 
 ```javascript
-<script>
-    import Tags from "svelte-tags-input";
+import Tags from "svelte-tags-input";
 
-    let tags = [];
-    $: tags2 = [];
+let tags = [];
+$: tags2 = [];
 
-    function changeTags2(event) {
-        var tmp_tags = event.detail.tags;
-            tmp_tags = tmp_tags.toString().split(',').map(d => d.trim());
+function changeTags2(event) {
+    var tmp_tags = event.detail.tags;
+        tmp_tags = tmp_tags.toString().split(',').map(d => d.trim());
         
-        tags2 = tmp_tags;
-    }
-<script>
+    tags2 = tmp_tags;
+}
 
 <Tags
     on:tags={changeTags2}
@@ -175,30 +167,28 @@ let tags = ["start", "with", "this", "tags"];
 ## Full example
 
 ```javascript
-<script>
-    import Tags from "svelte-tags-input";
+import Tags from "svelte-tags-input";
 
-    // If on:tags is defined
-    let tag = "";
+// If on:tags is defined
+let tag = "";
 
-    function handleTags(event) {
-        tag = event.detail.tags;
-    }
+function handleTags(event) {
+    tag = event.detail.tags;
+}
 
-    const countryList = [
-        "Afghanistan",
-        "Albania",
-        "Algeria",
-        "American Samoa",
-        "Andorra",
-        "Angola",
-        "Anguilla",
-        "Antarctica",
-        "Antigua and Barbuda",
-        "Argentina"
-        ...
-    ];
-<style>
+const countryList = [
+    "Afghanistan",
+    "Albania",
+    "Algeria",
+    "American Samoa",
+    "Andorra",
+    "Angola",
+    "Anguilla",
+    "Antarctica",
+    "Antigua and Barbuda",
+    "Argentina"
+    ...
+];
 
 <Tags
     on:tags={handleTagProperties}
@@ -221,7 +211,7 @@ let tags = ["start", "with", "this", "tags"];
 #### How to override tag styles?
 
 ```html
-<div  class="my-custom-class"> 
+<div class="my-custom-class"> 
     <Tags /> 
 </div>
 
