@@ -18,12 +18,10 @@
 npm install svelte-tags-input --save
 ```
 
-```svelte
-<script>
-		import Tags from "svelte-tags-input";
+```javascript
+import Tags from "svelte-tags-input";
 
-		<Tags />
-</script>
+<Tags />
 ```
 
 ### [Full Documentation](https://github.com/agustinl/svelte-tags-input) 
