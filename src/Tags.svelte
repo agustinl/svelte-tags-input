@@ -31,17 +31,21 @@ function setTag(event) {
     
     const currentTag = event.target.value;
 
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13) { // If ENTER addTag
         addTag(currentTag);
     }
     
-    if (event.keyCode === 8 && tag == "") {
+    if (event.keyCode === 8 && tag == "") { // If BACKSPACE remove tag
         tags.pop();  
         tags = tags;
 
         dispatch('tags', {
             tags: tags
         });
+    }
+
+    if (event.keyCode === 40 && autoComplete) {
+        document.querySelectorAll("li")[0].focus();
     }
     
     if (addKeys) {
@@ -51,7 +55,7 @@ function setTag(event) {
                 case 188:
                     // Remove comma if keycode to add tag is comma
                     addTag(currentTag.substring(0, currentTag.length - 1));
-                    break;                    
+                    break;
                 case 9:
                     event.preventDefault();
                     addTag(currentTag);
@@ -151,20 +155,38 @@ function splitTags(data) {
     return data.split(splitWith).map(d => d.trim());    
 }
 
-function getMatchElements(e) {
+function getMatchElements(event) {
 
     if(!autoComplete) return;
     
-    var x = e.target.value;
+    var x = event.target.value;
     
-    if (x == "") {
+    if (x == "" || event.keyCode === 27) { // Close auto complete list if press ESC
         arrelementsmatch = [];
         return;
     }
 
-    var matchs = autoComplete.filter(e =>e.toLowerCase().includes(x.toLowerCase()));
+    var matchs = autoComplete.filter(event =>event.toLowerCase().includes(x.toLowerCase()));
 
     arrelementsmatch = matchs;
+}
+
+function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
+
+    if(!autoComplete) return;
+
+    if (event.keyCode === 40) { // If KEYDOWN
+        if (autoCompleteIndex + 1 === autoCompleteLength) return; // If it is the last element on the list
+        document.querySelectorAll("li")[autoCompleteIndex + 1].focus();
+    } else if (event.keyCode === 38) { // If KEYUP
+        if (autoCompleteIndex === 0) return; // If it is the first element on the list
+        document.querySelectorAll("li")[autoCompleteIndex - 1].focus();
+    } else if (event.keyCode === 13) { // If ENTER addTag
+        addTag(autoCompleteElement);
+    } else if (event.keyCode === 27) { // Close auto complete list if press ESC and focus in input
+        arrelementsmatch = [];
+        document.getElementsByClassName("svelte-tags-input")[0].focus();
+    }
 }
 
 </script>
@@ -182,7 +204,7 @@ function getMatchElements(e) {
 {#if autoComplete && arrelementsmatch.length > 0}
     <ul class="svelte-tags-input-matchs">
         {#each arrelementsmatch as element, i}
-            <li value="element" on:click={() => addTag(element)}>{element}</li>
+            <li tabindex="0" on:keydown={() => navigateAutoComplete(i, arrelementsmatch.length, element)} on:click={() => addTag(element)}>{element}</li>
         {/each}
     </ul>
 {/if}
@@ -276,7 +298,8 @@ function getMatchElements(e) {
     cursor:pointer;
 }
 
-.svelte-tags-input-matchs li:hover {
+.svelte-tags-input-matchs li:hover,
+.svelte-tags-input-matchs li:focus {
     background:#000;
     color:#FFF;
 }
