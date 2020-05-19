@@ -27,15 +27,15 @@ $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
 
-function setTag(event) {
+function setTag(input) {
     
-    const currentTag = event.target.value;
+    const currentTag = input.target.value;
 
-    if (event.keyCode === 13) { // If ENTER addTag
+    if (input.keyCode === 13) { // If ENTER addTag()
         addTag(currentTag);
     }
     
-    if (event.keyCode === 8 && tag == "") { // If BACKSPACE remove tag
+    if (input.keyCode === 8 && tag == "") { // If BACKSPACE removeTag()
         tags.pop();  
         tags = tags;
 
@@ -44,21 +44,25 @@ function setTag(event) {
         });
     }
 
-    if (event.keyCode === 40 && autoComplete) {
+    if (input.keyCode === 40 && autoComplete && document.getElementsByClassName("svelte-tags-input-matchs").length) { // If KEYDOWN focus on first element of the autocomplete
         document.querySelectorAll("li")[0].focus();
     }
     
     if (addKeys) {
         addKeys.forEach(function(key) {
-            if (key === event.keyCode) {
-                switch (event.keyCode) {
+            if (key === input.keyCode) {
+                switch (input.keyCode) {
                 case 188:
-                    // Remove comma if keycode to add tag is comma
+                    // Remove comma if keycode to add tag is ,
                     addTag(currentTag.substring(0, currentTag.length - 1));
                     break;
                 case 9:
-                    event.preventDefault();
-                    addTag(currentTag);
+                    input.preventDefault();
+                    if (autoComplete && document.getElementsByClassName("svelte-tags-input-matchs").length) { // Add first item of autocomplete list on TAB
+                        addTag(document.querySelectorAll("li")[0].textContent);
+                    } else {
+                        addTag(currentTag);
+                    }                    
                     break;
                 default:
                     addTag(currentTag);
@@ -70,7 +74,7 @@ function setTag(event) {
     
     if (removeKeys) {
         removeKeys.forEach(function(key) {
-            if (key === event.keyCode) {
+            if (key === input.keyCode) {
                 tags.pop();  
                 tags = tags;
                 tag = "";
@@ -89,11 +93,8 @@ function addTag(currentTag) {
     currentTag = currentTag.trim();
 
     if (currentTag == "") return;
-    if (maxTags && tags.length == maxTags) return;
-    
-    if(onlyUnique) {
-        if (tags.includes(currentTag)) return;
-    }
+    if (maxTags && tags.length == maxTags) return;    
+    if(onlyUnique && tags.includes(currentTag)) return;
     
     tags.push(currentTag)
     tags = tags;
@@ -101,7 +102,11 @@ function addTag(currentTag) {
 
     dispatch('tags', {
 		tags: tags
-	});
+    });
+    
+    // After add a tag, hide autocomplete list and focus on svelte tags input
+    arrelementsmatch = [];
+    document.getElementsByClassName("svelte-tags-input")[0].focus();
 
 }
 
@@ -113,6 +118,10 @@ function removeTag(i) {
     dispatch('tags', {
 		tags: tags
 	});
+    
+    // After add a tag, hide autocomplete list and focus on svelte tags input
+    arrelementsmatch = [];
+    document.getElementsByClassName("svelte-tags-input")[0].focus();
 
 }
 
@@ -155,25 +164,29 @@ function splitTags(data) {
     return data.split(splitWith).map(d => d.trim());    
 }
 
-function getMatchElements(event) {
+function getMatchElements(input) {
 
-    if(!autoComplete) return;
+    if (!autoComplete) return;
     
-    var x = event.target.value;
+    var value = input.target.value;
     
-    if (x == "" || event.keyCode === 27) { // Close auto complete list if press ESC
+    if (value == "" || input.keyCode === 27) { // Close auto complete list if press ESC or there is no value
         arrelementsmatch = [];
         return;
     }
 
-    var matchs = autoComplete.filter(event =>event.toLowerCase().includes(x.toLowerCase()));
+    var matchs = autoComplete.filter(e => e.toLowerCase().includes(value.toLowerCase())); 
+
+    if (onlyUnique === true) { // Show autocomplete list without tags already added
+        matchs = matchs.filter(x => !tags.includes(x));
+    }   
 
     arrelementsmatch = matchs;
 }
 
 function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
 
-    if(!autoComplete) return;
+    if (!autoComplete) return;
 
     if (event.keyCode === 40) { // If KEYDOWN
         if (autoCompleteIndex + 1 === autoCompleteLength) return; // If it is the last element on the list
@@ -204,7 +217,7 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
 {#if autoComplete && arrelementsmatch.length > 0}
     <ul class="svelte-tags-input-matchs">
         {#each arrelementsmatch as element, i}
-            <li tabindex="0" on:keydown={() => navigateAutoComplete(i, arrelementsmatch.length, element)} on:click={() => addTag(element)}>{element}</li>
+            <li tabindex="-1" on:keydown={() => navigateAutoComplete(i, arrelementsmatch.length, element)} on:click={() => addTag(element)}>{element}</li>
         {/each}
     </ul>
 {/if}
