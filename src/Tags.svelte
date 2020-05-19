@@ -226,7 +226,8 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
 /* main */
 
 .svelte-tags-input,
-.svelte-tags-input-tag {
+.svelte-tags-input-tag,
+.svelte-tags-input-matchs {
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
     font-size: 14px;
     padding: 2px 5px;
@@ -315,5 +316,6 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
 .svelte-tags-input-matchs li:focus {
     background:#000;
     color:#FFF;
+    outline:none;
 }
 </style>

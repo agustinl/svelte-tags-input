@@ -1,5 +1,8 @@
 # svelte-tags-input changelog
 
+## 2.2.0
+* Improve autocomplete ([#10](https://github.com/agustinl/svelte-tags-input/pull/10))
+
 ## 2.1.0
 * Added FAQs
 * Added a way to reset the input tags ([#7](https://github.com/agustinl/svelte-tags-input/issues/7))
