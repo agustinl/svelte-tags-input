@@ -4,6 +4,7 @@ import { createEventDispatcher } from 'svelte';
 const dispatch = createEventDispatcher();
 let tag;
 let arrelementsmatch = [];
+let ID = uniqueID();
 
 export let tags;
 export let addKeys;
@@ -106,7 +107,7 @@ function addTag(currentTag) {
     
     // After add a tag, hide autocomplete list and focus on svelte tags input
     arrelementsmatch = [];
-    document.getElementsByClassName("svelte-tags-input")[0].focus();
+    document.getElementById(ID).focus();
 
 }
 
@@ -121,7 +122,7 @@ function removeTag(i) {
     
     // After add a tag, hide autocomplete list and focus on svelte tags input
     arrelementsmatch = [];
-    document.getElementsByClassName("svelte-tags-input")[0].focus();
+    document.getElementById(ID).focus();
 
 }
 
@@ -198,9 +199,13 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
         addTag(autoCompleteElement);
     } else if (event.keyCode === 27) { // Close auto complete list if press ESC and focus in input
         arrelementsmatch = [];
-        document.getElementsByClassName("svelte-tags-input")[0].focus();
+        document.getElementById(ID).focus();
     }
 }
+
+function uniqueID() {
+    return 'sti_' + Math.random().toString(36).substr(2, 9);
+};
 
 </script>
 
@@ -210,8 +215,7 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
             <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> ×</span></span>
         {/each}
     {/if}
-    <input type="text" bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
-    
+    <input type="text" id={ID} bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
 </div>
 
 {#if autoComplete && arrelementsmatch.length > 0}

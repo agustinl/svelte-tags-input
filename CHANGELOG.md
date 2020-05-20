@@ -1,5 +1,8 @@
 # svelte-tags-input changelog
 
+## 2.2.1
+* Added a unique ID for each input
+
 ## 2.2.0
 * Improve autocomplete ([#10](https://github.com/agustinl/svelte-tags-input/pull/10))
 
