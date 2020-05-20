@@ -1,10 +1,18 @@
 # svelte-tags-input changelog
 
+## 2.3.0
+* Added a unique ID for each auto-complete list
+* If `onlyUnique === true` auto-complete list not show tags previously added
+* Enabled navigation with <kbd>ARROW UP</kbd> and <kbd>ARROW DOWN</kbd> the auto-complete list, and corrected the errors
+* Close auto-complete list and focus on tags input with <kbd>ESC</kbd>
+* Add selected tag in auto-complete list with <kbd>ENTER</kbd>
+* Enabled infinite scroll in auto-complete list
+
 ## 2.2.1
 * Added a unique ID for each input
 
 ## 2.2.0
-* Improve autocomplete ([#10](https://github.com/agustinl/svelte-tags-input/pull/10))
+* Improve auto-complete ([#10](https://github.com/agustinl/svelte-tags-input/pull/10))
 
 ## 2.1.0
 * Added FAQs

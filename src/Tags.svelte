@@ -5,6 +5,7 @@ const dispatch = createEventDispatcher();
 let tag;
 let arrelementsmatch = [];
 let ID = uniqueID();
+let matchsID = ID + "_matchs";
 
 export let tags;
 export let addKeys;
@@ -45,8 +46,14 @@ function setTag(input) {
         });
     }
 
-    if (input.keyCode === 40 && autoComplete && document.getElementsByClassName("svelte-tags-input-matchs").length) { // If KEYDOWN focus on first element of the autocomplete
-        document.querySelectorAll("li")[0].focus();
+    // If KEYDOWN focus on first element of the autocomplete
+    if (input.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
+        event.preventDefault();
+        document.getElementById(matchsID).querySelector("li:first-child").focus();
+    } // If KEYUP focus on last element of the autocomplete
+    else if (input.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
+        event.preventDefault();
+        document.getElementById(matchsID).querySelector("li:last-child").focus();
     }
     
     if (addKeys) {
@@ -59,8 +66,9 @@ function setTag(input) {
                     break;
                 case 9:
                     input.preventDefault();
-                    if (autoComplete && document.getElementsByClassName("svelte-tags-input-matchs").length) { // Add first item of autocomplete list on TAB
-                        addTag(document.querySelectorAll("li")[0].textContent);
+                    // Add first item of autocomplete list on TAB
+                    if (autoComplete && document.getElementById(matchsID)) {                        
+                        addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
                     } else {
                         addTag(currentTag);
                     }                    
@@ -188,13 +196,23 @@ function getMatchElements(input) {
 function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
 
     if (!autoComplete) return;
+    
+    event.preventDefault();
 
     if (event.keyCode === 40) { // If KEYDOWN
-        if (autoCompleteIndex + 1 === autoCompleteLength) return; // If it is the last element on the list
-        document.querySelectorAll("li")[autoCompleteIndex + 1].focus();
+        // If it is the last element on the list, go to the first
+        if (autoCompleteIndex + 1 === autoCompleteLength) {
+            document.getElementById(matchsID).querySelector("li:first-child").focus();
+            return;
+        }
+        document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex + 1].focus();
     } else if (event.keyCode === 38) { // If KEYUP
-        if (autoCompleteIndex === 0) return; // If it is the first element on the list
-        document.querySelectorAll("li")[autoCompleteIndex - 1].focus();
+        // If it is the first element on the list, go to the last
+        if (autoCompleteIndex === 0) {
+            document.getElementById(matchsID).querySelector("li:last-child").focus();
+            return;
+        }
+        document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex - 1].focus();
     } else if (event.keyCode === 13) { // If ENTER addTag
         addTag(autoCompleteElement);
     } else if (event.keyCode === 27) { // Close auto complete list if press ESC and focus in input
@@ -212,18 +230,20 @@ function uniqueID() {
 <div class="svelte-tags-input-layout">
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> ×</span></span>
+            <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span></span>
         {/each}
     {/if}
     <input type="text" id={ID} bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
 </div>
 
 {#if autoComplete && arrelementsmatch.length > 0}
-    <ul class="svelte-tags-input-matchs">
-        {#each arrelementsmatch as element, i}
-            <li tabindex="-1" on:keydown={() => navigateAutoComplete(i, arrelementsmatch.length, element)} on:click={() => addTag(element)}>{element}</li>
-        {/each}
-    </ul>
+    <div class="svelte-tags-input-matchs-parent">
+        <ul id="{ID}_matchs" class="svelte-tags-input-matchs">
+            {#each arrelementsmatch as element, i}
+                <li tabindex="-1" on:keydown={() => navigateAutoComplete(i, arrelementsmatch.length, element)} on:click={() => addTag(element)}>{element}</li>
+            {/each}
+        </ul>
+    </div>
 {/if}
 
 <style>
@@ -306,7 +326,7 @@ function uniqueID() {
     border-radius: 2px;
     max-height:310px;
     overflow:scroll;
-    overflow-x:hidden;
+    overflow-x:auto;
 }
 
 .svelte-tags-input-matchs li {
