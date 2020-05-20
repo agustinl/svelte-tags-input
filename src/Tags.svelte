@@ -33,11 +33,13 @@ function setTag(input) {
     
     const currentTag = input.target.value;
 
-    if (input.keyCode === 13) { // If ENTER addTag()
+    // If ENTER addTag()
+    if (input.keyCode === 13) {
         addTag(currentTag);
     }
     
-    if (input.keyCode === 8 && tag == "") { // If BACKSPACE removeTag()
+    // If BACKSPACE removeTag()
+    if (input.keyCode === 8 && tag == "") {
         tags.pop();  
         tags = tags;
 
@@ -179,14 +181,16 @@ function getMatchElements(input) {
     
     var value = input.target.value;
     
-    if (value == "" || input.keyCode === 27) { // Close auto complete list if press ESC or there is no value
+    // Close auto complete list if press ESC or there is no value
+    if (value == "" || input.keyCode === 27) {
         arrelementsmatch = [];
         return;
     }
 
     var matchs = autoComplete.filter(e => e.toLowerCase().includes(value.toLowerCase())); 
 
-    if (onlyUnique === true) { // Show autocomplete list without tags already added
+    // Show autocomplete list without tags already added
+    if (onlyUnique === true) {
         matchs = matchs.filter(x => !tags.includes(x));
     }   
 
@@ -319,9 +323,18 @@ function uniqueID() {
 
 /* svelte-tags-input-matchs */
 
+.svelte-tags-input-matchs-parent {
+    position:relative;
+}
+
 .svelte-tags-input-matchs {
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
     margin:3px 0;
     padding: 0px;
+    background:#FFF;
     border: solid 1px #CCC;
     border-radius: 2px;
     max-height:310px;

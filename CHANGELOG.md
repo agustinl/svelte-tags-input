@@ -7,6 +7,7 @@
 * Close auto-complete list and focus on tags input with <kbd>ESC</kbd>
 * Add selected tag in auto-complete list with <kbd>ENTER</kbd>
 * Enabled infinite scroll in auto-complete list
+* Fixed auto-complete list style to appear above content
 
 ## 2.2.1
 * Added a unique ID for each input
