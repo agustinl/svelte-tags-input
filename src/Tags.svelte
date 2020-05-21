@@ -313,9 +313,9 @@ function uniqueID() {
     margin-top: 5px;
 }
 
-.svelte-tags-input-tag:hover {
-    /*background: #CCC;*/
-}
+/*.svelte-tags-input-tag:hover {
+    background: #CCC;
+}*/
 
 .svelte-tags-input-tag-remove {
     cursor:pointer;

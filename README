@@ -4,15 +4,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/2151-shield.svg)](https://madewithsvelte.com/p/svelte-tags-input/shield-link)
 
-> Svelte tags input is a component to use with [Svelte](https://svelte.dev/) and easily enter tags and customize some functions.
+> Svelte tags input is a component to use with Svelte and easily enter tags and customize some options
 
+## Example  
 
-## Example 
-
-### [Live Demo](https://svelte-tags-input-example.now.sh/) 
+### [Live Demo](https://svelte-tags-input.now.sh/)  
  
- 
-## Install
+## Install  
 
 ```bash
 npm install svelte-tags-input --save
@@ -22,14 +20,14 @@ npm install svelte-tags-input --save
 import Tags from "svelte-tags-input";
 
 <Tags />
-```
+```  
 
-### [Full Documentation](https://github.com/agustinl/svelte-tags-input) 
-
-## Author
-
-[Agustínl](https://www.agustinl.dev/)
+### [Full Documentation](https://github.com/agustinl/svelte-tags-input)  
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the [MIT License](LICENSE)  
+
+## Author
+
+[Agustínl](https://www.agustinl.dev?ref=npm-sti)  

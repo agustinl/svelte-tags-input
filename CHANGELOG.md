@@ -1,5 +1,8 @@
 # svelte-tags-input changelog
 
+## 2.3.1
+* Update README
+
 ## 2.3.0
 * Added a unique ID for each auto-complete list
 * If `onlyUnique === true` auto-complete list not show tags previously added
