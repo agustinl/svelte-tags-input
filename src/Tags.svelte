@@ -61,9 +61,10 @@ function setTag(input) {
     if (addKeys) {
         addKeys.forEach(function(key) {
             if (key === input.keyCode) {
+                input.preventDefault();
+
                 switch (input.keyCode) {
                 case 9:
-                    input.preventDefault();
                     // Add first item of autocomplete list on TAB
                     if (autoComplete && document.getElementById(matchsID)) {                        
                         addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
@@ -71,9 +72,6 @@ function setTag(input) {
                         addTag(currentTag);
                     }                    
                     break;
-                case 188:
-                    // Prevent insertion of ,
-                    input.preventDefault();
                 default:
                     addTag(currentTag);
                     break;
