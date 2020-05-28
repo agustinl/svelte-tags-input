@@ -35,7 +35,7 @@ import Tags from "svelte-tags-input";
 | maxTags | `Array` | `false` | Set maximum number of tags |
 | onlyUnique | `Boolean` | `false` | Set the entered tags to be unique |
 | placeholder | `String` | `false` | Set a placeholder |
-| autoComplete | `Array` | `false` | Set an array of elements to create a autocomplete dropd |
+| autoComplete | `Array` | `false` | Set an array of elements to create a autocomplete dropdown |
 
 
 ## Full example
