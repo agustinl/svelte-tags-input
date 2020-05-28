@@ -39,6 +39,7 @@ import Tags from "svelte-tags-input";
 | name | `String` | `svelte-tags-input` | Set a `name` attribute |
 | id | `String` | Random Unique ID | Set a `id` attribute |
 
+##### [A complete list of key codes](https://keycode.info/)
 
 ## Full example
 
