@@ -62,6 +62,7 @@ function setTag(input) {
         addKeys.forEach(function(key) {
             if (key === input.keyCode) {
                 input.preventDefault();
+                
                 switch (input.keyCode) {
                 case 9:
                     // Add first item of autocomplete list on TAB
