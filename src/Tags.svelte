@@ -61,13 +61,10 @@ function setTag(input) {
     if (addKeys) {
         addKeys.forEach(function(key) {
             if (key === input.keyCode) {
+                input.preventDefault();
+
                 switch (input.keyCode) {
-                case 188:
-                    // Remove comma if keycode to add tag is ,
-                    addTag(currentTag.substring(0, currentTag.length - 1));
-                    break;
                 case 9:
-                    input.preventDefault();
                     // Add first item of autocomplete list on TAB
                     if (autoComplete && document.getElementById(matchsID)) {                        
                         addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
