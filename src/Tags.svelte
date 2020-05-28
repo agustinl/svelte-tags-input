@@ -4,8 +4,6 @@ import { createEventDispatcher } from 'svelte';
 const dispatch = createEventDispatcher();
 let tag;
 let arrelementsmatch = [];
-let ID = uniqueID();
-let matchsID = ID + "_matchs";
 
 export let tags;
 export let addKeys;
@@ -17,6 +15,8 @@ export let allowPaste;
 export let allowDrop;
 export let splitWith;
 export let autoComplete;
+export let name;
+export let id;
 
 $: tags = tags || [];
 $: addKeys = addKeys || false;
@@ -28,6 +28,10 @@ $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
+$: name = name || "svelte-tags-input";
+$: id = id || uniqueID();
+
+$: matchsID = id + "_matchs";
 
 function setTag(input) {
     
@@ -47,7 +51,7 @@ function setTag(input) {
             tags: tags
         });
     }
-
+    
     // If KEYDOWN focus on first element of the autocomplete
     if (input.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
         event.preventDefault();
@@ -114,7 +118,7 @@ function addTag(currentTag) {
     
     // After add a tag, hide autocomplete list and focus on svelte tags input
     arrelementsmatch = [];
-    document.getElementById(ID).focus();
+    document.getElementById(id).focus();
 
 }
 
@@ -129,7 +133,7 @@ function removeTag(i) {
     
     // After add a tag, hide autocomplete list and focus on svelte tags input
     arrelementsmatch = [];
-    document.getElementById(ID).focus();
+    document.getElementById(id).focus();
 
 }
 
@@ -218,7 +222,7 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
         addTag(autoCompleteElement);
     } else if (event.keyCode === 27) { // Close auto complete list if press ESC and focus in input
         arrelementsmatch = [];
-        document.getElementById(ID).focus();
+        document.getElementById(id).focus();
     }
 }
 
@@ -234,12 +238,12 @@ function uniqueID() {
             <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span></span>
         {/each}
     {/if}
-    <input type="text" id={ID} bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
+    <input type="text" id={id} name={name} bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
 </div>
 
 {#if autoComplete && arrelementsmatch.length > 0}
     <div class="svelte-tags-input-matchs-parent">
-        <ul id="{ID}_matchs" class="svelte-tags-input-matchs">
+        <ul id="{id}_matchs" class="svelte-tags-input-matchs">
             {#each arrelementsmatch as element, i}
                 <li tabindex="-1" on:keydown={() => navigateAutoComplete(i, arrelementsmatch.length, element)} on:click={() => addTag(element)}>{element}</li>
             {/each}

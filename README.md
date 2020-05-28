@@ -36,6 +36,8 @@ import Tags from "svelte-tags-input";
 | onlyUnique | `Boolean` | `false` | Set the entered tags to be unique |
 | placeholder | `String` | `false` | Set a placeholder |
 | autoComplete | `Array` | `false` | Set an array of elements to create a autocomplete dropdown |
+| name | `String` | `svelte-tags-input` | Set a `name` attribute |
+| id | `String` | Random Unique ID | Set a `id` attribute |
 
 
 ## Full example
@@ -77,6 +79,8 @@ const countryList = [
     removeKeys={[27]} // ESC Key
     placeholder={"Svelte Tags Input full example"}
     autoComplete={countryList}
+    name={"custom-name"}
+    id={"custom-id"}
 />
 ```
 
