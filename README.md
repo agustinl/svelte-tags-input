@@ -70,7 +70,7 @@ const countryList = [
 ];
 
 <Tags
-    on:tags={handleTagProperties}
+    on:tags={handleTags}
     addKeys={[9]} // TAB Key
     maxTags={3}
     allowPaste={true}
