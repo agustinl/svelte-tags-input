@@ -1,5 +1,10 @@
 # svelte-tags-input changelog
 
+## 2.5.0
+* Added the `on:blur` event
+* Removed duplicate <kbd>ENTER</kbd> and <kbd>BACKSPACE</kbd> check
+* Added `disable` option
+
 ## 2.3.1
 * Update README
 

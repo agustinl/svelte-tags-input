@@ -17,12 +17,14 @@ export let splitWith;
 export let autoComplete;
 export let name;
 export let id;
+export let allowBlur;
+export let disable;
 
 $: tags = tags || [];
-$: addKeys = addKeys || false;
+$: addKeys = addKeys || [13];
 $: maxTags = maxTags || false;
 $: onlyUnique = onlyUnique || false;
-$: removeKeys = removeKeys || false;
+$: removeKeys = removeKeys || [8];
 $: placeholder = placeholder || "";
 $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
@@ -30,37 +32,14 @@ $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
 $: name = name || "svelte-tags-input";
 $: id = id || uniqueID();
+$: allowBlur = allowBlur || false;
+$: disable = disable || false;
 
 $: matchsID = id + "_matchs";
 
 function setTag(input) {
     
     const currentTag = input.target.value;
-
-    // If ENTER addTag()
-    if (input.keyCode === 13) {
-        addTag(currentTag);
-    }
-    
-    // If BACKSPACE removeTag()
-    if (input.keyCode === 8 && tag == "") {
-        tags.pop();  
-        tags = tags;
-
-        dispatch('tags', {
-            tags: tags
-        });
-    }
-    
-    // If KEYDOWN focus on first element of the autocomplete
-    if (input.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
-        event.preventDefault();
-        document.getElementById(matchsID).querySelector("li:first-child").focus();
-    } // If KEYUP focus on last element of the autocomplete
-    else if (input.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
-        event.preventDefault();
-        document.getElementById(matchsID).querySelector("li:last-child").focus();
-    }
     
     if (addKeys) {
         addKeys.forEach(function(key) {
@@ -97,6 +76,16 @@ function setTag(input) {
             }
         });
     }
+    
+    // If KEYDOWN focus on first element of the autocomplete
+    if (input.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
+        event.preventDefault();
+        document.getElementById(matchsID).querySelector("li:first-child").focus();
+    } // If KEYUP focus on last element of the autocomplete
+    else if (input.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
+        event.preventDefault();
+        document.getElementById(matchsID).querySelector("li:last-child").focus();
+    }
 
 }
 
@@ -106,7 +95,7 @@ function addTag(currentTag) {
 
     if (currentTag == "") return;
     if (maxTags && tags.length == maxTags) return;    
-    if(onlyUnique && tags.includes(currentTag)) return;
+    if (onlyUnique && tags.includes(currentTag)) return;
     
     tags.push(currentTag)
     tags = tags;
@@ -157,6 +146,12 @@ function onDrop(e){
     const data = e.dataTransfer.getData("Text");
     const tags = splitTags(data).map(tag => addTag(tag));
 
+}
+
+function onBlur(input){
+
+    if(allowBlur) addTag(input);
+    
 }
 
 function getClipboardData(e) {
@@ -232,13 +227,17 @@ function uniqueID() {
 
 </script>
 
-<div class="svelte-tags-input-layout">
+<div class="svelte-tags-input-layout {disable ? "sti-layout-disable" : ""}">
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <span class="svelte-tags-input-tag">{tag} <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span></span>
+            <span class="svelte-tags-input-tag">{tag}
+                {#if !disable}
+                <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span>
+                {/if}
+            </span>
         {/each}
     {/if}
-    <input type="text" id={id} name={name} bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} class="svelte-tags-input" placeholder={placeholder}>
+    <input type="text" id={id} name={name} bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} on:blur={() => onBlur(tag)} class="svelte-tags-input" placeholder={placeholder} disabled={disable}>
 </div>
 
 {#if autoComplete && arrelementsmatch.length > 0}
@@ -355,5 +354,25 @@ function uniqueID() {
     background:#000;
     color:#FFF;
     outline:none;
+}
+
+/* svelte-tags-input disabled */
+.svelte-tags-input-layout.sti-layout-disable,
+.svelte-tags-input:disabled {
+    background: #EAEAEA;
+    cursor: not-allowed;
+}
+
+.svelte-tags-input-layout.sti-layout-disable:hover,
+.svelte-tags-input-layout.sti-layout-disable:focus {
+    border-color:#CCC;
+}
+
+.svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag {
+    background: #AEAEAE;
+}
+
+.svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag-remove {
+    cursor: not-allowed;
 }
 </style>
