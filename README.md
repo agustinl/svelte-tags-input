@@ -38,6 +38,8 @@ import Tags from "svelte-tags-input";
 | autoComplete | `Array` | `false` | Set an array of elements to create a autocomplete dropdown |
 | name | `String` | `svelte-tags-input` | Set a `name` attribute |
 | id | `String` | Random Unique ID | Set a `id` attribute |
+| allowBlur | `Boolean` | `false` | Enable add tag when input blur |
+| disable | `Boolean` | `false` | Disable input |
 
 ##### [A complete list of key codes](https://keycode.info/)
 
