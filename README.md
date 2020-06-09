@@ -27,11 +27,11 @@ import Tags from "svelte-tags-input";
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | on:tags | `Function` | `undefined` | To get the values |
-| addKeys | `Array` | <kbd>ENTER</kbd> <small>13</small> | Set which keys add new values |
-| removeKeys | `Array` | <kbd>BACKSPACE</kbd> <small>8</small> | Set which keys remove new values |
+| addKeys | `Array` | <kbd>ENTER</kbd> **13** | Set which keys add new values |
+| removeKeys | `Array` | <kbd>BACKSPACE</kbd> **8** | Set which keys remove new values |
 | allowPaste | `Boolean` | `false` | Enable pasting of a tag or tag group |
 | allowDrop | `Boolean` | `false` | Enable drag and drop of a tag or tag group |
-| splitWith | `String` | <kbd>,</kbd> | Choose what character split you group of tags<br><small>Work only if allowDrop or allowPaste are true</small> |
+| splitWith | `String` | <kbd>,</kbd> | Choose what character split you group of tags  _Work only if allowDrop or allowPaste are true_ |
 | maxTags | `Array` | `false` | Set maximum number of tags |
 | onlyUnique | `Boolean` | `false` | Set the entered tags to be unique |
 | placeholder | `String` | `false` | Set a placeholder |
