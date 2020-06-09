@@ -84,10 +84,14 @@ const countryList = [
     autoComplete={countryList}
     name={"custom-name"}
     id={"custom-id"}
+    allowBlur={true}
+    disable={false} // Just to illustrate. No need to declare it if it's false.
 />
 ```
 
 ## [FAQs](https://svelte-tags-input.now.sh#faqs)
+
+## [CHANGELOG](https://github.com/agustinl/svelte-tags-input/blob/master/CHANGELOG.md)
 
 ## License
 
