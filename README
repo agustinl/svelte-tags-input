@@ -24,6 +24,8 @@ import Tags from "svelte-tags-input";
 
 ### [Full Documentation](https://github.com/agustinl/svelte-tags-input)  
 
+### [CHANGELOG](https://github.com/agustinl/svelte-tags-input/blob/master/CHANGELOG.md)  
+
 ## License
 
 This project is open source and available under the [MIT License](LICENSE)  
