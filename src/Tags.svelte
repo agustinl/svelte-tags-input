@@ -68,7 +68,6 @@ function setTag(input) {
             if (key === input.keyCode && tag === "") {
                 tags.pop();  
                 tags = tags;
-                tag = "";
 
                 dispatch('tags', {
                     tags: tags
