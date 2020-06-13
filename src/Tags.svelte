@@ -2,7 +2,7 @@
 import { createEventDispatcher } from 'svelte';
 
 const dispatch = createEventDispatcher();
-let tag;
+let tag = "";
 let arrelementsmatch = [];
 
 export let tags;
@@ -65,7 +65,7 @@ function setTag(input) {
     
     if (removeKeys) {
         removeKeys.forEach(function(key) {
-            if (key === input.keyCode) {
+            if (key === input.keyCode && tag === "") {
                 tags.pop();  
                 tags = tags;
                 tag = "";
