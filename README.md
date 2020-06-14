@@ -1,5 +1,5 @@
 <h1 align="center">
-  🏷️ svelte-tags-input
+    svelte-tags-input
 </h1>
 <div align="center">Svelte tags input is a component to use with Svelte and easily enter tags and customize some options</div>
 <br />

@@ -1,7 +1,7 @@
 # svelte-tags-input changelog
 
 ## 2.5.1
-* Fix deleting last tag while input is not empty #27
+* Fix deleting last tag while input is not empty ([#26](https://github.com/agustinl/svelte-tags-input/pull/26))
 
 ## 2.5.0
 * Added the `on:blur` event
