@@ -91,7 +91,7 @@ const countryList = [
 
 ## [FAQs](https://svelte-tags-input.now.sh#faqs)
 
-## [CHANGELOG](CHANGELOG)
+## [CHANGELOG](CHANGELOG.md)
 
 ## License
 

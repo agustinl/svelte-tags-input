@@ -1,5 +1,8 @@
 # svelte-tags-input changelog
 
+## 2.5.1
+* Fix deleting last tag while input is not empty #27
+
 ## 2.5.0
 * Added the `on:blur` event
 * Removed duplicate <kbd>ENTER</kbd> and <kbd>BACKSPACE</kbd> check
