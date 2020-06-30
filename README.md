@@ -37,11 +37,12 @@ import Tags from "svelte-tags-input";
 | maxTags | `Array` | `false` | Set maximum number of tags |
 | onlyUnique | `Boolean` | `false` | Set the entered tags to be unique |
 | placeholder | `String` | `false` | Set a placeholder |
-| autoComplete | `Array` | `false` | Set an array of elements to create a autocomplete dropdown |
+| autoComplete | `Array` | `false` | Set an array of elements to create a auto-complete dropdown |
 | name | `String` | `svelte-tags-input` | Set a `name` attribute |
 | id | `String` | Random Unique ID | Set a `id` attribute |
 | allowBlur | `Boolean` | `false` | Enable add tag when input blur |
 | disable | `Boolean` | `false` | Disable input |
+| minChars | `Number` | `1` | Minimum length of search text to show auto-complete list |
 
 ##### [A complete list of key codes](https://keycode.info/)
 
@@ -88,6 +89,7 @@ const countryList = [
     id={"custom-id"}
     allowBlur={true}
     disable={false} // Just to illustrate. No need to declare it if it's false.
+    minChars={3}
 />
 ```
 

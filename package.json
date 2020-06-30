@@ -1,6 +1,6 @@
 {
   "name": "svelte-tags-input",
-  "version": "2.5.1",
+  "version": "2.6.0",
   "description": "Svelte tags input is a component to use with Svelte and easily enter tags and customize some functions.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -22,7 +22,7 @@
     "type": "git",
     "url": "https://github.com/agustinl/svelte-tags-input"
   },
-  "author": "agustinl (https://agustinl.dev)",
+  "author": "Agustin Lautaro <aencaje@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.1",
@@ -31,7 +31,7 @@
     "rollup-plugin-svelte": "^5.1.1",
     "svelte": "^3.16.7"
   },
-  "homepage": "https://svelte-tags-input-example.now.sh/",
+  "homepage": "https://svelte-tags-input.now.sh/",
   "bugs": {
     "url": "https://github.com/agustinl/svelte-tags-input/issues"
   },

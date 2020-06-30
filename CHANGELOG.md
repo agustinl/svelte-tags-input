@@ -1,5 +1,12 @@
 # svelte-tags-input changelog
 
+# 2.6.0
+* `minChars` minimum length of search text to show auto-complete list ([#28](https://github.com/agustinl/svelte-tags-input/pull/28))
+* Change homepage in package.json
+* Prevent writing if the maximum number of tags allowed is reached ([#25](https://github.com/agustinl/svelte-tags-input/pull/25))
+* Highlight the matching characters in the auto-complete list
+* Fix bug ([#30](https://github.com/agustinl/svelte-tags-input/pull/30))
+
 ## 2.5.1
 * Fix deleting last tag while input is not empty ([#26](https://github.com/agustinl/svelte-tags-input/pull/26))
 
