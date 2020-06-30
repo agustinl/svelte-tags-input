@@ -1,14 +1,14 @@
 # svelte-tags-input changelog
 
-# 2.6.0
-* `minChars` minimum length of search text to show auto-complete list ([#28](https://github.com/agustinl/svelte-tags-input/pull/28))
+## 2.6.0
+* Added `minChars` option: minimum length of search text to show auto-complete list ([#28](https://github.com/agustinl/svelte-tags-input/issues/28))
 * Change homepage in package.json
-* Prevent writing if the maximum number of tags allowed is reached ([#25](https://github.com/agustinl/svelte-tags-input/pull/25))
+* Prevent writing if the maximum number of tags allowed is reached ([#25](https://github.com/agustinl/svelte-tags-input/issues/25))
 * Highlight the matching characters in the auto-complete list
-* Fix bug ([#30](https://github.com/agustinl/svelte-tags-input/pull/30))
+* Fix bug ([#30](https://github.com/agustinl/svelte-tags-input/issues/30))
 
 ## 2.5.1
-* Fix deleting last tag while input is not empty ([#26](https://github.com/agustinl/svelte-tags-input/pull/26))
+* Fix deleting last tag while input is not empty ([#26](https://github.com/agustinl/svelte-tags-input/issues/26))
 
 ## 2.5.0
 * Added the `on:blur` event
@@ -31,7 +31,7 @@
 * Added a unique ID for each input
 
 ## 2.2.0
-* Improve auto-complete ([#10](https://github.com/agustinl/svelte-tags-input/pull/10))
+* Improve auto-complete ([#10](https://github.com/agustinl/svelte-tags-input/issues/10))
 
 ## 2.1.0
 * Added FAQs
@@ -40,14 +40,14 @@
 
 ## 2.0.1
 * Added CSS override instructions to documentation
-* Added link to modify the current list of tags ([#5](https://github.com/agustinl/svelte-tags-input/pull/5)) to documentation 
+* Added link to modify the current list of tags ([#5](https://github.com/agustinl/svelte-tags-input/issues/5)) to documentation 
 
 ## 2.0.0
-* Added auto complete feature ([#4](https://github.com/agustinl/svelte-tags-input/pull/4))
+* Added auto complete feature ([#4](https://github.com/agustinl/svelte-tags-input/issues/4))
 * Added vendor prefixes to CSS
 
 ## 1.0.16
 * Added paste or drop tag or group of tags
 
 ## 1.0.15
-* Blocking adding empty tag ([#1](https://github.com/agustinl/svelte-tags-input/pull/1))
+* Blocking adding empty tag ([#1](https://github.com/agustinl/svelte-tags-input/issues/1))
