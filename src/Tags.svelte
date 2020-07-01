@@ -277,7 +277,9 @@ function uniqueID() {
 {/if}
 
 <style>
-/* main */
+
+
+/* CSS svelte-tags-input */
 
 .svelte-tags-input,
 .svelte-tags-input-tag,

@@ -1,12 +1,14 @@
+<p align="center"><a href="https://svelte-tags-input.now.sh/"><img src="https://svelte-tags-input.now.sh/readme-image.png" alt="Svelte Tags Input"/></a></p>
 <h1 align="center">
     svelte-tags-input
 </h1>
 <div align="center">Svelte tags input is a component to use with Svelte and easily enter tags and customize some options</div>
 <br />
-
+<p align="center">
 [![License: MIT](https://img.shields.io/npm/v/svelte-tags-input.svg)](https://www.npmjs.com/package/svelte-tags-input)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![MadeWithSvelte.com shield](https://madewithsvelte.com/storage/repo-shields/2151-shield.svg)](https://madewithsvelte.com/p/svelte-tags-input/shield-link)
+</p>
 
 ## Example
 
