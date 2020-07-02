@@ -1,4 +1,3 @@
-# Directories
 node_modules/
 dist/
 .npmignore
