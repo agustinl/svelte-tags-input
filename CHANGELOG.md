@@ -1,6 +1,6 @@
 # svelte-tags-input changelog
 
-## 2.6.0
+## 2.6.3
 * Added `minChars` option: minimum length of search text to show auto-complete list ([#28](https://github.com/agustinl/svelte-tags-input/issues/28))
 * Change homepage in package.json
 * Prevent writing if the maximum number of tags allowed is reached ([#25](https://github.com/agustinl/svelte-tags-input/issues/25))

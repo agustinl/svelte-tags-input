@@ -1,10 +1,10 @@
 {
   "name": "svelte-tags-input",
-  "version": "2.6.0",
+  "version": "2.6.3",
   "description": "Svelte tags input is a component to use with Svelte and easily enter tags and customize some functions.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
-  "svelte": "src/index.js",
+  "svelte": "src/Tags.svelte",
   "scripts": {
     "build": "rollup -c",
     "prepare": "npm run build",
