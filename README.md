@@ -10,9 +10,7 @@
 <a href="https://madewithsvelte.com/p/svelte-tags-input/shield-link"><img src="https://madewithsvelte.com/storage/repo-shields/2151-shield.svg"/></a>
 </p>
 
-## Example
-
-### [Live Demo](https://svelte-tags-input.now.sh/)
+## [Basic REPL Example](https://svelte.dev/repl/72eb8ee74ab546cdbcab11e91c965471?version=3.24.0)
 
 ## Install
 
@@ -50,7 +48,7 @@ import Tags from "svelte-tags-input";
 
 ## Full example
 
-[Live Full Example Demo](https://svelte-tags-input.now.sh#example)  
+### [Full REPL Example](https://svelte.dev/repl/129f603083664aab9e5d10fe867745e2?version=3.24.0)  
 
 ```javascript
 import Tags from "svelte-tags-input";
