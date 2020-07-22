@@ -1,5 +1,8 @@
 # svelte-tags-input changelog
 
+## 2.6.4
+* Allow create a tag with tab, and change the focus if there is no tag ([#32](https://github.com/agustinl/svelte-tags-input/issues/32))
+
 ## 2.6.3
 * Added `minChars` option: minimum length of search text to show auto-complete list ([#28](https://github.com/agustinl/svelte-tags-input/issues/28))
 * Change homepage in package.json
