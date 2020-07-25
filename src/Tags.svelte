@@ -80,6 +80,11 @@ function setTag(input) {
                 dispatch('tags', {
                     tags: tags
                 });
+
+                arrelementsmatch = [];
+                document.getElementById(id).readOnly = false;
+                placeholder = storePlaceholder;
+                document.getElementById(id).focus();
             }
         });
     }
