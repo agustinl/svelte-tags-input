@@ -1,5 +1,9 @@
 # svelte-tags-input changelog
 
+## 2.6.5
+
+* Show input after removing the tag using remove keys ([#34](https://github.com/agustinl/svelte-tags-input/pull/34))
+
 ## 2.6.4
 * Allow create a tag with tab, and change the focus if there is no tag ([#32](https://github.com/agustinl/svelte-tags-input/issues/32))
 
