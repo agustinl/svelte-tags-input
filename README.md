@@ -34,7 +34,7 @@ import Tags from "svelte-tags-input";
 | allowPaste | `Boolean` | `false` | Enable pasting of a tag or tag group |
 | allowDrop | `Boolean` | `false` | Enable drag and drop of a tag or tag group |
 | splitWith | `String` | <kbd>,</kbd> | Choose what character split you group of tags<br>_Work only if allowDrop or allowPaste are true_ |
-| maxTags | `Array` | `false` | Set maximum number of tags |
+| maxTags | `Number|Boolean` | `false` | Set maximum number of tags |
 | onlyUnique | `Boolean` | `false` | Set the entered tags to be unique |
 | placeholder | `String` | `false` | Set a placeholder |
 | autoComplete | `Array` | `false` | Set an array of elements to create a auto-complete dropdown |
