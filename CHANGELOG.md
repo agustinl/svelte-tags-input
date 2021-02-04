@@ -1,5 +1,9 @@
 # svelte-tags-input changelog
 
+## 2.7.0
+
+* Allow `autoComplete` to handle asynchronous data ([#35](https://github.com/agustinl/svelte-tags-input/issues/35))
+* Added `autoCompleteKey` option for array of objects, to choose what key search on `autoComplete` results
 ## 2.6.5
 
 * Show input after removing the tag using remove keys ([#34](https://github.com/agustinl/svelte-tags-input/pull/34))
