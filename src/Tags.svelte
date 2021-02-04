@@ -304,7 +304,12 @@ function uniqueID() {
 <div class="svelte-tags-input-layout" class:sti-layout-disable={disable}>
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <span class="svelte-tags-input-tag">{autoCompleteKey ? tag[autoCompleteKey] : tag}
+            <span class="svelte-tags-input-tag">
+                {#if typeof tag === 'string'}
+                    {tag}
+                {:else}
+                    {tag[autoCompleteKey]}
+                {/if}
                 {#if !disable}
                 <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span>
                 {/if}
