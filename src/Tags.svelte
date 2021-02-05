@@ -2,6 +2,7 @@
 import { createEventDispatcher } from 'svelte';
 
 const dispatch = createEventDispatcher();
+
 let tag = "";
 let arrelementsmatch = [];
 let regExpEscape = (s) => {
@@ -18,6 +19,7 @@ export let allowPaste;
 export let allowDrop;
 export let splitWith;
 export let autoComplete;
+export let autoCompleteKey;
 export let name;
 export let id;
 export let allowBlur;
@@ -34,6 +36,7 @@ $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
+$: autoCompleteKey = autoCompleteKey || false;
 $: name = name || "svelte-tags-input";
 $: id = id || uniqueID();
 $: allowBlur = allowBlur || false;
@@ -45,7 +48,7 @@ $: matchsID = id + "_matchs";
 let storePlaceholder = placeholder;
 
 function setTag(input) {
-    
+        
     const currentTag = input.target.value;
     
     if (addKeys) {
@@ -103,18 +106,28 @@ function setTag(input) {
 
 function addTag(currentTag) {
 
-    currentTag = currentTag.trim();
+    if (typeof currentTag === 'object' && currentTag !== null) {
+        if (!autoCompleteKey) {
+            return console.error("'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects");
+        }
+
+        var currentObjTags = currentTag;
+        currentTag = currentTag[autoCompleteKey].trim();
+
+    } else {
+        currentTag = currentTag.trim();
+    }
 
     if (currentTag == "") return;
     if (maxTags && tags.length == maxTags) return;    
     if (onlyUnique && tags.includes(currentTag)) return;
     
-    tags.push(currentTag)
+    tags.push(currentObjTags ? currentObjTags : currentTag)
     tags = tags;
     tag = "";
 
     dispatch('tags', {
-		tags: tags
+        tags: tags
     });
     
     // Hide autocomplete list
@@ -195,9 +208,23 @@ function splitTags(data) {
     return data.split(splitWith).map(tag => tag.trim());    
 }
 
-function getMatchElements(input) {
+async function getMatchElements(input) {
 
     if (!autoComplete) return;
+
+    let autoCompleteValues = [];
+    
+    if (Array.isArray(autoComplete)) {
+        autoCompleteValues = autoComplete
+    }
+            
+    if (typeof autoComplete === 'function') {
+        if(autoComplete.constructor.name === 'AsyncFunction') {
+            autoCompleteValues = await autoComplete()
+        } else {
+            autoCompleteValues = autoComplete()
+        }
+    }
     
     var value = input.target.value;
     
@@ -206,15 +233,30 @@ function getMatchElements(input) {
         arrelementsmatch = [];
         return;
     }
+    
+    if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
+        
+        if (!autoCompleteKey) {
+            return console.error("'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects");
+        }
 
-    var matchs = autoComplete.filter(e => e.toLowerCase().includes(value.toLowerCase())).map(matchTag => {
+        var matchs = autoCompleteValues.filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase())).map(matchTag => {
+            return {
+                label: matchTag,
+                search: matchTag[autoCompleteKey].replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
+            }
+        });
+
+    } else {
+        var matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase())).map(matchTag => {
             return {
                 label: matchTag,
                 search: matchTag.replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
             }
-        });; 
+        });
+    }
 
-    if (onlyUnique === true) {
+    if (onlyUnique === true && !autoCompleteKey) {
         matchs = matchs.filter(tag => !tags.includes(tag.label));
     }
 
@@ -262,21 +304,44 @@ function uniqueID() {
 <div class="svelte-tags-input-layout" class:sti-layout-disable={disable}>
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <span class="svelte-tags-input-tag">{tag}
+            <span class="svelte-tags-input-tag">
+                {#if typeof tag === 'string'}
+                    {tag}
+                {:else}
+                    {tag[autoCompleteKey]}
+                {/if}
                 {#if !disable}
                 <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span>
                 {/if}
             </span>
         {/each}
     {/if}
-    <input type="text" id={id} name={name} bind:value={tag} on:keydown={setTag} on:keyup={getMatchElements} on:paste={onPaste} on:drop={onDrop} on:blur={() => onBlur(tag)} class="svelte-tags-input" placeholder={placeholder} disabled={disable} >
+    <input
+        type="text"
+        id={id}
+        name={name}
+        bind:value={tag}
+        on:keydown={setTag}
+        on:keyup={getMatchElements}
+        on:paste={onPaste}
+        on:drop={onDrop}
+        on:blur={() => onBlur(tag)}
+        class="svelte-tags-input"
+        placeholder={placeholder}
+        disabled={disable}
+    >
 </div>
 
 {#if autoComplete && arrelementsmatch.length > 0}
     <div class="svelte-tags-input-matchs-parent">
         <ul id="{id}_matchs" class="svelte-tags-input-matchs">
             {#each arrelementsmatch as element, index}
-                <li tabindex="-1" on:keydown={() => navigateAutoComplete(index, arrelementsmatch.length, element.label)} on:click={() => addTag(element.label)}>{@html element.search}</li>
+                <li
+                    tabindex="-1"
+                    on:keydown={() => navigateAutoComplete(index, arrelementsmatch.length, element.label)}
+                    on:click={() => addTag(element.label)}>
+                        {@html element.search}
+                    </li>
             {/each}
         </ul>
     </div>

@@ -37,7 +37,8 @@ import Tags from "svelte-tags-input";
 | maxTags | `Number` | `false` | Set maximum number of tags |
 | onlyUnique | `Boolean` | `false` | Set the entered tags to be unique |
 | placeholder | `String` | `false` | Set a placeholder |
-| autoComplete | `Array` | `false` | Set an array of elements to create a auto-complete dropdown |
+| autoComplete | `Array` or `fn()` | `false` | Set an array of elements to create a auto-complete dropdown |
+| autoCompleteKey | `String` | `false` | Set a key to search on `autoComplete` array of objects |
 | name | `String` | `svelte-tags-input` | Set a `name` attribute |
 | id | `String` | Random Unique ID | Set a `id` attribute |
 | allowBlur | `Boolean` | `false` | Enable add tag when input blur |
@@ -47,7 +48,6 @@ import Tags from "svelte-tags-input";
 ##### [A complete list of key codes](https://keycode.info/)
 
 ## Full example
-
 ### [Full REPL Example](https://svelte.dev/repl/129f603083664aab9e5d10fe867745e2?version=3.24.0)  
 
 ```javascript
@@ -93,6 +93,37 @@ const countryList = [
 />
 ```
 
+## Example with `autoComplete` function
+### [REPL Example](https://svelte.dev/repl/129f603083664aab9e5d10fe867745e2?version=3.24.0)  
+
+```javascript
+import Tags from "svelte-tags-input";
+
+let tag = "";
+
+function handleTags(event) {
+    tag = event.detail.tags;
+}
+
+const customAutocomplete = async () => {
+    const list = await fetch('https://restcountries.eu/rest/v2/all?fields=name;flag');
+    const res = await list.json();
+
+    return res;
+}
+
+<Tags
+    on:tags={handleTags}
+    autoComplete={customAutocomplete}
+    autoCompleteKey={"name"}
+/>
+
+{#each tag as country, index}
+    <p>{index} - {country.name} </p>
+    <img src={country.image} />
+{/each}
+```
+
 ## [FAQs](https://svelte-tags-input.now.sh#faqs)
 
 ## [CHANGELOG](CHANGELOG.md)
@@ -103,6 +134,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Author
 
-[Agustínl](https://www.agustinl.dev?ref=github-sti)
+[Agustínl](https://www.agustinl.com?ref=github-sti)
 
-##### 2020
+##### 2021
