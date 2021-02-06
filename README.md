@@ -94,7 +94,7 @@ const countryList = [
 ```
 
 ## Example with `autoComplete` function
-### [REPL Example](https://svelte.dev/repl/129f603083664aab9e5d10fe867745e2?version=3.24.0)  
+### [REPL Example](https://svelte.dev/repl/dc827c219cf44a1a9f1bfc711438af26?version=3.32.1)  
 
 ```javascript
 import Tags from "svelte-tags-input";
@@ -120,7 +120,7 @@ const customAutocomplete = async () => {
 
 {#each tag as country, index}
     <p>{index} - {country.name} </p>
-    <img src={country.image} />
+    <img src={country.flag} />
 {/each}
 ```
 
