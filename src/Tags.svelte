@@ -1,314 +1,335 @@
 <script>
-import { createEventDispatcher } from 'svelte';
 
-const dispatch = createEventDispatcher();
+import { createEventDispatcher } from 'svelte'
 
-let tag = "";
-let arrelementsmatch = [];
-let regExpEscape = (s) => {
-  return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&")
-}
+const dispatch = createEventDispatcher()
 
-export let tags;
-export let addKeys;
-export let maxTags;
-export let onlyUnique;
-export let removeKeys;
-export let placeholder;
-export let allowPaste;
-export let allowDrop;
-export let splitWith;
-export let autoComplete;
-export let autoCompleteKey;
-export let name;
-export let id;
-export let allowBlur;
-export let disable;
-export let minChars;
+let tag = ''
+let arrelementsmatch = []
+let regExpEscape = s =>
+    s.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&')
 
-$: tags = tags || [];
-$: addKeys = addKeys || [13];
-$: maxTags = maxTags || false;
-$: onlyUnique = onlyUnique || false;
-$: removeKeys = removeKeys || [8];
-$: placeholder = placeholder || "";
-$: allowPaste = allowPaste || false;
-$: allowDrop = allowDrop || false;
-$: splitWith = splitWith || ",";
-$: autoComplete = autoComplete || false;
-$: autoCompleteKey = autoCompleteKey || false;
-$: name = name || "svelte-tags-input";
-$: id = id || uniqueID();
-$: allowBlur = allowBlur || false;
-$: disable = disable || false;
-$: minChars = minChars || 1;
+export let tags
+export let addKeys
+export let maxTags
+export let onlyUnique
+export let removeKeys
+export let placeholder
+export let allowPaste
+export let allowDrop
+export let splitWith
+export let autoComplete
+export let autoCompleteKey
+export let name
+export let id
+export let allowBlur
+export let disable
+export let minChars
 
-$: matchsID = id + "_matchs";
+// Allows true, false, or a custom string, default = false
+export let nativeAutocomplete = false
 
-let storePlaceholder = placeholder;
+export let inputLayoutClass = null
+export let inputClass = null
+export let autocompleteParentClass = null
+export let autocompleteListClass = null
+export let autocompleteItemClass = null
 
-function setTag(input) {
+$: tags = tags || []
+$: addKeys = addKeys || [13]
+$: maxTags = maxTags || false
+$: onlyUnique = onlyUnique || false
+$: removeKeys = removeKeys || [8]
+$: placeholder = placeholder || ""
+$: allowPaste = allowPaste || false
+$: allowDrop = allowDrop || false
+$: splitWith = splitWith || ","
+$: autoComplete = autoComplete || false
+$: autoCompleteKey = autoCompleteKey || false
+$: name = name || 'svelte-tags-input'
+$: id = id || uniqueID()
+$: allowBlur = allowBlur || false
+$: disable = disable || false
+$: minChars = minChars || 1
+
+$: matchesID = id + '_matches'
+
+$: nativeAutocompleteValue = (
+    (nativeAutocomplete === false)
+        ? 'off'
+        : (nativeAutocomplete === true)
+            ? 'on'
+            : nativeAutocomplete
+)
+
+let storePlaceholder = placeholder
+
+const uniqueID = () =>
+    'sti_' + Math.random().toString(36).substr(2, 9)
+
+const setTag = input => {
         
-    const currentTag = input.target.value;
+    const currentTag = input.target.value
     
-    if (addKeys) {
-        addKeys.forEach(function(key) {
-            if (key === input.keyCode) {
-                
-                if (currentTag) input.preventDefault();
-                                
-                switch (input.keyCode) {
+    if (addKeys) addKeys.forEach(key => {
+        
+        if (key === input.keyCode) {
+            
+            if (currentTag) input.preventDefault()
+                            
+            switch (input.keyCode) {
                 case 9:
                     // TAB add first element on the autoComplete list
-                    if (autoComplete && document.getElementById(matchsID)) {                        
-                        addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
-                    } else {
-                        addTag(currentTag);
-                    }                    
-                    break;
+                    if (autoComplete && document.getElementById(matchesID))
+                        addTag(document.getElementById(matchesID).querySelectorAll('li')[0].textContent)
+                    else
+                        addTag(currentTag)                    
+                    break
                 default:
-                    addTag(currentTag);
-                    break;
-                }
+                    addTag(currentTag)
+                    break
             }
-        });
+            
+        }
+        
+    })
+    
+    if (removeKeys) removeKeys.forEach(key => {
+        if (key === input.keyCode && tag === '') {
+            
+            tags.pop()
+            tags = tags
+            
+            dispatch('tags', { tags })
+            
+            arrelementsmatch = []
+            document.getElementById(id).readOnly = false
+            placeholder = storePlaceholder
+            document.getElementById(id).focus()
+            
+        }
+    })
+    
+    if (input.keyCode === 40 && autoComplete && document.getElementById(matchesID)) {
+        // ArrowDown : focus on first element of the autocomplete
+        input.preventDefault()
+        document.getElementById(matchesID).querySelector("li:first-child").focus();
+    } else if (input.keyCode === 38 && autoComplete && document.getElementById(matchesID)) {
+        // ArrowUp : focus on last element of the autocomplete
+        input.preventDefault();
+        document.getElementById(matchesID).querySelector("li:last-child").focus();
     }
     
-    if (removeKeys) {
-        removeKeys.forEach(function(key) {
-            if (key === input.keyCode && tag === "") {
-                tags.pop();  
-                tags = tags;
-
-                dispatch('tags', {
-                    tags: tags
-                });
-
-                arrelementsmatch = [];
-                document.getElementById(id).readOnly = false;
-                placeholder = storePlaceholder;
-                document.getElementById(id).focus();
-            }
-        });
-    }
-    
-    // ArrowDown : focus on first element of the autocomplete
-    if (input.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
-        event.preventDefault();
-        document.getElementById(matchsID).querySelector("li:first-child").focus();
-    } // ArrowUp : focus on last element of the autocomplete
-    else if (input.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
-        event.preventDefault();
-        document.getElementById(matchsID).querySelector("li:last-child").focus();
-    }
-
 }
 
-function addTag(currentTag) {
-
+const addTag = currentTag => {
+    
+    let currentObjTags = null
+    
     if (typeof currentTag === 'object' && currentTag !== null) {
-        if (!autoCompleteKey) {
-            return console.error("'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects");
-        }
-
-        var currentObjTags = currentTag;
-        currentTag = currentTag[autoCompleteKey].trim();
-
+        
+        if (!autoCompleteKey)
+            return console.error("'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects")
+        
+        currentObjTags = currentTag
+        currentTag = currentTag[autoCompleteKey].trim()
+        
     } else {
-        currentTag = currentTag.trim();
+        
+        currentTag = currentTag.trim()
+        
     }
-
-    if (currentTag == "") return;
-    if (maxTags && tags.length == maxTags) return;    
-    if (onlyUnique && tags.includes(currentTag)) return;
+    
+    if (currentTag == '') return
+    if (maxTags && tags.length == maxTags) return    
+    if (onlyUnique && tags.includes(currentTag)) return
     
     tags.push(currentObjTags ? currentObjTags : currentTag)
-    tags = tags;
-    tag = "";
-
-    dispatch('tags', {
-        tags: tags
-    });
+    tags = tags
+    tag = ''
+    
+    dispatch('tags', { tags })
     
     // Hide autocomplete list
     // Focus on svelte tags input
-    arrelementsmatch = [];
-    document.getElementById(id).focus();
-
+    arrelementsmatch = []
+    document.getElementById(id).focus()
+    
     if (maxTags && tags.length == maxTags) {
-        document.getElementById(id).readOnly = true;
-        placeholder = "";
-    };
-
+        document.getElementById(id).readOnly = true
+        placeholder = ''
+    }
+    
 }
 
-function removeTag(i) {
+const removeTag = i => {
     
-    tags.splice(i, 1);
-    tags = tags;
-
-    dispatch('tags', {
-		tags: tags
-	});    
+    tags.splice(i, 1)
+    tags = tags
+    
+    dispatch('tags', { tags })
     
     // Hide autocomplete list
     // Focus on svelte tags input
-    arrelementsmatch = [];
-    document.getElementById(id).readOnly = false;
-    placeholder = storePlaceholder;
-    document.getElementById(id).focus();
-
-}
-
-function onPaste(e){
-
-    if(!allowPaste) return;
-
-    e.preventDefault();
-
-    const data = getClipboardData(e);
-    const tags = splitTags(data).map(tag => addTag(tag));
+    arrelementsmatch = []
+    document.getElementById(id).readOnly = false
+    placeholder = storePlaceholder
+    document.getElementById(id).focus()
     
 }
 
-function onDrop(e){
-
-    if(!allowDrop) return;
-
-    e.preventDefault();
-
-    const data = e.dataTransfer.getData("Text");
-    const tags = splitTags(data).map(tag => addTag(tag));
-
+const onPaste = e => {
+    
+    if (!allowPaste) return
+    
+    e.preventDefault()
+    
+    const data = getClipboardData(e)
+    tags = splitTags(data).map(tag => addTag(tag))
+    
+    dispatch('tags', { tags })
+    
 }
 
-function onBlur(tag){
+const onDrop = e => {
+    
+    if (!allowDrop) return
+    
+    e.preventDefault()
+    
+    const data = e.dataTransfer.getData('Text')
+    tags = splitTags(data).map(tag => addTag(tag))
+    
+    dispatch('tags', { tags })
+    
+}
 
-    if (!document.getElementById(matchsID) && allowBlur) {
-        event.preventDefault();
-        addTag(tag);
+const onBlur = (e, tag) => {
+    
+    if (!document.getElementById(matchesID) && allowBlur) {
+        e.preventDefault()
+        addTag(tag)
     }
     
 }
 
-function getClipboardData(e) {
-
-    if (window.clipboardData) {
+const getClipboardData = e => {
+    
+    if (window.clipboardData)
         return window.clipboardData.getData('Text')
-    }
-
-    if (e.clipboardData) {
+    
+    if (e.clipboardData)
         return e.clipboardData.getData('text/plain')
-    }
-
+    
     return ''
-}
-
-function splitTags(data) {
-    return data.split(splitWith).map(tag => tag.trim());    
-}
-
-async function getMatchElements(input) {
-
-    if (!autoComplete) return;
-
-    let autoCompleteValues = [];
     
-    if (Array.isArray(autoComplete)) {
+}
+
+const splitTags = data =>
+    data.split(splitWith).map(tag => tag.trim())
+
+const getMatchElements = async (input) => {
+    
+    if (!autoComplete) return
+    
+    let autoCompleteValues = []
+    
+    if (Array.isArray(autoComplete))
         autoCompleteValues = autoComplete
-    }
-            
+    
     if (typeof autoComplete === 'function') {
-        if(autoComplete.constructor.name === 'AsyncFunction') {
+        if (autoComplete.constructor.name === 'AsyncFunction')
             autoCompleteValues = await autoComplete()
-        } else {
+        else
             autoCompleteValues = autoComplete()
-        }
     }
     
-    var value = input.target.value;
+    const value = input.target.value
     
     // Escape
-    if (value == "" || input.keyCode === 27 || value.length < minChars ) {
-        arrelementsmatch = [];
-        return;
+    if (value == '' || input.keyCode === 27 || value.length < minChars ) {
+        arrelementsmatch = []
+        return
     }
+    
+    let matches = []
     
     if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
         
-        if (!autoCompleteKey) {
-            return console.error("'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects");
-        }
-
-        var matchs = autoCompleteValues.filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase())).map(matchTag => {
-            return {
+        if (!autoCompleteKey)
+            return console.error("'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects")
+        
+        matches = autoCompleteValues
+            .filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase()))
+            .map(matchTag => ({
                 label: matchTag,
                 search: matchTag[autoCompleteKey].replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
-            }
-        });
-
+            }))
+        
     } else {
-        var matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase())).map(matchTag => {
-            return {
+        
+        matches = autoCompleteValues
+            .filter(e => e.toLowerCase().includes(value.toLowerCase()))
+            .map(matchTag => ({
                 label: matchTag,
                 search: matchTag.replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
-            }
-        });
+            }))
+        
     }
-
-    if (onlyUnique === true && !autoCompleteKey) {
-        matchs = matchs.filter(tag => !tags.includes(tag.label));
-    }
-
-    arrelementsmatch = matchs;
+    
+    if (onlyUnique === true && !autoCompleteKey)
+        matches = matches.filter(tag => !tags.includes(tag.label))
+    
+    arrelementsmatch = matches
+    
 }
 
-function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
-
-    if (!autoComplete) return;
+const navigateAutoComplete = (e, autoCompleteIndex, autoCompleteLength, autoCompleteElement) => {
     
-    event.preventDefault();
-
+    if (!autoComplete) return
+    
+    e.preventDefault()
+    
     // ArrowDown
-    if (event.keyCode === 40) {
+    if (e.keyCode === 40) {
         // Last element on the list ? Go to the first
         if (autoCompleteIndex + 1 === autoCompleteLength) {
-            document.getElementById(matchsID).querySelector("li:first-child").focus();
-            return;
+            document.getElementById(matchesID).querySelector("li:first-child").focus()
+            return
         }
-        document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex + 1].focus();
-    } else if (event.keyCode === 38) {
+        document.getElementById(matchesID).querySelectorAll("li")[autoCompleteIndex + 1].focus()
+    } else if (e.keyCode === 38) {
         // ArrowUp
         // First element on the list ? Go to the last
         if (autoCompleteIndex === 0) {
-            document.getElementById(matchsID).querySelector("li:last-child").focus();
-            return;
+            document.getElementById(matchesID).querySelector("li:last-child").focus()
+            return
         }
-        document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex - 1].focus();
-    } else if (event.keyCode === 13) { 
+        document.getElementById(matchesID).querySelectorAll("li")[autoCompleteIndex - 1].focus()
+    } else if (e.keyCode === 13) { 
         // Enter
-        addTag(autoCompleteElement);
-    } else if (event.keyCode === 27) {
+        addTag(autoCompleteElement)
+    } else if (e.keyCode === 27) {
         // Escape
-        arrelementsmatch = [];
-        document.getElementById(id).focus();
+        arrelementsmatch = []
+        document.getElementById(id).focus()
     }
+    
 }
-
-function uniqueID() {
-    return 'sti_' + Math.random().toString(36).substr(2, 9);
-};
 
 </script>
 
-<div class="svelte-tags-input-layout" class:sti-layout-disable={disable}>
+<div
+    class={inputLayoutClass ? inputLayoutClass : 'svelte-tags-input-layout'}
+    class:sti-layout-disable={disable}>
+    
     {#if tags.length > 0}
         {#each tags as tag, i}
             <span class="svelte-tags-input-tag">
                 {#if typeof tag === 'string'}
-                    {tag}
+                {tag}
                 {:else}
-                    {tag[autoCompleteKey]}
+                {tag[autoCompleteKey]}
                 {/if}
                 {#if !disable}
                 <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span>
@@ -316,7 +337,9 @@ function uniqueID() {
             </span>
         {/each}
     {/if}
+    
     <input
+        class={inputClass ? inputClass : 'svelte-tags-input'}
         type="text"
         id={id}
         name={name}
@@ -325,26 +348,27 @@ function uniqueID() {
         on:keyup={getMatchElements}
         on:paste={onPaste}
         on:drop={onDrop}
-        on:blur={() => onBlur(tag)}
-        class="svelte-tags-input"
+        on:blur={e => onBlur(e, tag)}
         placeholder={placeholder}
         disabled={disable}
+        autocomplete={nativeAutocompleteValue}
     >
 </div>
 
 {#if autoComplete && arrelementsmatch.length > 0}
-    <div class="svelte-tags-input-matchs-parent">
-        <ul id="{id}_matchs" class="svelte-tags-input-matchs">
-            {#each arrelementsmatch as element, index}
-                <li
-                    tabindex="-1"
-                    on:keydown={() => navigateAutoComplete(index, arrelementsmatch.length, element.label)}
-                    on:click={() => addTag(element.label)}>
-                        {@html element.search}
-                    </li>
-            {/each}
-        </ul>
-    </div>
+<div class={autocompleteParentClass ? autocompleteParentClass : 'svelte-tags-input-matches-parent'}>
+    <ul id="{id}_matches" class={autocompleteListClass ? autocompleteListClass : 'svelte-tags-input-matches'}>
+        {#each arrelementsmatch as element, index}
+            <li
+                class={autocompleteItemClass ? autocompleteItemClass : ''}
+                tabindex="-1"
+                on:keydown={e => navigateAutoComplete(e, index, arrelementsmatch.length, element.label)}
+                on:click={() => addTag(element.label)}>
+                    {@html element.search}
+                </li>
+        {/each}
+    </ul>
+</div>
 {/if}
 
 <style>
@@ -352,7 +376,7 @@ function uniqueID() {
 
 .svelte-tags-input,
 .svelte-tags-input-tag,
-.svelte-tags-input-matchs {
+.svelte-tags-input-matches {
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
     font-size: 14px;
     padding: 2px 5px;
@@ -370,9 +394,6 @@ function uniqueID() {
         -ms-flex-align:center;
             align-items:center;
     padding: 0px 5px 5px 5px;
-    border: solid 1px #CCC;
-    background: #FFF;
-    border-radius: 2px;
 }
 
 .svelte-tags-input-layout:focus,
@@ -387,7 +408,7 @@ function uniqueID() {
         -ms-flex: 1;
             flex: 1; 
     margin: 0;
-    margin-top: 5px;
+    /* margin-top: 5px; */
     border:none;
 }
 
@@ -418,13 +439,13 @@ function uniqueID() {
     cursor:pointer;
 }
 
-/* svelte-tags-input-matchs */
+/* svelte-tags-input-matches */
 
-.svelte-tags-input-matchs-parent {
+.svelte-tags-input-matches-parent {
     position:relative;
 }
 
-.svelte-tags-input-matchs {
+.svelte-tags-input-matches {
     position:absolute;
     top:0;
     left:0;
@@ -439,15 +460,15 @@ function uniqueID() {
     overflow-x:auto;
 }
 
-.svelte-tags-input-matchs li {
+.svelte-tags-input-matches li {
     list-style:none;
     padding:5px;
     border-radius: 2px;
     cursor:pointer;
 }
 
-.svelte-tags-input-matchs li:hover,
-.svelte-tags-input-matchs li:focus {
+.svelte-tags-input-matches li:hover,
+.svelte-tags-input-matches li:focus {
     background:#000;
     color:#FFF;
     outline:none;
