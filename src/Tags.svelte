@@ -1,6 +1,7 @@
 <script>
 
 import { createEventDispatcher } from 'svelte'
+import * as events from './events'
 
 const dispatch = createEventDispatcher()
 
@@ -67,129 +68,80 @@ let storePlaceholder = placeholder
 const uniqueID = () =>
     'sti_' + Math.random().toString(36).substr(2, 9)
 
-const setTag = input => {
-        
-    const currentTag = input.target.value
-    
-    if (addKeys) addKeys.forEach(key => {
-        
-        if (key === input.keyCode) {
-            
-            if (currentTag) input.preventDefault()
-                            
-            switch (input.keyCode) {
-                case 9:
-                    // TAB add first element on the autoComplete list
-                    if (autoComplete && document.getElementById(matchesID))
-                        addTag(document.getElementById(matchesID).querySelectorAll('li')[0].textContent)
-                    else
-                        addTag(currentTag)                    
-                    break
-                default:
-                    addTag(currentTag)
-                    break
-            }
-            
-        }
-        
-    })
-    
-    if (removeKeys) removeKeys.forEach(key => {
-        if (key === input.keyCode && tag === '') {
-            
-            tags.pop()
-            tags = tags
-            
-            dispatch('tags', { tags })
-            
-            arrelementsmatch = []
-            document.getElementById(id).readOnly = false
-            placeholder = storePlaceholder
-            document.getElementById(id).focus()
-            
-        }
-    })
-    
-    if (input.keyCode === 40 && autoComplete && document.getElementById(matchesID)) {
-        // ArrowDown : focus on first element of the autocomplete
-        input.preventDefault()
-        document.getElementById(matchesID).querySelector("li:first-child").focus();
-    } else if (input.keyCode === 38 && autoComplete && document.getElementById(matchesID)) {
-        // ArrowUp : focus on last element of the autocomplete
-        input.preventDefault();
-        document.getElementById(matchesID).querySelector("li:last-child").focus();
-    }
-    
+const _getTags = () => tags
+
+const _setTag = newTag => {
+    tag = newTag
 }
 
-const addTag = currentTag => {
-    
-    let currentObjTags = null
-    
-    if (typeof currentTag === 'object' && currentTag !== null) {
-        
-        if (!autoCompleteKey)
-            return console.error("'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects")
-        
-        currentObjTags = currentTag
-        currentTag = currentTag[autoCompleteKey].trim()
-        
-    } else {
-        
-        currentTag = currentTag.trim()
-        
-    }
-    
-    if (currentTag == '') return
-    if (maxTags && tags.length == maxTags) return    
-    if (onlyUnique && tags.includes(currentTag)) return
-    
-    tags.push(currentObjTags ? currentObjTags : currentTag)
-    tags = tags
-    tag = ''
-    
-    dispatch('tags', { tags })
-    
-    // Hide autocomplete list
-    // Focus on svelte tags input
-    arrelementsmatch = []
-    document.getElementById(id).focus()
-    
-    if (maxTags && tags.length == maxTags) {
-        document.getElementById(id).readOnly = true
-        placeholder = ''
-    }
-    
+const _setTags = newTags => {
+    tags = newTags
 }
 
-const removeTag = i => {
-    
-    tags.splice(i, 1)
-    tags = tags
-    
-    dispatch('tags', { tags })
-    
-    // Hide autocomplete list
-    // Focus on svelte tags input
-    arrelementsmatch = []
-    document.getElementById(id).readOnly = false
-    placeholder = storePlaceholder
-    document.getElementById(id).focus()
-    
+const _spliceTags = (index, count) => {
+    tags.splice(index, count)
 }
 
-const onPaste = e => {
-    
-    if (!allowPaste) return
-    
-    e.preventDefault()
-    
-    const data = getClipboardData(e)
-    tags = splitTags(data).map(tag => addTag(tag))
-    
-    dispatch('tags', { tags })
-    
+const _pushTag = newTag => {
+    tags.push(newTag)
 }
+
+const _setArrelementsmatch = newItems => {
+    arrelementsmatch = newItems
+}
+
+const _setPlaceholder = text => {
+    placeholder = text
+}
+
+//
+
+const setTag = e => events.setTag(
+    e,
+    autoComplete,
+    matchesID,
+    addKeys,
+    removeKeys
+)
+
+const addTag = currentTag => events.addTag(
+    currentTag,
+    _getTags,
+    _setTag,
+    _setTags,
+    _pushTag,
+    _setArrelementsmatch,
+    autoCompleteKey,
+    maxTags,
+    id,
+    onlyUnique,
+    placeholder,
+    dispatch
+)
+
+const removeTag = index => events.removeTag(
+    index,
+    id,
+    storePlaceholder,
+    _getTags,
+    _setTags,
+    _spliceTags,
+    _setPlaceholder,
+    _setArrelementsmatch,
+    dispatch
+)
+
+const onPaste = e => events.onPaste(
+    e,
+    allowPaste,
+    autoCompleteKey,
+    splitTags,
+    addTag,
+    getClipboardData
+)
+
+
+//foo,bar,biz
 
 const onDrop = e => {
     
@@ -198,7 +150,7 @@ const onDrop = e => {
     e.preventDefault()
     
     const data = e.dataTransfer.getData('Text')
-    tags = splitTags(data).map(tag => addTag(tag))
+    _setTags(splitTags(data).map(tag => addTag(tag)))
     
     dispatch('tags', { tags })
     
@@ -206,7 +158,11 @@ const onDrop = e => {
 
 const onBlur = (e, tag) => {
     
-    if (!document.getElementById(matchesID) && allowBlur) {
+    if (
+        tag && tag.length &&
+        !document.getElementById(matchesID) &&
+        allowBlur
+    ) {
         e.preventDefault()
         addTag(tag)
     }

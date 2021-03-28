@@ -1,7 +1,16 @@
 <script>
 
+import { onMount } from 'svelte'
 import countries from '../public/countries.json'
 import Tags from '../../src'
+
+const useStarterTags = true
+const starterTags = !useStarterTags ? null : [
+    { name: 'Italy' },
+    { name: 'Greece' },
+    { name: 'Albania' },
+    { name: 'France' },
+]
 
 let tags = []
 
@@ -21,6 +30,13 @@ const customAutocomplete = async () => {
 
 $: placeholder = countries.slice(0, 3).map(it => it.name).join(', ')
 
+onMount(() => {
+    
+    if (useStarterTags)
+        tags = [...starterTags]
+    
+})
+
 </script>
 
 <main>
@@ -31,8 +47,7 @@ $: placeholder = countries.slice(0, 3).map(it => it.name).join(', ')
     
     <div class="mt-6">
         <Tags
-            tags={['Italy', 'Greece', 'Albania', 'France']}
-            
+            tags={starterTags ? starterTags : []}
             inputLayoutClass="tags-layout flex flex-wrap border border-gray-300 rounded"
             inputClass="flex outline-none focus:outline-none p-3 w-full"
             autocompleteParentClass="tags-autocomplete-parent"
