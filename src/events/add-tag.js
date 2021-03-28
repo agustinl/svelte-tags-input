@@ -71,7 +71,12 @@ export const addTag = (
         dispatch
     )).filter(Boolean)
     
-    newTags.forEach(pushTag)
+    newTags.forEach(it => {
+        let newTag = it
+        if (autoCompleteKey && typeof it !== 'object')
+            newTag = { [autoCompleteKey]: it }
+        pushTag(newTag)
+    })
     
     setTags(getTags())
     setTag('')

@@ -4,7 +4,8 @@ export const setTag = (
     autoComplete,
     matchesID,
     addKeys,
-    removeKeys
+    removeKeys,
+    addTag
 ) => {
         
     const currentTag = e.target.value

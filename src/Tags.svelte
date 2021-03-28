@@ -96,13 +96,16 @@ const _setPlaceholder = text => {
 
 //
 
-const setTag = e => events.setTag(
-    e,
-    autoComplete,
-    matchesID,
-    addKeys,
-    removeKeys
-)
+const getClipboardData = e => {
+    if (window.clipboardData)
+        return window.clipboardData.getData('Text')
+    if (e.clipboardData)
+        return e.clipboardData.getData('text/plain')
+    return ''
+}
+
+const splitTags = data =>
+    data.split(splitWith).map(tag => tag.trim())
 
 const addTag = currentTag => events.addTag(
     currentTag,
@@ -117,6 +120,15 @@ const addTag = currentTag => events.addTag(
     onlyUnique,
     placeholder,
     dispatch
+)
+
+const setTag = e => events.setTag(
+    e,
+    autoComplete,
+    matchesID,
+    addKeys,
+    removeKeys,
+    addTag
 )
 
 const removeTag = index => events.removeTag(
@@ -140,138 +152,48 @@ const onPaste = e => events.onPaste(
     getClipboardData
 )
 
+const onDrop = e => events.onDrop(
+    e,
+    allowDrop,
+    autoCompleteKey,
+    splitTags,
+    addTag
+)
 
-//foo,bar,biz
+const onBlur = (e, tag) => events.onBlur(
+    e,
+    tag,
+    allowBlur,
+    matchesID,
+    autoCompleteKey,
+    _getTags,
+    addTag
+)
 
-const onDrop = e => {
-    
-    if (!allowDrop) return
-    
-    e.preventDefault()
-    
-    const data = e.dataTransfer.getData('Text')
-    _setTags(splitTags(data).map(tag => addTag(tag)))
-    
-    dispatch('tags', { tags })
-    
-}
+const getMatchElements = e => events.getMatchElements(
+    e,
+    autoComplete,
+    autoCompleteKey,
+    onlyUnique,
+    minChars,
+    regExpEscape,
+    _setArrelementsmatch
+)
 
-const onBlur = (e, tag) => {
-    
-    if (
-        tag && tag.length &&
-        !document.getElementById(matchesID) &&
-        allowBlur
-    ) {
-        e.preventDefault()
-        addTag(tag)
-    }
-    
-}
-
-const getClipboardData = e => {
-    
-    if (window.clipboardData)
-        return window.clipboardData.getData('Text')
-    
-    if (e.clipboardData)
-        return e.clipboardData.getData('text/plain')
-    
-    return ''
-    
-}
-
-const splitTags = data =>
-    data.split(splitWith).map(tag => tag.trim())
-
-const getMatchElements = async (input) => {
-    
-    if (!autoComplete) return
-    
-    let autoCompleteValues = []
-    
-    if (Array.isArray(autoComplete))
-        autoCompleteValues = autoComplete
-    
-    if (typeof autoComplete === 'function') {
-        if (autoComplete.constructor.name === 'AsyncFunction')
-            autoCompleteValues = await autoComplete()
-        else
-            autoCompleteValues = autoComplete()
-    }
-    
-    const value = input.target.value
-    
-    // Escape
-    if (value == '' || input.keyCode === 27 || value.length < minChars ) {
-        arrelementsmatch = []
-        return
-    }
-    
-    let matches = []
-    
-    if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
-        
-        if (!autoCompleteKey)
-            return console.error("'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects")
-        
-        matches = autoCompleteValues
-            .filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase()))
-            .map(matchTag => ({
-                label: matchTag,
-                search: matchTag[autoCompleteKey].replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
-            }))
-        
-    } else {
-        
-        matches = autoCompleteValues
-            .filter(e => e.toLowerCase().includes(value.toLowerCase()))
-            .map(matchTag => ({
-                label: matchTag,
-                search: matchTag.replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
-            }))
-        
-    }
-    
-    if (onlyUnique === true && !autoCompleteKey)
-        matches = matches.filter(tag => !tags.includes(tag.label))
-    
-    arrelementsmatch = matches
-    
-}
-
-const navigateAutoComplete = (e, autoCompleteIndex, autoCompleteLength, autoCompleteElement) => {
-    
-    if (!autoComplete) return
-    
-    e.preventDefault()
-    
-    // ArrowDown
-    if (e.keyCode === 40) {
-        // Last element on the list ? Go to the first
-        if (autoCompleteIndex + 1 === autoCompleteLength) {
-            document.getElementById(matchesID).querySelector("li:first-child").focus()
-            return
-        }
-        document.getElementById(matchesID).querySelectorAll("li")[autoCompleteIndex + 1].focus()
-    } else if (e.keyCode === 38) {
-        // ArrowUp
-        // First element on the list ? Go to the last
-        if (autoCompleteIndex === 0) {
-            document.getElementById(matchesID).querySelector("li:last-child").focus()
-            return
-        }
-        document.getElementById(matchesID).querySelectorAll("li")[autoCompleteIndex - 1].focus()
-    } else if (e.keyCode === 13) { 
-        // Enter
-        addTag(autoCompleteElement)
-    } else if (e.keyCode === 27) {
-        // Escape
-        arrelementsmatch = []
-        document.getElementById(id).focus()
-    }
-    
-}
+const navigateAutoComplete = (
+    e,
+    autoCompleteIndex,
+    autoCompleteLength,
+    autoCompleteElement
+) => events.navigateAutoComplete(
+    e,
+    autoComplete,
+    autoCompleteIndex,
+    autoCompleteLength,
+    autoCompleteElement,
+    matchesID,
+    addTag
+)
 
 </script>
 
@@ -327,126 +249,4 @@ const navigateAutoComplete = (e, autoCompleteIndex, autoCompleteLength, autoComp
 </div>
 {/if}
 
-<style>
-/* CSS svelte-tags-input */
-
-.svelte-tags-input,
-.svelte-tags-input-tag,
-.svelte-tags-input-matches {
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
-    font-size: 14px;
-    padding: 2px 5px;
-}
-
-/* svelte-tags-input-layout */
-
-.svelte-tags-input-layout {
-    display:-webkit-box;
-    display:-ms-flexbox;
-    display:flex;
-    -ms-flex-wrap:wrap;
-        flex-wrap:wrap;
-    -webkit-box-align:center;
-        -ms-flex-align:center;
-            align-items:center;
-    padding: 0px 5px 5px 5px;
-}
-
-.svelte-tags-input-layout:focus,
-.svelte-tags-input-layout:hover {
-    border: solid 1px #000;    
-}
-
-/* svelte-tags-input */
-
-.svelte-tags-input {
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1; 
-    margin: 0;
-    /* margin-top: 5px; */
-    border:none;
-}
-
-.svelte-tags-input:focus {
-    outline:0;
-}
-
-/* svelte-tags-input-tag */
-
-.svelte-tags-input-tag {
-    display:-webkit-box;
-    display:-ms-flexbox;
-    display:flex;
-    white-space: nowrap;
-    list-style:none;
-    background: #000;
-    color: #FFF;
-    border-radius: 2px;
-    margin-right: 5px;
-    margin-top: 5px;
-}
-
-/*.svelte-tags-input-tag:hover {
-    background: #CCC;
-}*/
-
-.svelte-tags-input-tag-remove {
-    cursor:pointer;
-}
-
-/* svelte-tags-input-matches */
-
-.svelte-tags-input-matches-parent {
-    position:relative;
-}
-
-.svelte-tags-input-matches {
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    margin:3px 0;
-    padding: 0px;
-    background:#FFF;
-    border: solid 1px #CCC;
-    border-radius: 2px;
-    max-height:310px;
-    overflow:scroll;
-    overflow-x:auto;
-}
-
-.svelte-tags-input-matches li {
-    list-style:none;
-    padding:5px;
-    border-radius: 2px;
-    cursor:pointer;
-}
-
-.svelte-tags-input-matches li:hover,
-.svelte-tags-input-matches li:focus {
-    background:#000;
-    color:#FFF;
-    outline:none;
-}
-
-/* svelte-tags-input disabled */
-.svelte-tags-input-layout.sti-layout-disable,
-.svelte-tags-input:disabled {
-    background: #EAEAEA;
-    cursor: not-allowed;
-}
-
-.svelte-tags-input-layout.sti-layout-disable:hover,
-.svelte-tags-input-layout.sti-layout-disable:focus {
-    border-color:#CCC;
-}
-
-.svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag {
-    background: #AEAEAE;
-}
-
-.svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag-remove {
-    cursor: not-allowed;
-}
-</style>
+<style src="tags.css"></style>
