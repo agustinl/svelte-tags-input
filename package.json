@@ -25,7 +25,7 @@
     "@rollup/plugin-commonjs": "^11.0.1",
     "rollup": "^1.28.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-svelte": "^5.1.1",
+    "rollup-plugin-svelte": "^7.1.0",
     "svelte": "^3.16.7"
   },
   "homepage": "https://svelte-tags-input.now.sh/",
