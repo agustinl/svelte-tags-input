@@ -58,7 +58,7 @@ export const getMatchElements = async (
     }
     
     if (onlyUnique === true && !autoCompleteKey)
-        matches = matches.filter(tag => !tags.includes(tag.label))
+        matches = matches.filter(tag => !getTags().includes(tag.label))
     
     setArrelementsmatch(matches)
     
