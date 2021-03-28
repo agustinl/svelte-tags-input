@@ -6,6 +6,7 @@ export const getMatchElements = async (
     onlyUnique,
     minChars,
     regExpEscape,
+    getTags,
     setArrelementsmatch
 ) => {
     

@@ -177,6 +177,7 @@ const getMatchElements = e => events.getMatchElements(
     onlyUnique,
     minChars,
     regExpEscape,
+    _getTags,
     _setArrelementsmatch
 )
 
