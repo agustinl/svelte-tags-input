@@ -25,6 +25,7 @@ export let id;
 export let allowBlur;
 export let disable;
 export let minChars;
+export let onlyAutocomplete;
 
 $: tags = tags || [];
 $: addKeys = addKeys || [13];
@@ -42,6 +43,7 @@ $: id = id || uniqueID();
 $: allowBlur = allowBlur || false;
 $: disable = disable || false;
 $: minChars = minChars || 1;
+$: onlyAutocomplete = onlyAutocomplete || false;
 
 $: matchsID = id + "_matchs";
 
@@ -119,9 +121,10 @@ function addTag(currentTag) {
     }
 
     if (currentTag == "") return;
-    if (maxTags && tags.length == maxTags) return;    
+    if (maxTags && tags.length == maxTags) return;
     if (onlyUnique && tags.includes(currentTag)) return;
-    
+    if (onlyAutocomplete && arrelementsmatch.length === 0) return;
+        
     tags.push(currentObjTags ? currentObjTags : currentTag)
     tags = tags;
     tag = "";

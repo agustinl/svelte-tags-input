@@ -39,6 +39,7 @@ import Tags from "svelte-tags-input";
 | placeholder | `String` | `false` | Set a placeholder |
 | autoComplete | `Array` or `fn()` | `false` | Set an array of elements to create a auto-complete dropdown |
 | autoCompleteKey | `String` | `false` | Set a key to search on `autoComplete` array of objects |
+| onlyAutocomplete | `Boolean` | `false` | Only accept tags inside the auto complete list |
 | name | `String` | `svelte-tags-input` | Set a `name` attribute |
 | id | `String` | Random Unique ID | Set a `id` attribute |
 | allowBlur | `Boolean` | `false` | Enable add tag when input blur |
