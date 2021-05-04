@@ -119,7 +119,7 @@ function addTag(currentTag) {
     } else {
         currentTag = currentTag.trim();
     }
-
+    
     if (currentTag == "") return;
     if (maxTags && tags.length == maxTags) return;
     if (onlyUnique && tags.includes(currentTag)) return;
@@ -250,6 +250,7 @@ async function getMatchElements(input) {
             }
         });
 
+
     } else {
         var matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase())).map(matchTag => {
             return {
@@ -265,6 +266,8 @@ async function getMatchElements(input) {
 
     arrelementsmatch = matchs;
 }
+
+const pluck = (objs, property) => objs.map(obj => obj[property]);
 
 function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
 
