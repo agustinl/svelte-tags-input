@@ -267,8 +267,6 @@ async function getMatchElements(input) {
     arrelementsmatch = matchs;
 }
 
-const pluck = (objs, property) => objs.map(obj => obj[property]);
-
 function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
 
     if (!autoComplete) return;
