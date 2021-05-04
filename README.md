@@ -1,4 +1,4 @@
-<p align="center"><a href="https://svelte-tags-input.now.sh/"><img src="https://svelte-tags-input.now.sh/readme-image.png" alt="Svelte Tags Input"/></a></p>
+<p align="center"><a href="https://svelte-tags-input.vercel.app"><img src="https://svelte-tags-input.vercel.app/readme-image.png" alt="Svelte Tags Input"/></a></p>
 <h1 align="center">
     svelte-tags-input
 </h1>
@@ -125,7 +125,7 @@ const customAutocomplete = async () => {
 {/each}
 ```
 
-## [FAQs](https://svelte-tags-input.now.sh#faqs)
+## [FAQs](https://svelte-tags-input.vercel.app#faqs)
 
 ## [CHANGELOG](CHANGELOG.md)
 
