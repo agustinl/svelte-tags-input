@@ -1,5 +1,8 @@
 # svelte-tags-input changelog
 
+## 2.7.1
+* Added `onlyAutocomplete` prop, to only accept tags inside the auto complete list ([#41](https://github.com/agustinl/svelte-tags-input/issues/41))
+* Dependencies updated
 ## 2.7.0
 
 * Allow `autoComplete` to handle asynchronous data ([#35](https://github.com/agustinl/svelte-tags-input/issues/35))
