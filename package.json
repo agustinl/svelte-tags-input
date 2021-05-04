@@ -29,7 +29,7 @@
     "rollup-plugin-svelte": "^7.1.0",
     "svelte": "^3.37.0"
   },
-  "homepage": "https://svelte-tags-input.now.sh/",
+  "homepage": "https://svelte-tags-input.vercel.app/",
   "bugs": {
     "url": "https://github.com/agustinl/svelte-tags-input/issues"
   },

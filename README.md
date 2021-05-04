@@ -91,6 +91,7 @@ const countryList = [
     allowBlur={true}
     disable={false} // Just to illustrate. No need to declare it if it's false.
     minChars={3}
+    onlyAutocomplete
 />
 ```
 
