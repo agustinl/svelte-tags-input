@@ -26,6 +26,8 @@ export let allowBlur;
 export let disable;
 export let minChars;
 export let onlyAutocomplete;
+export let labelText;
+export let labelShow;
 
 $: tags = tags || [];
 $: addKeys = addKeys || [13];
@@ -44,6 +46,8 @@ $: allowBlur = allowBlur || false;
 $: disable = disable || false;
 $: minChars = minChars || 1;
 $: onlyAutocomplete = onlyAutocomplete || false;
+$: labelText = labelText || name;
+$: labelShow = labelShow || false;
 
 $: matchsID = id + "_matchs";
 
@@ -306,6 +310,8 @@ function uniqueID() {
 </script>
 
 <div class="svelte-tags-input-layout" class:sti-layout-disable={disable}>
+    <label for={id} class={labelShow ? "" : "sr-only"}>{labelText}</label>
+
     {#if tags.length > 0}
         {#each tags as tag, i}
             <span class="svelte-tags-input-tag">
@@ -356,10 +362,17 @@ function uniqueID() {
 
 .svelte-tags-input,
 .svelte-tags-input-tag,
-.svelte-tags-input-matchs {
+.svelte-tags-input-matchs,
+.svelte-tags-input-layout label {
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
     font-size: 14px;
     padding: 2px 5px;
+}
+
+.svelte-tags-input-layout label {
+    margin: 4px 5px 0 0;
+    padding:0;
+    font-weight:500;
 }
 
 /* svelte-tags-input-layout */
@@ -475,5 +488,17 @@ function uniqueID() {
 
 .svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag-remove {
     cursor: not-allowed;
+}
+
+.svelte-tags-input-layout label.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 </style>

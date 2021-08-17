@@ -45,6 +45,8 @@ import Tags from "svelte-tags-input";
 | allowBlur | `Boolean` | `false` | Enable add tag when input blur |
 | disable | `Boolean` | `false` | Disable input |
 | minChars | `Number` | `1` | Minimum length of search text to show auto-complete list |
+| labelText | `String` | ` ` | Custom text for input label |
+| labelShow | `Boolean` | `false` | If `true` the label will be visible |
 
 ##### [A complete list of key codes](https://keycode.info/)
 
@@ -92,6 +94,8 @@ const countryList = [
     disable={false} // Just to illustrate. No need to declare it if it's false.
     minChars={3}
     onlyAutocomplete
+    labelText="Label"
+    labelShow
 />
 ```
 
