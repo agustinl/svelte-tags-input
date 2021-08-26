@@ -45,7 +45,7 @@ import Tags from "svelte-tags-input";
 | allowBlur | `Boolean` | `false` | Enable add tag when input blur |
 | disable | `Boolean` | `false` | Disable input |
 | minChars | `Number` | `1` | Minimum length of search text to show auto-complete list |
-| labelText | `String` | ` ` | Custom text for input label |
+| labelText | `String` | `svelte-tags-input` | Custom text for input label |
 | labelShow | `Boolean` | `false` | If `true` the label will be visible |
 
 ##### [A complete list of key codes](https://keycode.info/)
