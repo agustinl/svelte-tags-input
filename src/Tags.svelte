@@ -54,7 +54,6 @@ $: matchsID = id + "_matchs";
 let storePlaceholder = placeholder;
 
 function setTag(input) {
-        
     const currentTag = input.target.value;
     
     if (addKeys) {
@@ -63,7 +62,7 @@ function setTag(input) {
                 
                 if (currentTag) input.preventDefault();
                                 
-                switch (input.keyCode) {
+                /* switch (input.keyCode) {
                 case 9:
                     // TAB add first element on the autoComplete list
                     if (autoComplete && document.getElementById(matchsID)) {                        
@@ -75,6 +74,11 @@ function setTag(input) {
                 default:
                     addTag(currentTag);
                     break;
+                } */
+                if (autoComplete && document.getElementById(matchsID)) {
+                    addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
+                } else {
+                    addTag(currentTag);
                 }
             }
         });
