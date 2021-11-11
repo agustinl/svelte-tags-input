@@ -21,6 +21,7 @@ export let splitWith;
 export let autoComplete;
 export let autoCompleteFilter;
 export let autoCompleteKey;
+export let autoCompleteMarkupKey;
 export let name;
 export let id;
 export let allowBlur;
@@ -43,6 +44,7 @@ $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
 $: autoCompleteKey = autoCompleteKey || false;
+$: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
 $: name = name || "svelte-tags-input";
 $: id = id || uniqueID();
 $: allowBlur = allowBlur || false;
@@ -230,6 +232,22 @@ function splitTags(data) {
     return data.split(splitWith).map(tag => tag.trim());    
 }
 
+function escapeHTML(string) {
+    const htmlEscapes = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '/': '&#x2F;'
+    };
+    return ('' + string).replace(/[&<>"'\/]/g, match => htmlEscapes[match]);
+}
+
+function buildMatchMarkup(search, value) {
+    return escapeHTML(value).replace(RegExp(regExpEscape(search.toLowerCase()), 'i'), "<strong>$&</strong>")
+}
+
 async function getMatchElements(input) {
 
     if (!autoComplete) return;
@@ -273,7 +291,8 @@ async function getMatchElements(input) {
         matchs = matchs.map(matchTag => {
             return {
                 label: matchTag,
-                search: matchTag[autoCompleteKey].replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
+                search: autoCompleteMarkupKey ? matchTag[autoCompleteMarkupKey] :
+                                                buildMatchMarkup(value, matchTag[autoCompleteKey])
             }
         });
 
@@ -285,7 +304,7 @@ async function getMatchElements(input) {
         matchs = matchs.map(matchTag => {
             return {
                 label: matchTag,
-                search: matchTag.replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
+                search: buildMatchMarkup(value, matchTag)
             }
         });
     }
