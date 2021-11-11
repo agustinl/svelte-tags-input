@@ -247,7 +247,10 @@ async function getMatchElements(input) {
             autoCompleteValues = autoComplete(value)
         }
     }
-    
+
+    if(autoCompleteValues.constructor.name === 'Promise') {
+      autoCompleteValues = await autoCompleteValues;
+    }
     
     // Escape
     if (value == "" || input.keyCode === 27 || value.length < minChars ) {
