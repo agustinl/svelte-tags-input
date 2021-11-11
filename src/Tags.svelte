@@ -29,6 +29,8 @@ export let onlyAutocomplete;
 export let labelText;
 export let labelShow;
 
+let layoutElement;
+
 $: tags = tags || [];
 $: addKeys = addKeys || [13];
 $: maxTags = maxTags || false;
@@ -193,7 +195,15 @@ function onDrop(e){
 
 }
 
+function onFocus(tag){
+
+    layoutElement.classList.add('focus');
+
+}
+
 function onBlur(tag){
+
+    layoutElement.classList.remove('focus');
 
     if (!document.getElementById(matchsID) && allowBlur) {
         event.preventDefault();
@@ -313,7 +323,7 @@ function uniqueID() {
 
 </script>
 
-<div class="svelte-tags-input-layout" class:sti-layout-disable={disable}>
+<div class="svelte-tags-input-layout" class:sti-layout-disable={disable} bind:this={layoutElement}>
     <label for={id} class={labelShow ? "" : "sr-only"}>{labelText}</label>
 
     {#if tags.length > 0}
@@ -339,6 +349,7 @@ function uniqueID() {
         on:keyup={getMatchElements}
         on:paste={onPaste}
         on:drop={onDrop}
+        on:focus={() => onFocus(tag)}
         on:blur={() => onBlur(tag)}
         class="svelte-tags-input"
         placeholder={placeholder}
