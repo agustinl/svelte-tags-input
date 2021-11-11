@@ -233,6 +233,7 @@ async function getMatchElements(input) {
 
     if (!autoComplete) return;
 
+    let value = input.target.value;
     let autoCompleteValues = [];
     
     if (Array.isArray(autoComplete)) {
@@ -241,13 +242,12 @@ async function getMatchElements(input) {
             
     if (typeof autoComplete === 'function') {
         if(autoComplete.constructor.name === 'AsyncFunction') {
-            autoCompleteValues = await autoComplete()
+            autoCompleteValues = await autoComplete(value)
         } else {
-            autoCompleteValues = autoComplete()
+            autoCompleteValues = autoComplete(value)
         }
     }
     
-    var value = input.target.value;
     
     // Escape
     if (value == "" || input.keyCode === 27 || value.length < minChars ) {
