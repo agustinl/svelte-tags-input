@@ -180,29 +180,23 @@ function removeTag(i) {
 function onPaste(e){
 
     if(!allowPaste) return;
-
     e.preventDefault();
 
     const data = getClipboardData(e);
-    const tags = splitTags(data).map(tag => addTag(tag));
-    
+    splitTags(data).map(tag => addTag(tag));    
 }
 
 function onDrop(e){
 
     if(!allowDrop) return;
-
     e.preventDefault();
 
     const data = e.dataTransfer.getData("Text");
-    const tags = splitTags(data).map(tag => addTag(tag));
-
+    splitTags(data).map(tag => addTag(tag));
 }
 
-function onFocus(tag){
-
+function onFocus(){
     layoutElement.classList.add('focus');
-
 }
 
 function onBlur(tag){
@@ -350,7 +344,7 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
 }
 
 function uniqueID() {
-    return 'sti_' + Math.random().toString(36).substr(2, 9);
+    return 'sti_' + Math.random().toString(36).substring(2, 11);
 };
 
 </script>
@@ -381,7 +375,7 @@ function uniqueID() {
         on:keyup={getMatchElements}
         on:paste={onPaste}
         on:drop={onDrop}
-        on:focus={() => onFocus(tag)}
+        on:focus={onFocus}
         on:blur={() => onBlur(tag)}
         class="svelte-tags-input"
         placeholder={placeholder}
