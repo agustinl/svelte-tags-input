@@ -19,7 +19,9 @@ export let allowPaste;
 export let allowDrop;
 export let splitWith;
 export let autoComplete;
+export let autoCompleteFilter;
 export let autoCompleteKey;
+export let autoCompleteMarkupKey;
 export let name;
 export let id;
 export let allowBlur;
@@ -28,6 +30,8 @@ export let minChars;
 export let onlyAutocomplete;
 export let labelText;
 export let labelShow;
+
+let layoutElement;
 
 $: tags = tags || [];
 $: addKeys = addKeys || [13];
@@ -40,6 +44,7 @@ $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
 $: autoCompleteKey = autoCompleteKey || false;
+$: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
 $: name = name || "svelte-tags-input";
 $: id = id || uniqueID();
 $: allowBlur = allowBlur || false;
@@ -193,7 +198,15 @@ function onDrop(e){
 
 }
 
+function onFocus(tag){
+
+    layoutElement.classList.add('focus');
+
+}
+
 function onBlur(tag){
+
+    layoutElement.classList.remove('focus');
 
     if (!document.getElementById(matchsID) && allowBlur) {
         event.preventDefault();
@@ -219,10 +232,27 @@ function splitTags(data) {
     return data.split(splitWith).map(tag => tag.trim());    
 }
 
+function escapeHTML(string) {
+    const htmlEscapes = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '/': '&#x2F;'
+    };
+    return ('' + string).replace(/[&<>"'\/]/g, match => htmlEscapes[match]);
+}
+
+function buildMatchMarkup(search, value) {
+    return escapeHTML(value).replace(RegExp(regExpEscape(search.toLowerCase()), 'i'), "<strong>$&</strong>")
+}
+
 async function getMatchElements(input) {
 
     if (!autoComplete) return;
 
+    let value = input.target.value;
     let autoCompleteValues = [];
     
     if (Array.isArray(autoComplete)) {
@@ -231,19 +261,23 @@ async function getMatchElements(input) {
             
     if (typeof autoComplete === 'function') {
         if(autoComplete.constructor.name === 'AsyncFunction') {
-            autoCompleteValues = await autoComplete()
+            autoCompleteValues = await autoComplete(value)
         } else {
-            autoCompleteValues = autoComplete()
+            autoCompleteValues = autoComplete(value)
         }
     }
-    
-    var value = input.target.value;
+
+    if(autoCompleteValues.constructor.name === 'Promise') {
+      autoCompleteValues = await autoCompleteValues;
+    }
     
     // Escape
     if (value == "" || input.keyCode === 27 || value.length < minChars ) {
         arrelementsmatch = [];
         return;
     }
+
+    let matchs = autoCompleteValues
     
     if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
         
@@ -251,19 +285,26 @@ async function getMatchElements(input) {
             return console.error("'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects");
         }
 
-        var matchs = autoCompleteValues.filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase())).map(matchTag => {
+        if(autoCompleteFilter !== false) {
+            matchs = autoCompleteValues.filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase()))
+        }
+        matchs = matchs.map(matchTag => {
             return {
                 label: matchTag,
-                search: matchTag[autoCompleteKey].replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
+                search: autoCompleteMarkupKey ? matchTag[autoCompleteMarkupKey] :
+                                                buildMatchMarkup(value, matchTag[autoCompleteKey])
             }
         });
 
 
     } else {
-        var matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase())).map(matchTag => {
+        if(autoCompleteFilter !== false) {
+            matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase()))
+        }
+        matchs = matchs.map(matchTag => {
             return {
                 label: matchTag,
-                search: matchTag.replace(RegExp(regExpEscape(value.toLowerCase()), 'i'), "<strong>$&</strong>")
+                search: buildMatchMarkup(value, matchTag)
             }
         });
     }
@@ -313,7 +354,7 @@ function uniqueID() {
 
 </script>
 
-<div class="svelte-tags-input-layout" class:sti-layout-disable={disable}>
+<div class="svelte-tags-input-layout" class:sti-layout-disable={disable} bind:this={layoutElement}>
     <label for={id} class={labelShow ? "" : "sr-only"}>{labelText}</label>
 
     {#if tags.length > 0}
@@ -339,6 +380,7 @@ function uniqueID() {
         on:keyup={getMatchElements}
         on:paste={onPaste}
         on:drop={onDrop}
+        on:focus={() => onFocus(tag)}
         on:blur={() => onBlur(tag)}
         class="svelte-tags-input"
         placeholder={placeholder}
