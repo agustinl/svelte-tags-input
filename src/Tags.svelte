@@ -19,6 +19,7 @@ export let allowPaste;
 export let allowDrop;
 export let splitWith;
 export let autoComplete;
+export let autoCompleteFilter;
 export let autoCompleteKey;
 export let autoCompleteMarkupKey;
 export let name;
@@ -275,6 +276,8 @@ async function getMatchElements(input) {
         arrelementsmatch = [];
         return;
     }
+
+    let matchs = autoCompleteValues
     
     if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
         
@@ -282,7 +285,10 @@ async function getMatchElements(input) {
             return console.error("'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects");
         }
 
-        var matchs = autoCompleteValues.filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase())).map(matchTag => {
+        if(autoCompleteFilter !== false) {
+            matchs = autoCompleteValues.filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase()))
+        }
+        matchs = matchs.map(matchTag => {
             return {
                 label: matchTag,
                 search: autoCompleteMarkupKey ? matchTag[autoCompleteMarkupKey] :
@@ -292,7 +298,10 @@ async function getMatchElements(input) {
 
 
     } else {
-        var matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase())).map(matchTag => {
+        if(autoCompleteFilter !== false) {
+            matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase()))
+        }
+        matchs = matchs.map(matchTag => {
             return {
                 label: matchTag,
                 search: buildMatchMarkup(value, matchTag)
