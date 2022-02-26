@@ -43,6 +43,7 @@ $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
+$: autoCompleteFilter = typeof autoCompleteFilter == "undefined" ? true : false;
 $: autoCompleteKey = autoCompleteKey || false;
 $: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
 $: name = name || "svelte-tags-input";
@@ -109,11 +110,11 @@ function setTag(input) {
     
     // ArrowDown : focus on first element of the autocomplete
     if (input.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
-        event.preventDefault();
+        e.preventDefault();
         document.getElementById(matchsID).querySelector("li:first-child").focus();
     } // ArrowUp : focus on last element of the autocomplete
     else if (input.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
-        event.preventDefault();
+        e.preventDefault();
         document.getElementById(matchsID).querySelector("li:last-child").focus();
     }
 
@@ -176,44 +177,41 @@ function removeTag(i) {
 
 }
 
-function onPaste(e){
+function onPaste(e) {
 
     if(!allowPaste) return;
-
     e.preventDefault();
 
     const data = getClipboardData(e);
-    const tags = splitTags(data).map(tag => addTag(tag));
-    
+    splitTags(data).map(tag => addTag(tag));    
 }
 
-function onDrop(e){
+function onDrop(e) {
 
     if(!allowDrop) return;
-
     e.preventDefault();
 
     const data = e.dataTransfer.getData("Text");
-    const tags = splitTags(data).map(tag => addTag(tag));
-
+    splitTags(data).map(tag => addTag(tag));
 }
 
-function onFocus(tag){
-
+function onFocus() {
     layoutElement.classList.add('focus');
-
 }
 
-function onBlur(tag){
-
+function onBlur(tag) {
     layoutElement.classList.remove('focus');
 
     if (!document.getElementById(matchsID) && allowBlur) {
-        event.preventDefault();
+        e.preventDefault();
         addTag(tag);
     }
-    
 }
+
+function onClick() {    
+    minChars == 0 && getMatchElements();
+}
+
 
 function getClipboardData(e) {
 
@@ -251,8 +249,8 @@ function buildMatchMarkup(search, value) {
 async function getMatchElements(input) {
 
     if (!autoComplete) return;
-
-    let value = input.target.value;
+    
+    let value = input ? input.target.value : "";
     let autoCompleteValues = [];
     
     if (Array.isArray(autoComplete)) {
@@ -268,16 +266,16 @@ async function getMatchElements(input) {
     }
 
     if(autoCompleteValues.constructor.name === 'Promise') {
-      autoCompleteValues = await autoCompleteValues;
+        autoCompleteValues = await autoCompleteValues;
     }
     
     // Escape
-    if (value == "" || input.keyCode === 27 || value.length < minChars ) {
+    if ((minChars > 0 && value == "") || (input && input.keyCode === 27) || value.length < minChars ) {
         arrelementsmatch = [];
         return;
     }
 
-    let matchs = autoCompleteValues
+    let matchs = autoCompleteValues;
     
     if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
         
@@ -291,8 +289,7 @@ async function getMatchElements(input) {
         matchs = matchs.map(matchTag => {
             return {
                 label: matchTag,
-                search: autoCompleteMarkupKey ? matchTag[autoCompleteMarkupKey] :
-                                                buildMatchMarkup(value, matchTag[autoCompleteKey])
+                search: autoCompleteMarkupKey ? matchTag[autoCompleteMarkupKey] : buildMatchMarkup(value, matchTag[autoCompleteKey])
             }
         });
 
@@ -320,17 +317,17 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
 
     if (!autoComplete) return;
     
-    event.preventDefault();
+    e.preventDefault();
 
     // ArrowDown
-    if (event.keyCode === 40) {
+    if (e.keyCode === 40) {
         // Last element on the list ? Go to the first
         if (autoCompleteIndex + 1 === autoCompleteLength) {
             document.getElementById(matchsID).querySelector("li:first-child").focus();
             return;
         }
         document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex + 1].focus();
-    } else if (event.keyCode === 38) {
+    } else if (e.keyCode === 38) {
         // ArrowUp
         // First element on the list ? Go to the last
         if (autoCompleteIndex === 0) {
@@ -338,10 +335,10 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
             return;
         }
         document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex - 1].focus();
-    } else if (event.keyCode === 13) { 
+    } else if (e.keyCode === 13) { 
         // Enter
         addTag(autoCompleteElement);
-    } else if (event.keyCode === 27) {
+    } else if (e.keyCode === 27) {
         // Escape
         arrelementsmatch = [];
         document.getElementById(id).focus();
@@ -349,7 +346,7 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
 }
 
 function uniqueID() {
-    return 'sti_' + Math.random().toString(36).substr(2, 9);
+    return 'sti_' + Math.random().toString(36).substring(2, 11);
 };
 
 </script>
@@ -380,8 +377,9 @@ function uniqueID() {
         on:keyup={getMatchElements}
         on:paste={onPaste}
         on:drop={onDrop}
-        on:focus={() => onFocus(tag)}
+        on:focus={onFocus}
         on:blur={() => onBlur(tag)}
+        on:click={onClick}
         class="svelte-tags-input"
         placeholder={placeholder}
         disabled={disable}

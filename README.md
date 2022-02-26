@@ -39,12 +39,13 @@ import Tags from "svelte-tags-input";
 | placeholder | `String` | `false` | Set a placeholder |
 | autoComplete | `Array` or `fn()` | `false` | Set an array of elements to create a auto-complete dropdown |
 | autoCompleteKey | `String` | `false` | Set a key to search on `autoComplete` array of objects |
+| autoCompleteFilter | `Boolean` | `true` | If `false` disable auto complete filter and return endpoint response without filter |
 | onlyAutocomplete | `Boolean` | `false` | Only accept tags inside the auto complete list |
 | name | `String` | `svelte-tags-input` | Set a `name` attribute |
 | id | `String` | Random Unique ID | Set a `id` attribute |
 | allowBlur | `Boolean` | `false` | Enable add tag when input blur |
 | disable | `Boolean` | `false` | Disable input |
-| minChars | `Number` | `1` | Minimum length of search text to show auto-complete list |
+| minChars | `Number` | `1` | Minimum length of search text to show autoComplete list. If 0, autoComplete list shows all results when click on input |
 | labelText | `String` | `svelte-tags-input` | Custom text for input label |
 | labelShow | `Boolean` | `false` | If `true` the label will be visible |
 
@@ -112,7 +113,7 @@ function handleTags(event) {
 }
 
 const customAutocomplete = async () => {
-    const list = await fetch('https://restcountries.eu/rest/v2/all?fields=name;flag');
+    const list = await fetch('https://restcountries.com/v2/all?fields=name,alpha3Code,flag');
     const res = await list.json();
 
     return res;
@@ -140,6 +141,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Author
 
-[Agustínl](https://www.agustinl.com?ref=github-sti)
+[@agustinl](https://www.agustinl.com?ref=github-sti)
 
-##### 2021
+##### 2022
