@@ -32,7 +32,7 @@ export let labelText;
 export let labelShow;
 
 let layoutElement;
-
+console.log(typeof autoCompleteFilter)
 $: tags = tags || [];
 $: addKeys = addKeys || [13];
 $: maxTags = maxTags || false;
@@ -43,6 +43,7 @@ $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
+$: autoCompleteFilter = typeof autoCompleteFilter == "undefined" ? true : false;
 $: autoCompleteKey = autoCompleteKey || false;
 $: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
 $: name = name || "svelte-tags-input";
@@ -53,6 +54,7 @@ $: minChars = minChars || 1;
 $: onlyAutocomplete = onlyAutocomplete || false;
 $: labelText = labelText || name;
 $: labelShow = labelShow || false;
+console.log(typeof autoCompleteFilter)
 
 $: matchsID = id + "_matchs";
 
