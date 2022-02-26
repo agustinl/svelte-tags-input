@@ -113,7 +113,7 @@ function handleTags(event) {
 }
 
 const customAutocomplete = async () => {
-    const list = await fetch('https://restcountries.eu/rest/v2/all?fields=name;flag');
+    const list = await fetch('https://restcountries.com/v2/all?fields=name,alpha3Code,flag');
     const res = await list.json();
 
     return res;
@@ -141,6 +141,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Author
 
-[Agustínl](https://www.agustinl.com?ref=github-sti)
+[@agustinl](https://www.agustinl.com?ref=github-sti)
 
-##### 2021
+##### 2022
