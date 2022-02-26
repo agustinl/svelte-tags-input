@@ -7,6 +7,7 @@
 * Add class when input is focused
 * If autoComplete is a function, pass the search value 
 * If autoComplete function returns a Promise, resolve it
+* Add possibility to set `minChars` to 0 to show all autoComplete results without filter on input click. ([#55](https://github.com/agustinl/svelte-tags-input/issues/55))
 ## 2.7.1
 * Added `onlyAutocomplete` prop, to only accept tags inside the auto complete list ([#41](https://github.com/agustinl/svelte-tags-input/issues/41))
 * Dependencies updated

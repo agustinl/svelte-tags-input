@@ -177,7 +177,7 @@ function removeTag(i) {
 
 }
 
-function onPaste(e){
+function onPaste(e) {
 
     if(!allowPaste) return;
     e.preventDefault();
@@ -186,7 +186,7 @@ function onPaste(e){
     splitTags(data).map(tag => addTag(tag));    
 }
 
-function onDrop(e){
+function onDrop(e) {
 
     if(!allowDrop) return;
     e.preventDefault();
@@ -195,20 +195,23 @@ function onDrop(e){
     splitTags(data).map(tag => addTag(tag));
 }
 
-function onFocus(){
+function onFocus() {
     layoutElement.classList.add('focus');
 }
 
-function onBlur(tag){
-
+function onBlur(tag) {
     layoutElement.classList.remove('focus');
 
     if (!document.getElementById(matchsID) && allowBlur) {
         e.preventDefault();
         addTag(tag);
     }
-    
 }
+
+function onClick() {    
+    minChars == 0 && getMatchElements();
+}
+
 
 function getClipboardData(e) {
 
@@ -246,8 +249,8 @@ function buildMatchMarkup(search, value) {
 async function getMatchElements(input) {
 
     if (!autoComplete) return;
-
-    let value = input.target.value;
+    
+    let value = input ? input.target.value : "";
     let autoCompleteValues = [];
     
     if (Array.isArray(autoComplete)) {
@@ -263,16 +266,16 @@ async function getMatchElements(input) {
     }
 
     if(autoCompleteValues.constructor.name === 'Promise') {
-      autoCompleteValues = await autoCompleteValues;
+        autoCompleteValues = await autoCompleteValues;
     }
     
     // Escape
-    if (value == "" || input.keyCode === 27 || value.length < minChars ) {
+    if ((minChars > 0 && value == "") || (input && input.keyCode === 27) || value.length < minChars ) {
         arrelementsmatch = [];
         return;
     }
 
-    let matchs = autoCompleteValues
+    let matchs = autoCompleteValues;
     
     if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
         
@@ -286,8 +289,7 @@ async function getMatchElements(input) {
         matchs = matchs.map(matchTag => {
             return {
                 label: matchTag,
-                search: autoCompleteMarkupKey ? matchTag[autoCompleteMarkupKey] :
-                                                buildMatchMarkup(value, matchTag[autoCompleteKey])
+                search: autoCompleteMarkupKey ? matchTag[autoCompleteMarkupKey] : buildMatchMarkup(value, matchTag[autoCompleteKey])
             }
         });
 
@@ -377,6 +379,7 @@ function uniqueID() {
         on:drop={onDrop}
         on:focus={onFocus}
         on:blur={() => onBlur(tag)}
+        on:click={onClick}
         class="svelte-tags-input"
         placeholder={placeholder}
         disabled={disable}

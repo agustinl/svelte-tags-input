@@ -45,7 +45,7 @@ import Tags from "svelte-tags-input";
 | id | `String` | Random Unique ID | Set a `id` attribute |
 | allowBlur | `Boolean` | `false` | Enable add tag when input blur |
 | disable | `Boolean` | `false` | Disable input |
-| minChars | `Number` | `1` | Minimum length of search text to show auto-complete list |
+| minChars | `Number` | `1` | Minimum length of search text to show autoComplete list. If 0, autoComplete list shows all results when click on input |
 | labelText | `String` | `svelte-tags-input` | Custom text for input label |
 | labelShow | `Boolean` | `false` | If `true` the label will be visible |
 
