@@ -2,9 +2,9 @@
 
 ## 2.9.0
 [#52](https://github.com/agustinl/svelte-tags-input/pull/52) thanks to [@mildred](https://github.com/mildred)
-* HTML escape autocomplete results and allow custom HTML
-* Add option to disble filtering after autocomplete
-* Add class when input is focused 
+* HTML escape autoComplete results and allow custom HTML
+* Add option `autoCompleteFilter` to disable filtering after autoComplete
+* Add class when input is focused
 * If autoComplete is a function, pass the search value 
 * If autoComplete function returns a Promise, resolve it
 ## 2.7.1

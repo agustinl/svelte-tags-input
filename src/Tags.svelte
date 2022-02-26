@@ -32,7 +32,7 @@ export let labelText;
 export let labelShow;
 
 let layoutElement;
-console.log(typeof autoCompleteFilter)
+
 $: tags = tags || [];
 $: addKeys = addKeys || [13];
 $: maxTags = maxTags || false;
@@ -54,7 +54,6 @@ $: minChars = minChars || 1;
 $: onlyAutocomplete = onlyAutocomplete || false;
 $: labelText = labelText || name;
 $: labelShow = labelShow || false;
-console.log(typeof autoCompleteFilter)
 
 $: matchsID = id + "_matchs";
 
@@ -111,11 +110,11 @@ function setTag(input) {
     
     // ArrowDown : focus on first element of the autocomplete
     if (input.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
-        event.preventDefault();
+        e.preventDefault();
         document.getElementById(matchsID).querySelector("li:first-child").focus();
     } // ArrowUp : focus on last element of the autocomplete
     else if (input.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
-        event.preventDefault();
+        e.preventDefault();
         document.getElementById(matchsID).querySelector("li:last-child").focus();
     }
 
@@ -211,7 +210,7 @@ function onBlur(tag){
     layoutElement.classList.remove('focus');
 
     if (!document.getElementById(matchsID) && allowBlur) {
-        event.preventDefault();
+        e.preventDefault();
         addTag(tag);
     }
     
@@ -322,17 +321,17 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
 
     if (!autoComplete) return;
     
-    event.preventDefault();
+    e.preventDefault();
 
     // ArrowDown
-    if (event.keyCode === 40) {
+    if (e.keyCode === 40) {
         // Last element on the list ? Go to the first
         if (autoCompleteIndex + 1 === autoCompleteLength) {
             document.getElementById(matchsID).querySelector("li:first-child").focus();
             return;
         }
         document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex + 1].focus();
-    } else if (event.keyCode === 38) {
+    } else if (e.keyCode === 38) {
         // ArrowUp
         // First element on the list ? Go to the last
         if (autoCompleteIndex === 0) {
@@ -340,10 +339,10 @@ function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoComplet
             return;
         }
         document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex - 1].focus();
-    } else if (event.keyCode === 13) { 
+    } else if (e.keyCode === 13) { 
         // Enter
         addTag(autoCompleteElement);
-    } else if (event.keyCode === 27) {
+    } else if (e.keyCode === 27) {
         // Escape
         arrelementsmatch = [];
         document.getElementById(id).focus();
