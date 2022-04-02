@@ -199,7 +199,7 @@ function onFocus() {
     layoutElement.classList.add('focus');
 }
 
-function onBlur(tag) {
+function onBlur(e, tag) {
     layoutElement.classList.remove('focus');
 
     if (!document.getElementById(matchsID) && allowBlur) {
@@ -378,7 +378,7 @@ function uniqueID() {
         on:paste={onPaste}
         on:drop={onDrop}
         on:focus={onFocus}
-        on:blur={() => onBlur(tag)}
+        on:blur={(e) => onBlur(e, tag)}
         on:click={onClick}
         class="svelte-tags-input"
         placeholder={placeholder}
