@@ -1,5 +1,7 @@
 # svelte-tags-input changelog
 
+## 2.9.1
+* Fix onBlur bug. ([#58](https://github.com/agustinl/svelte-tags-input/issues/58))
 ## 2.9.0
 [#52](https://github.com/agustinl/svelte-tags-input/pull/52) thanks to [@mildred](https://github.com/mildred)
 * HTML escape autoComplete results and allow custom HTML
