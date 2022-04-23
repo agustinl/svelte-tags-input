@@ -59,14 +59,14 @@ $: matchsID = id + "_matchs";
 
 let storePlaceholder = placeholder;
 
-function setTag(input) {
-    const currentTag = input.target.value;
+function setTag(e) {
+    const currentTag = e.target.value;
     
     if (addKeys) {
         addKeys.forEach(function(key) {
-            if (key === input.keyCode) {
+            if (key === e.keyCode) {
                 
-                if (currentTag) input.preventDefault();
+                if (currentTag) e.preventDefault();
                                 
                 /* switch (input.keyCode) {
                 case 9:
@@ -92,7 +92,7 @@ function setTag(input) {
     
     if (removeKeys) {
         removeKeys.forEach(function(key) {
-            if (key === input.keyCode && tag === "") {
+            if (key === e.keyCode && tag === "") {
                 tags.pop();  
                 tags = tags;
 
@@ -109,11 +109,11 @@ function setTag(input) {
     }
     
     // ArrowDown : focus on first element of the autocomplete
-    if (input.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
+    if (e.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
         e.preventDefault();
         document.getElementById(matchsID).querySelector("li:first-child").focus();
     } // ArrowUp : focus on last element of the autocomplete
-    else if (input.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
+    else if (e.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
         e.preventDefault();
         document.getElementById(matchsID).querySelector("li:last-child").focus();
     }
@@ -313,7 +313,7 @@ async function getMatchElements(input) {
     arrelementsmatch = matchs;
 }
 
-function navigateAutoComplete(autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
+function navigateAutoComplete(e, autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
 
     if (!autoComplete) return;
     
@@ -392,7 +392,7 @@ function uniqueID() {
             {#each arrelementsmatch as element, index}
                 <li
                     tabindex="-1"
-                    on:keydown={() => navigateAutoComplete(index, arrelementsmatch.length, element.label)}
+                    on:keydown={(e) => navigateAutoComplete(e, index, arrelementsmatch.length, element.label)}
                     on:click={() => addTag(element.label)}>
                         {@html element.search}
                     </li>
