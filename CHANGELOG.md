@@ -1,5 +1,8 @@
 # svelte-tags-input changelog
 
+## 2.9.2
+* Fix keyboard navigation of suggestions broken ([#59](https://github.com/agustinl/svelte-tags-input/issues/59))
+
 ## 2.9.1
 * Fix onBlur bug. ([#58](https://github.com/agustinl/svelte-tags-input/issues/58))
 ## 2.9.0
