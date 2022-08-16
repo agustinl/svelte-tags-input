@@ -227,7 +227,7 @@ function onBlur(e, tag) {
 }
 
 function onClick() {    
-    minChars == 0 && getMatchElements();
+    (!minChars || minChars == 0) && getMatchElements();
 }
 
 
@@ -381,7 +381,7 @@ function uniqueID() {
                 <li
                     tabindex="-1"
                     class:focus={index === autoCompleteIndex}
-                    on:click={() => addTag(element.label)}>
+                    on:pointerdown|preventDefault={() => addTag(element.label)}>
                         {@html element.search}
                     </li>
             {/each}
