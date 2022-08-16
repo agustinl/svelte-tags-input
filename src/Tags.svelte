@@ -257,6 +257,7 @@ function buildMatchMarkup(search, value) {
 async function getMatchElements(input) {
 
     if (!autoComplete) return;
+    if (maxTags && tags.length >= maxTags) return;
     
     let value = input ? input.target.value : "";
     let autoCompleteValues = [];
