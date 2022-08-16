@@ -210,10 +210,20 @@ function onFocus() {
 function onBlur(e, tag) {
     layoutElement.classList.remove('focus');
 
-    if (!document.getElementById(matchsID) && allowBlur) {
-        e.preventDefault();
-        addTag(tag);
+    if (allowBlur) {
+        // A match is highlighted
+        if (arrelementsmatch.length && autoCompleteIndex > -1) {
+            addTag(arrelementsmatch?.[autoCompleteIndex]?.label)
+        }
+        // There is no match, but we may add a new tag
+        else if (!arrelementsmatch.length) {
+            e.preventDefault()
+            addTag(tag)
+        }
     }
+
+    arrelementsmatch = []
+    autoCompleteIndex = -1
 }
 
 function onClick() {    
