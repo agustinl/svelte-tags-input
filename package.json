@@ -32,8 +32,5 @@
   "homepage": "https://svelte-tags-input.vercel.app/",
   "bugs": {
     "url": "https://github.com/agustinl/svelte-tags-input/issues"
-  },
-  "dependencies": {
-    "acorn": "^8.1.1"
   }
 }
