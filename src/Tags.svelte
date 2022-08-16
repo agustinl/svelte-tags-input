@@ -370,6 +370,7 @@ function uniqueID() {
         class="svelte-tags-input"
         placeholder={placeholder}
         disabled={disable}
+        autocomplete="off"
     >
 </div>
 
