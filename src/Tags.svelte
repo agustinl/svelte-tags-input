@@ -350,7 +350,7 @@ function uniqueID() {
                     {tag[autoCompleteKey]}
                 {/if}
                 {#if !disable}
-                <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span>
+                <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
                 {/if}
             </span>
         {/each}
@@ -366,7 +366,7 @@ function uniqueID() {
         on:drop={onDrop}
         on:focus={onFocus}
         on:blur={(e) => onBlur(e, tag)}
-        on:click={onClick}
+        on:pointerdown={onClick}
         class="svelte-tags-input"
         placeholder={placeholder}
         disabled={disable}
