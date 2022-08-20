@@ -5,6 +5,7 @@ const dispatch = createEventDispatcher();
 
 let tag = "";
 let arrelementsmatch = [];
+let autoCompleteIndex = -1;
 let regExpEscape = (s) => {
   return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&")
 }
@@ -82,7 +83,7 @@ function setTag(e) {
                     break;
                 } */
                 if (autoComplete && document.getElementById(matchsID)) {
-                    addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
+                    addTag(arrelementsmatch?.[autoCompleteIndex]?.label);
                 } else {
                     addTag(currentTag);
                 }
@@ -110,12 +111,18 @@ function setTag(e) {
     
     // ArrowDown : focus on first element of the autocomplete
     if (e.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
-        e.preventDefault();
-        document.getElementById(matchsID).querySelector("li:first-child").focus();
-    } // ArrowUp : focus on last element of the autocomplete
-    else if (e.keyCode === 38 && autoComplete && document.getElementById(matchsID)) {
-        e.preventDefault();
-        document.getElementById(matchsID).querySelector("li:last-child").focus();
+        // Last element on the list ? Go to the first
+        if (autoCompleteIndex + 1 === arrelementsmatch.length) autoCompleteIndex = 0
+        else autoCompleteIndex++
+    } else if (e.keyCode === 38) {
+        // ArrowUp
+        // First element on the list ? Go to the last
+        if (autoCompleteIndex <= 0) autoCompleteIndex = arrelementsmatch.length - 1
+        else autoCompleteIndex--
+    } else if (e.keyCode === 27) {
+        // Escape
+        arrelementsmatch = [];
+        document.getElementById(id).focus();
     }
 
 }
@@ -150,6 +157,7 @@ function addTag(currentTag) {
     // Hide autocomplete list
     // Focus on svelte tags input
     arrelementsmatch = [];
+    autoCompleteIndex = -1;
     document.getElementById(id).focus();
 
     if (maxTags && tags.length == maxTags) {
@@ -202,14 +210,24 @@ function onFocus() {
 function onBlur(e, tag) {
     layoutElement.classList.remove('focus');
 
-    if (!document.getElementById(matchsID) && allowBlur) {
-        e.preventDefault();
-        addTag(tag);
+    if (allowBlur) {
+        // A match is highlighted
+        if (arrelementsmatch.length && autoCompleteIndex > -1) {
+            addTag(arrelementsmatch?.[autoCompleteIndex]?.label)
+        }
+        // There is no match, but we may add a new tag
+        else if (!arrelementsmatch.length) {
+            e.preventDefault()
+            addTag(tag)
+        }
     }
+
+    arrelementsmatch = []
+    autoCompleteIndex = -1
 }
 
 function onClick() {    
-    minChars == 0 && getMatchElements();
+    (!minChars || minChars == 0) && getMatchElements();
 }
 
 
@@ -249,6 +267,7 @@ function buildMatchMarkup(search, value) {
 async function getMatchElements(input) {
 
     if (!autoComplete) return;
+    if (maxTags && tags.length >= maxTags) return;
     
     let value = input ? input.target.value : "";
     let autoCompleteValues = [];
@@ -313,38 +332,6 @@ async function getMatchElements(input) {
     arrelementsmatch = matchs;
 }
 
-function navigateAutoComplete(e, autoCompleteIndex, autoCompleteLength, autoCompleteElement) {
-
-    if (!autoComplete) return;
-    
-    e.preventDefault();
-
-    // ArrowDown
-    if (e.keyCode === 40) {
-        // Last element on the list ? Go to the first
-        if (autoCompleteIndex + 1 === autoCompleteLength) {
-            document.getElementById(matchsID).querySelector("li:first-child").focus();
-            return;
-        }
-        document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex + 1].focus();
-    } else if (e.keyCode === 38) {
-        // ArrowUp
-        // First element on the list ? Go to the last
-        if (autoCompleteIndex === 0) {
-            document.getElementById(matchsID).querySelector("li:last-child").focus();
-            return;
-        }
-        document.getElementById(matchsID).querySelectorAll("li")[autoCompleteIndex - 1].focus();
-    } else if (e.keyCode === 13) { 
-        // Enter
-        addTag(autoCompleteElement);
-    } else if (e.keyCode === 27) {
-        // Escape
-        arrelementsmatch = [];
-        document.getElementById(id).focus();
-    }
-}
-
 function uniqueID() {
     return 'sti_' + Math.random().toString(36).substring(2, 11);
 };
@@ -363,7 +350,7 @@ function uniqueID() {
                     {tag[autoCompleteKey]}
                 {/if}
                 {#if !disable}
-                <span class="svelte-tags-input-tag-remove" on:click={() => removeTag(i)}> &#215;</span>
+                <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
                 {/if}
             </span>
         {/each}
@@ -379,10 +366,11 @@ function uniqueID() {
         on:drop={onDrop}
         on:focus={onFocus}
         on:blur={(e) => onBlur(e, tag)}
-        on:click={onClick}
+        on:pointerdown={onClick}
         class="svelte-tags-input"
         placeholder={placeholder}
         disabled={disable}
+        autocomplete="off"
     >
 </div>
 
@@ -392,8 +380,8 @@ function uniqueID() {
             {#each arrelementsmatch as element, index}
                 <li
                     tabindex="-1"
-                    on:keydown={(e) => navigateAutoComplete(e, index, arrelementsmatch.length, element.label)}
-                    on:click={() => addTag(element.label)}>
+                    class:focus={index === autoCompleteIndex}
+                    on:pointerdown|preventDefault={() => addTag(element.label)}>
                         {@html element.search}
                     </li>
             {/each}
@@ -439,6 +427,11 @@ function uniqueID() {
 .svelte-tags-input-layout:focus,
 .svelte-tags-input-layout:hover {
     border: solid 1px #000;    
+}
+
+.svelte-tags-input-layout:focus-within {
+    outline: 5px auto Highlight;
+    outline: 5px auto -webkit-focus-ring-color;
 }
 
 /* svelte-tags-input */
@@ -508,7 +501,7 @@ function uniqueID() {
 }
 
 .svelte-tags-input-matchs li:hover,
-.svelte-tags-input-matchs li:focus {
+.svelte-tags-input-matchs li.focus {
     background:#000;
     color:#FFF;
     outline:none;
