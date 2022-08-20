@@ -1,6 +1,6 @@
 {
   "name": "svelte-tags-input",
-  "version": "2.9.2",
+  "version": "3.0.0",
   "description": "Fully customizable Svelte component to enter tags.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
