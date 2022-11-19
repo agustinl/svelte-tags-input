@@ -28,7 +28,7 @@ import Tags from "svelte-tags-input";
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| on:tags | `Function` | `undefined` | To get the values |
+| bind:tags | `Array` | `[]` | To get the values |
 | addKeys | `Array` | <kbd>ENTER</kbd> 13 | Set which keys add new values |
 | removeKeys | `Array` | <kbd>BACKSPACE</kbd> 8 | Set which keys remove new values |
 | allowPaste | `Boolean` | `false` | Enable pasting of a tag or tag group |
@@ -57,12 +57,7 @@ import Tags from "svelte-tags-input";
 ```javascript
 import Tags from "svelte-tags-input";
 
-// If on:tags is defined
-let tag = "";
-
-function handleTags(event) {
-    tag = event.detail.tags;
-}
+let tags = [];
 
 const countryList = [
     "Afghanistan",
@@ -79,7 +74,7 @@ const countryList = [
 ];
 
 <Tags
-    on:tags={handleTags}
+    bind:tags={tags}
     addKeys={[9]} // TAB Key
     maxTags={3}
     allowPaste={true}
@@ -106,11 +101,7 @@ const countryList = [
 ```javascript
 import Tags from "svelte-tags-input";
 
-let tag = "";
-
-function handleTags(event) {
-    tag = event.detail.tags;
-}
+let tags = [];
 
 const customAutocomplete = async () => {
     const list = await fetch('https://restcountries.com/v2/all?fields=name,alpha3Code,flag');
@@ -120,12 +111,12 @@ const customAutocomplete = async () => {
 }
 
 <Tags
-    on:tags={handleTags}
+    bind:tags={tags}
     autoComplete={customAutocomplete}
     autoCompleteKey={"name"}
 />
 
-{#each tag as country, index}
+{#each tags as country, index}
     <p>{index} - {country.name} </p>
     <img src={country.flag} />
 {/each}
