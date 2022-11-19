@@ -31,6 +31,8 @@ export let minChars;
 export let onlyAutocomplete;
 export let labelText;
 export let labelShow;
+export let readonly;
+export let onTagClick;
 
 let layoutElement;
 
@@ -55,6 +57,8 @@ $: minChars = minChars || 1;
 $: onlyAutocomplete = onlyAutocomplete || false;
 $: labelText = labelText || name;
 $: labelShow = labelShow || false;
+$: readonly = readonly || false;
+$: onTagClick = onTagClick || function(){};
 
 $: matchsID = id + "_matchs";
 
@@ -338,19 +342,19 @@ function uniqueID() {
 
 </script>
 
-<div class="svelte-tags-input-layout" class:sti-layout-disable={disable} bind:this={layoutElement}>
+<div class="svelte-tags-input-layout" class:sti-layout-disable={disable} class:sti-layout-readonly={readonly} bind:this={layoutElement}>
     <label for={id} class={labelShow ? "" : "sr-only"}>{labelText}</label>
 
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <span class="svelte-tags-input-tag">
+            <span class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
                 {#if typeof tag === 'string'}
                     {tag}
                 {:else}
                     {tag[autoCompleteKey]}
                 {/if}
-                {#if !disable}
-                <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
+                {#if !disable && !readonly}
+                    <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
                 {/if}
             </span>
         {/each}
@@ -369,7 +373,7 @@ function uniqueID() {
         on:pointerdown={onClick}
         class="svelte-tags-input"
         placeholder={placeholder}
-        disabled={disable}
+        disabled={disable || readonly}
         autocomplete="off"
     >
 </div>
@@ -469,6 +473,7 @@ function uniqueID() {
 
 .svelte-tags-input-tag-remove {
     cursor:pointer;
+    margin-left: 5px;
 }
 
 /* svelte-tags-input-matchs */
@@ -507,14 +512,21 @@ function uniqueID() {
 }
 
 /* svelte-tags-input disabled */
-.svelte-tags-input-layout.sti-layout-disable,
+
 .svelte-tags-input:disabled {
-    background: #EAEAEA;
+    background: transparent;
+}
+
+.svelte-tags-input-layout.sti-layout-disable,
+.svelte-tags-input-layout.sti-layout-disable input {
     cursor: not-allowed;
+    background: #EAEAEA;
 }
 
 .svelte-tags-input-layout.sti-layout-disable:hover,
-.svelte-tags-input-layout.sti-layout-disable:focus {
+.svelte-tags-input-layout.sti-layout-disable:focus,
+.svelte-tags-input-layout.sti-layout-readonly:hover,
+.svelte-tags-input-layout.sti-layout-readonly:focus {
     border-color:#CCC;
 }
 
