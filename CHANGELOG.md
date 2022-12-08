@@ -1,5 +1,9 @@
 # svelte-tags-input changelog
 
+## 4.0.0
+
+* **Add:** support for binding values. [#38](https://github.com/agustinl/svelte-tags-input/issues/38)
+
 ## 3.0.0
 
 Thanks to [@dnotes](https://github.com/dnotes)

@@ -1,11 +1,9 @@
 <script>
-import { createEventDispatcher } from 'svelte';
-
-const dispatch = createEventDispatcher();
 
 let tag = "";
 let arrelementsmatch = [];
 let autoCompleteIndex = -1;
+
 let regExpEscape = (s) => {
   return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&")
 }
@@ -97,10 +95,6 @@ function setTag(e) {
                 tags.pop();  
                 tags = tags;
 
-                dispatch('tags', {
-                    tags: tags
-                });
-
                 arrelementsmatch = [];
                 document.getElementById(id).readOnly = false;
                 placeholder = storePlaceholder;
@@ -149,10 +143,6 @@ function addTag(currentTag) {
     tags.push(currentObjTags ? currentObjTags : currentTag)
     tags = tags;
     tag = "";
-
-    dispatch('tags', {
-        tags: tags
-    });
     
     // Hide autocomplete list
     // Focus on svelte tags input
@@ -171,10 +161,6 @@ function removeTag(i) {
     
     tags.splice(i, 1);
     tags = tags;
-
-    dispatch('tags', {
-		tags: tags
-	});    
     
     // Hide autocomplete list
     // Focus on svelte tags input
