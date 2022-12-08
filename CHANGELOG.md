@@ -3,6 +3,7 @@
 ## 4.0.0
 
 * **Add:** support for binding values. [#38](https://github.com/agustinl/svelte-tags-input/issues/38)
+* **Add:** `readonly` prop for display mode. [#63](https://github.com/agustinl/svelte-tags-input/issues/63)
 
 ## 3.0.0
 

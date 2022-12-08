@@ -48,6 +48,8 @@ import Tags from "svelte-tags-input";
 | minChars | `Number` | `1` | Minimum length of search text to show autoComplete list. If 0, autoComplete list shows all results when click on input |
 | labelText | `String` | `svelte-tags-input` | Custom text for input label |
 | labelShow | `Boolean` | `false` | If `true` the label will be visible |
+| readonly | `Boolean` | `false` | If `true` the input show in display mode |
+| onTagClick | `Function` | `empty` | A function to fire when a tag is clicked |
 
 ##### [A complete list of key codes](https://keycode.info/)
 
@@ -88,10 +90,12 @@ const countryList = [
     id={"custom-id"}
     allowBlur={true}
     disable={false} // Just to illustrate. No need to declare it if it's false.
+    readonly={false} // Just to illustrate. No need to declare it if it's false.
     minChars={3}
     onlyAutocomplete
     labelText="Label"
     labelShow
+    onTagClick={tag => console.log(tag)}
 />
 ```
 
@@ -134,4 +138,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 [@agustinl](https://www.agustinl.com?ref=github-sti)
 
-##### 2022
+##### 202X
