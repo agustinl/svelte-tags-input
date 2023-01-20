@@ -426,6 +426,8 @@ function uniqueID() {
 /* svelte-tags-input */
 
 .svelte-tags-input {
+    /* Use parent background */
+    background: inherit;
     -webkit-box-flex: 1;
         -ms-flex: 1;
             flex: 1; 
