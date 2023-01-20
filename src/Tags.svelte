@@ -333,7 +333,7 @@ function uniqueID() {
 
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <span class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
+            <button class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
                 {#if typeof tag === 'string'}
                     {tag}
                 {:else}
@@ -342,7 +342,7 @@ function uniqueID() {
                 {#if !disable && !readonly}
                     <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
                 {/if}
-            </span>
+            </button>
         {/each}
     {/if}
     <input
@@ -441,12 +441,15 @@ function uniqueID() {
 /* svelte-tags-input-tag */
 
 .svelte-tags-input-tag {
+    cursor: text;
     display:-webkit-box;
     display:-ms-flexbox;
     display:flex;
     white-space: nowrap;
+    user-select: text;
     list-style:none;
     background: #000;
+    border: none;
     color: #FFF;
     border-radius: 2px;
     margin-right: 5px;
