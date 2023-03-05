@@ -131,6 +131,12 @@ function addTag(currentTag) {
         if (!autoCompleteKey) {
             return console.error("'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects");
         }
+        
+        if (onlyUnique) {
+            let found = tags?.find(elem => elem[autoCompleteKey] === currentTag[autoCompleteKey]);
+        
+            if (found) return;
+        }
 
         var currentObjTags = currentTag;
         currentTag = currentTag[autoCompleteKey].trim();
