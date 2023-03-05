@@ -2,6 +2,7 @@
 
 ## 5.0.0
 
+* **Add:** `autoCompleteShowKey` prop to show a different value form the object returned in auto complete list. [#85](https://github.com/agustinl/svelte-tags-input/issues/85)
 * **Fix:** Fix `onlyUnique` if is array of objects. [#80](https://github.com/agustinl/svelte-tags-input/issues/80)
 * **Fix:** Fix `minChars` type. [#82](https://github.com/agustinl/svelte-tags-input/issues/82)
 

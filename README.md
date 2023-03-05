@@ -50,6 +50,7 @@ import Tags from "svelte-tags-input";
 | labelShow | `Boolean` | `false` | If `true` the label will be visible |
 | readonly | `Boolean` | `false` | If `true` the input show in display mode |
 | onTagClick | `Function` | `empty` | A function to fire when a tag is clicked |
+| autoCompleteShowKey | `String` | `autoCompleteKey` | A key string to show a different value from auto complete list object returned |
 
 ##### [A complete list of key codes](https://keycode.info/)
 
@@ -118,10 +119,11 @@ const customAutocomplete = async () => {
     bind:tags={tags}
     autoComplete={customAutocomplete}
     autoCompleteKey={"name"}
+    autoCompleteShowKey={"alpha3Code"}
 />
 
 {#each tags as country, index}
-    <p>{index} - {country.name} </p>
+    <p>{index} - {country.name} - {country.alpha3Code} </p>
     <img src={country.flag} />
 {/each}
 ```
@@ -136,6 +138,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Author
 
-[@agustinl](https://www.agustinl.com?ref=github-sti)
+[@agustinl](https://twitter.com/agustinlautaro)
 
-##### 202X
+##### 2023

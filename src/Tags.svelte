@@ -31,6 +31,7 @@ export let labelText;
 export let labelShow;
 export let readonly;
 export let onTagClick;
+export let autoCompleteShowKey;
 
 let layoutElement;
 
@@ -57,6 +58,7 @@ $: labelText = labelText || name;
 $: labelShow = labelShow || false;
 $: readonly = readonly || false;
 $: onTagClick = onTagClick || function(){};
+$: autoCompleteShowKey = autoCompleteShowKey || autoCompleteKey;
 
 $: matchsID = id + "_matchs";
 
@@ -342,7 +344,7 @@ function uniqueID() {
                 {#if typeof tag === 'string'}
                     {tag}
                 {:else}
-                    {tag[autoCompleteKey]}
+                    {tag[autoCompleteShowKey]}
                 {/if}
                 {#if !disable && !readonly}
                     <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
