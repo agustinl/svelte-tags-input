@@ -463,6 +463,7 @@ function uniqueID() {
     border-radius: 2px;
     margin-right: 5px;
     margin-top: 5px;
+    font-weight: 400;
 }
 
 /*.svelte-tags-input-tag:hover {
