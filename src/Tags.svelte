@@ -31,6 +31,7 @@ export let labelText;
 export let labelShow;
 export let readonly;
 export let onTagClick;
+export let autoCompleteShowKey;
 
 let layoutElement;
 
@@ -51,12 +52,13 @@ $: name = name || "svelte-tags-input";
 $: id = id || uniqueID();
 $: allowBlur = allowBlur || false;
 $: disable = disable || false;
-$: minChars = minChars || 1;
+$: minChars = minChars ?? 1;
 $: onlyAutocomplete = onlyAutocomplete || false;
 $: labelText = labelText || name;
 $: labelShow = labelShow || false;
 $: readonly = readonly || false;
 $: onTagClick = onTagClick || function(){};
+$: autoCompleteShowKey = autoCompleteShowKey || autoCompleteKey;
 
 $: matchsID = id + "_matchs";
 
@@ -130,6 +132,12 @@ function addTag(currentTag) {
     if (typeof currentTag === 'object' && currentTag !== null) {
         if (!autoCompleteKey) {
             return console.error("'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects");
+        }
+        
+        if (onlyUnique) {
+            let found = tags?.find(elem => elem[autoCompleteKey] === currentTag[autoCompleteKey]);
+        
+            if (found) return;
         }
 
         var currentObjTags = currentTag;
@@ -216,8 +224,8 @@ function onBlur(e, tag) {
     autoCompleteIndex = -1
 }
 
-function onClick() {    
-    (!minChars || minChars == 0) && getMatchElements();
+function onClick() {
+    minChars == 0 && getMatchElements();
 }
 
 
@@ -277,7 +285,6 @@ async function getMatchElements(input) {
     if(autoCompleteValues.constructor.name === 'Promise') {
         autoCompleteValues = await autoCompleteValues;
     }
-    
     // Escape
     if ((minChars > 0 && value == "") || (input && input.keyCode === 27) || value.length < minChars ) {
         arrelementsmatch = [];
@@ -333,16 +340,16 @@ function uniqueID() {
 
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <span class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
+            <button class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
                 {#if typeof tag === 'string'}
                     {tag}
                 {:else}
-                    {tag[autoCompleteKey]}
+                    {tag[autoCompleteShowKey]}
                 {/if}
                 {#if !disable && !readonly}
                     <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
                 {/if}
-            </span>
+            </button>
         {/each}
     {/if}
     <input
@@ -426,6 +433,8 @@ function uniqueID() {
 /* svelte-tags-input */
 
 .svelte-tags-input {
+    /* Parent handles background */
+    background: unset;
     -webkit-box-flex: 1;
         -ms-flex: 1;
             flex: 1; 
@@ -441,16 +450,20 @@ function uniqueID() {
 /* svelte-tags-input-tag */
 
 .svelte-tags-input-tag {
+    cursor: text;
     display:-webkit-box;
     display:-ms-flexbox;
     display:flex;
     white-space: nowrap;
+    user-select: text;
     list-style:none;
     background: #000;
+    border: none;
     color: #FFF;
     border-radius: 2px;
     margin-right: 5px;
     margin-top: 5px;
+    font-weight: 400;
 }
 
 /*.svelte-tags-input-tag:hover {
