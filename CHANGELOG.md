@@ -3,6 +3,7 @@
 ## 5.0.0
 
 * **Fix:** Fix `onlyUnique` if is array of objects. [#80](https://github.com/agustinl/svelte-tags-input/issues/80)
+* **Fix:** Fix `minChars` type. [#82](https://github.com/agustinl/svelte-tags-input/issues/82)
 
 ## 4.0.0
 

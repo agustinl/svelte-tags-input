@@ -51,7 +51,7 @@ $: name = name || "svelte-tags-input";
 $: id = id || uniqueID();
 $: allowBlur = allowBlur || false;
 $: disable = disable || false;
-$: minChars = minChars || 1;
+$: minChars = minChars ?? 1;
 $: onlyAutocomplete = onlyAutocomplete || false;
 $: labelText = labelText || name;
 $: labelShow = labelShow || false;
@@ -222,8 +222,8 @@ function onBlur(e, tag) {
     autoCompleteIndex = -1
 }
 
-function onClick() {    
-    (!minChars || minChars == 0) && getMatchElements();
+function onClick() {
+    minChars == 0 && getMatchElements();
 }
 
 
@@ -283,7 +283,6 @@ async function getMatchElements(input) {
     if(autoCompleteValues.constructor.name === 'Promise') {
         autoCompleteValues = await autoCompleteValues;
     }
-    
     // Escape
     if ((minChars > 0 && value == "") || (input && input.keyCode === 27) || value.length < minChars ) {
         arrelementsmatch = [];
