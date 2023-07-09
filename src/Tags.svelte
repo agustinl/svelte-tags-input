@@ -340,7 +340,7 @@ function uniqueID() {
 
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <button class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
+            <button type="button" class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
                 {#if typeof tag === 'string'}
                     {tag}
                 {:else}
