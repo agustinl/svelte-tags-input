@@ -9,7 +9,7 @@
 		".": {
 			"svelte": "src/Tags.svelte"
 		}
-	}
+	},
 	"scripts": {
 		"build": "rollup -c",
 		"prepare": "npm run build",
