@@ -51,6 +51,10 @@ import Tags from "svelte-tags-input";
 | readonly | `Boolean` | `false` | If `true` the input show in display mode |
 | onTagClick | `Function` | `empty` | A function to fire when a tag is clicked |
 | autoCompleteShowKey | `String` | `autoCompleteKey` | A key string to show a different value from auto complete list object returned |
+| onTagAdded | `Function` | `fn()` | Get a function to execute when tag added |
+| onTagRemoved | `Function` | `fn()` | Get a function to execute when tag removed |
+| cleanOnBlur | `Boolean` | `false` | Clear input on blur (tags keeped) |
+| customValidation | `Function` | `fn()` | Create a custom validation when tag is added |
 
 ##### [A complete list of key codes](https://keycode.info/)
 
@@ -97,6 +101,10 @@ const countryList = [
     labelText="Label"
     labelShow
     onTagClick={tag => console.log(tag)}
+    onTagAdded={(tag, tags) => console.log(tag, tags)}
+    onTagRemoved={(tag, tags) => console.log(tag, tags)}
+	cleanOnBlur={true}
+	customValidation={(tag) => tag === "Argentina" ? true : false }
 />
 ```
 
@@ -140,4 +148,4 @@ This project is open source and available under the [MIT License](LICENSE).
 
 [@agustinl](https://twitter.com/agustinlautaro)
 
-##### 2023
+##### 2024

@@ -32,6 +32,10 @@ export let labelShow;
 export let readonly;
 export let onTagClick;
 export let autoCompleteShowKey;
+export let onTagAdded;
+export let onTagRemoved;
+export let cleanOnBlur;
+export let customValidation;
 
 let layoutElement;
 
@@ -59,6 +63,11 @@ $: labelShow = labelShow || false;
 $: readonly = readonly || false;
 $: onTagClick = onTagClick || function(){};
 $: autoCompleteShowKey = autoCompleteShowKey || autoCompleteKey;
+$: onTagAdded = onTagAdded || function(){};
+$: onTagRemoved = onTagRemoved || function(){};
+$: cleanOnBlur = cleanOnBlur || false;
+$: customValidation = customValidation || false;
+
 
 $: matchsID = id + "_matchs";
 
@@ -86,7 +95,14 @@ function setTag(e) {
                     addTag(currentTag);
                     break;
                 } */
-                if (autoComplete && document.getElementById(matchsID)) {
+
+				/*
+				 * Fix https://github.com/agustinl/svelte-tags-input/issues/87
+				 * If autocomplete = true
+				 * If onlyAutocomplete = true: You cannot add random tags
+				 * If input element with ID
+				 */
+                if (autoComplete && onlyAutocomplete && document.getElementById(matchsID)) {
                     addTag(arrelementsmatch?.[autoCompleteIndex]?.label);
                 } else {
                     addTag(currentTag);
@@ -151,10 +167,14 @@ function addTag(currentTag) {
     if (maxTags && tags.length == maxTags) return;
     if (onlyUnique && tags.includes(currentTag)) return;
     if (onlyAutocomplete && arrelementsmatch.length === 0) return;
+
+	if (customValidation && !customValidation(currentTag)) return;
         
     tags.push(currentObjTags ? currentObjTags : currentTag)
     tags = tags;
     tag = "";
+	
+	onTagAdded(currentTag, tags)
     
     // Hide autocomplete list
     // Focus on svelte tags input
@@ -170,8 +190,9 @@ function addTag(currentTag) {
 }
 
 function removeTag(i) {
-    
-    tags.splice(i, 1);
+
+	tags.splice(i, 1);
+	onTagRemoved(tags[i], tags);
     tags = tags;
     
     // Hide autocomplete list
@@ -205,7 +226,7 @@ function onFocus() {
     layoutElement.classList.add('focus');
 }
 
-function onBlur(e, tag) {
+function onBlur(e, currentTag) {
     layoutElement.classList.remove('focus');
 
     if (allowBlur) {
@@ -216,9 +237,14 @@ function onBlur(e, tag) {
         // There is no match, but we may add a new tag
         else if (!arrelementsmatch.length) {
             e.preventDefault()
-            addTag(tag)
+            addTag(currentTag)
         }
     }
+
+	// Clean input on
+	if (cleanOnBlur) {
+		tag = "";
+	}
 
     arrelementsmatch = []
     autoCompleteIndex = -1
@@ -227,7 +253,6 @@ function onBlur(e, tag) {
 function onClick() {
     minChars == 0 && getMatchElements();
 }
-
 
 function getClipboardData(e) {
 
