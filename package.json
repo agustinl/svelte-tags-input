@@ -5,6 +5,11 @@
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
 	"svelte": "src/Tags.svelte",
+	"exports": {
+		".": {
+			"svelte": "src/Tags.svelte"
+		}
+	},
 	"scripts": {
 		"build": "rollup -c",
 		"prepare": "npm run build",
