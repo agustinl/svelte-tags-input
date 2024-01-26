@@ -10,12 +10,12 @@
 <a href="https://madewithsvelte.com/p/svelte-tags-input/shield-link"><img src="https://madewithsvelte.com/storage/repo-shields/2151-shield.svg"/></a>
 </p>
 
-## [Basic REPL Example](https://svelte.dev/repl/72eb8ee74ab546cdbcab11e91c965471?version=3.24.0)
+## [Live Demo](https://svelte-tags-input.vercel.app/)
 
-## Install
+## Install & Usage
 
 ```bash
-npm install svelte-tags-input --save
+npm install svelte-tags-input
 ```
 
 ```javascript
@@ -51,11 +51,15 @@ import Tags from "svelte-tags-input";
 | readonly | `Boolean` | `false` | If `true` the input show in display mode |
 | onTagClick | `Function` | `empty` | A function to fire when a tag is clicked |
 | autoCompleteShowKey | `String` | `autoCompleteKey` | A key string to show a different value from auto complete list object returned |
+| onTagAdded | `Function` | `empty` | Get a function to execute when tag added |
+| onTagRemoved | `Function` | `empty` | Get a function to execute when tag removed |
+| cleanOnBlur | `Boolean` | `false` | Clear input on blur (tags keeped) |
+| customValidation | `Function` | `empty` | Create a custom validation when tag is added |
 
 ##### [A complete list of key codes](https://keycode.info/)
 
 ## Full example
-### [Full REPL Example](https://svelte.dev/repl/129f603083664aab9e5d10fe867745e2?version=3.24.0)  
+### [Live Demo](https://svelte-tags-input.vercel.app/)  
 
 ```javascript
 import Tags from "svelte-tags-input";
@@ -97,11 +101,15 @@ const countryList = [
     labelText="Label"
     labelShow
     onTagClick={tag => console.log(tag)}
+    onTagAdded={(tag, tags) => console.log(tag, tags)}
+    onTagRemoved={(tag, tags) => console.log(tag, tags)}
+	cleanOnBlur={true}
+	customValidation={(tag) => tag === "Argentina" ? true : false }
 />
 ```
 
 ## Example with `autoComplete` function
-### [REPL Example](https://svelte.dev/repl/dc827c219cf44a1a9f1bfc711438af26?version=3.32.1)  
+### [Live Demo](https://svelte-tags-input.vercel.app/)  
 
 ```javascript
 import Tags from "svelte-tags-input";
@@ -128,7 +136,7 @@ const customAutocomplete = async () => {
 {/each}
 ```
 
-## [FAQs](https://svelte-tags-input.vercel.app#faqs)
+## [FAQs](https://svelte-tags-input.vercel.app)
 
 ## [CHANGELOG](CHANGELOG.md)
 
@@ -138,6 +146,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Author
 
-[@agustinl](https://twitter.com/agustinlautaro)
+[Agustín](https://twitter.com/agustinlautaro)
 
-##### 2023
+##### 2024

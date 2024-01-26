@@ -1,5 +1,14 @@
 # svelte-tags-input changelog
 
+## 6.0.0
+
+* **Fix:** [#87](https://github.com/agustinl/svelte-tags-input/issues/87)
+* **Add:** `onTagAdded` and `onTagRemoved` events. [#77](https://github.com/agustinl/svelte-tags-input/issues/77)
+* **Add:** `cleanOnBlur` prop. [#83](https://github.com/agustinl/svelte-tags-input/issues/83)
+* **Add:** `customValidation` prop. [#89](https://github.com/agustinl/svelte-tags-input/issues/89)
+* **Fix:** Form submitting when tag clicked [#88](https://github.com/agustinl/svelte-tags-input/pull/88)
+* **Fix:** [https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition](https://github.com/sveltejs/vite-plugin-svelte/blob/main/docs/faq.md#missing-exports-condition) [#90](https://github.com/agustinl/svelte-tags-input/pull/90)
+
 ## 5.0.0
 
 * **Fix:** Tag a11y events warning.
