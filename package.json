@@ -27,9 +27,9 @@
 	"author": "Agustin Lautaro <aencaje@gmail.com>",
 	"license": "MIT",
 	"devDependencies": {
-		"@rollup/plugin-commonjs": "^18.0.0",
-		"rollup": "^2.45.2",
-		"rollup-plugin-css-only": "^3.1.0",
+		"@rollup/plugin-commonjs": "^28.0.0",
+		"rollup": "^4.22.4",
+		"rollup-plugin-css-only": "^4.5.2",
 		"rollup-plugin-node-resolve": "^5.2.0",
 		"rollup-plugin-svelte": "^7.1.0",
 		"svelte": "^3.37.0"
