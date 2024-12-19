@@ -2,7 +2,6 @@
 
 let tag = "";
 let arrelementsmatch = [];
-let autoCompleteIndex = -1;
 
 let regExpEscape = (s) => {
   return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&")
@@ -21,6 +20,7 @@ export let autoComplete;
 export let autoCompleteFilter;
 export let autoCompleteKey;
 export let autoCompleteMarkupKey;
+export let autoCompleteStartFocused;
 export let name;
 export let id;
 export let allowBlur;
@@ -52,6 +52,7 @@ $: autoComplete = autoComplete || false;
 $: autoCompleteFilter = typeof autoCompleteFilter == "undefined" ? true : false;
 $: autoCompleteKey = autoCompleteKey || false;
 $: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
+$: autoCompleteIndexStart = autoCompleteStartFocused ? 0 : -1
 $: name = name || "svelte-tags-input";
 $: id = id || uniqueID();
 $: allowBlur = allowBlur || false;
@@ -68,6 +69,7 @@ $: onTagRemoved = onTagRemoved || function(){};
 $: cleanOnBlur = cleanOnBlur || false;
 $: customValidation = customValidation || false;
 
+$: autoCompleteIndex = autoCompleteIndexStart;
 
 $: matchsID = id + "_matchs";
 
@@ -184,7 +186,7 @@ function addTag(currentTag) {
     // Hide autocomplete list
     // Focus on svelte tags input
     arrelementsmatch = [];
-    autoCompleteIndex = -1;
+    autoCompleteIndex = autoCompleteIndexStart;
     document.getElementById(id).focus();
 
     if (maxTags && tags.length == maxTags) {
@@ -252,7 +254,7 @@ function onBlur(e, currentTag) {
 	}
 
     arrelementsmatch = []
-    autoCompleteIndex = -1
+    autoCompleteIndex = autoCompleteIndexStart
 }
 
 function onClick() {
