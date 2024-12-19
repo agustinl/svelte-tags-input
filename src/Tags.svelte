@@ -143,7 +143,7 @@ function setTag(e) {
         // ArrowUp
         autoCompleteIndex--
         // Went off the list ? Go to the last
-        if (autoCompleteIndex <= 0 || autoCompleteIndex >= arrelementsmatch.length) {
+        if (autoCompleteIndex < 0 || autoCompleteIndex >= arrelementsmatch.length) {
           autoCompleteIndex = arrelementsmatch.length - 1
         }
     } else if (e.keyCode === 27) {
