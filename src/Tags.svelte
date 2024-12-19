@@ -134,14 +134,18 @@ function setTag(e) {
 
     // ArrowDown : focus on first element of the autocomplete
     if (e.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
-        // Last element on the list ? Go to the first
-        if (autoCompleteIndex + 1 === arrelementsmatch.length) autoCompleteIndex = 0
-        else autoCompleteIndex++
+        autoCompleteIndex++
+        // Went off the list ? Go to the first
+        if (autoCompleteIndex >= arrelementsmatch.length || autoCompleteIndex < 0) {
+          autoCompleteIndex = 0
+        }
     } else if (e.keyCode === 38) {
         // ArrowUp
-        // First element on the list ? Go to the last
-        if (autoCompleteIndex <= 0) autoCompleteIndex = arrelementsmatch.length - 1
-        else autoCompleteIndex--
+        autoCompleteIndex--
+        // Went off the list ? Go to the last
+        if (autoCompleteIndex <= 0 || autoCompleteIndex >= arrelementsmatch.length) {
+          autoCompleteIndex = arrelementsmatch.length - 1
+        }
     } else if (e.keyCode === 27) {
         // Escape
         arrelementsmatch = [];
