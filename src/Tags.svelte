@@ -2,7 +2,6 @@
 
 let tag = "";
 let arrelementsmatch = [];
-let autoCompleteIndex = -1;
 
 let regExpEscape = (s) => {
   return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&")
@@ -21,6 +20,7 @@ export let autoComplete;
 export let autoCompleteFilter;
 export let autoCompleteKey;
 export let autoCompleteMarkupKey;
+export let autoCompleteStartFocused;
 export let name;
 export let id;
 export let allowBlur;
@@ -52,6 +52,7 @@ $: autoComplete = autoComplete || false;
 $: autoCompleteFilter = typeof autoCompleteFilter == "undefined" ? true : false;
 $: autoCompleteKey = autoCompleteKey || false;
 $: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
+$: autoCompleteIndexStart = autoCompleteStartFocused ? 0 : -1
 $: name = name || "svelte-tags-input";
 $: id = id || uniqueID();
 $: allowBlur = allowBlur || false;
@@ -68,6 +69,7 @@ $: onTagRemoved = onTagRemoved || function(){};
 $: cleanOnBlur = cleanOnBlur || false;
 $: customValidation = customValidation || false;
 
+$: autoCompleteIndex = autoCompleteIndexStart;
 
 $: matchsID = id + "_matchs";
 
@@ -132,14 +134,18 @@ function setTag(e) {
 
     // ArrowDown : focus on first element of the autocomplete
     if (e.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
-        // Last element on the list ? Go to the first
-        if (autoCompleteIndex + 1 === arrelementsmatch.length) autoCompleteIndex = 0
-        else autoCompleteIndex++
+        autoCompleteIndex++
+        // Went off the list ? Go to the first
+        if (autoCompleteIndex >= arrelementsmatch.length || autoCompleteIndex < 0) {
+          autoCompleteIndex = 0
+        }
     } else if (e.keyCode === 38) {
         // ArrowUp
-        // First element on the list ? Go to the last
-        if (autoCompleteIndex <= 0) autoCompleteIndex = arrelementsmatch.length - 1
-        else autoCompleteIndex--
+        autoCompleteIndex--
+        // Went off the list ? Go to the last
+        if (autoCompleteIndex < 0 || autoCompleteIndex >= arrelementsmatch.length) {
+          autoCompleteIndex = arrelementsmatch.length - 1
+        }
     } else if (e.keyCode === 27) {
         // Escape
         arrelementsmatch = [];
@@ -184,7 +190,7 @@ function addTag(currentTag) {
     // Hide autocomplete list
     // Focus on svelte tags input
     arrelementsmatch = [];
-    autoCompleteIndex = -1;
+    autoCompleteIndex = autoCompleteIndexStart;
     document.getElementById(id).focus();
 
     if (maxTags && tags.length == maxTags) {
@@ -252,7 +258,7 @@ function onBlur(e, currentTag) {
 	}
 
     arrelementsmatch = []
-    autoCompleteIndex = -1
+    autoCompleteIndex = autoCompleteIndexStart
 }
 
 function onClick() {
@@ -370,7 +376,7 @@ function uniqueID() {
 
     {#if tags.length > 0}
         {#each tags as tag, i}
-            <button type="button" class="svelte-tags-input-tag" on:click={onTagClick(tag)}>
+            <button type="button" class="svelte-tags-input-tag" on:click={() => onTagClick(tag)}>
                 {#if typeof tag === 'string'}
                     {tag}
                 {:else}
