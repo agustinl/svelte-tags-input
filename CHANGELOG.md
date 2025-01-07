@@ -1,5 +1,9 @@
 # svelte-tags-input changelog
 
+## 6.0.2
+
+* **Add:** Support for `autoCompleteStartFocused` [#101](https://github.com/agustinl/svelte-tags-input/issues/101)
+
 ## 6.0.1
 
 * **Fix:** Keyboard autocomplete selection does not select autocomplete entry [#95](https://github.com/agustinl/svelte-tags-input/issues/95)
