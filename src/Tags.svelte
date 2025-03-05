@@ -49,7 +49,7 @@ $: allowPaste = allowPaste || false;
 $: allowDrop = allowDrop || false;
 $: splitWith = splitWith || ",";
 $: autoComplete = autoComplete || false;
-$: autoCompleteFilter = typeof autoCompleteFilter == "undefined" ? true : false;
+$: autoCompleteFilter = autoCompleteFilter || false;
 $: autoCompleteKey = autoCompleteKey || false;
 $: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
 $: autoCompleteIndexStart = autoCompleteStartFocused ? 0 : -1
