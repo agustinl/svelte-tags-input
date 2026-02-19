@@ -10,7 +10,9 @@
 	"exports": {
 		".": {
 			"types": "types/index.d.ts",
-			"svelte": "src/Tags.svelte"
+			"svelte": "src/Tags.svelte",
+			"import": "./dist/index.mjs",
+			"default": "./dist/index.mjs"
 		}
 	},
 	"scripts": {
