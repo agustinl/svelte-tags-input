@@ -82,11 +82,8 @@
 
 		if (removeKeys) {
 			removeKeys.forEach(function (key) {
-				if (key === keyCode && tagInput === '') {
-					tags = tags.slice(0, -1);
-					arrelementsmatch = [];
-					document.getElementById(id).readOnly = false;
-					document.getElementById(id).focus();
+				if (key === keyCode && tagInput === '' && tags.length > 0) {
+					removeTag(tags.length - 1);
 				}
 			});
 		}

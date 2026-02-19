@@ -8,6 +8,7 @@
 * **Upgrade:** Build migrated from Rollup to Vite
 * **Add:** Test suite with Vitest and @testing-library/svelte
 * **Fix:** `onTagRemoved` callback now receives correct removed tag (was `undefined` before)
+* **Fix:** `removeKeys` (e.g. Backspace) now trigger `onTagRemoved` [#94](https://github.com/agustinl/svelte-tags-input/issues/94)
 * **Fix:** Placeholder display when `maxTags` reached now uses derived value
 
 Migration: If you're on Svelte 3 or 4, upgrade your project to Svelte 5 first. The component API is unchanged.
