@@ -1,5 +1,18 @@
 # svelte-tags-input changelog
 
+## 7.0.0
+
+**Breaking:** Requires Svelte 5.x (no longer supports Svelte 3/4)
+
+* **Upgrade:** Migrate to Svelte 5 with runes (`$state`, `$derived`, `$props`, `$bindable`)
+* **Upgrade:** Build migrated from Rollup to Vite
+* **Add:** Test suite with Vitest and @testing-library/svelte
+* **Fix:** `onTagRemoved` callback now receives correct removed tag (was `undefined` before)
+* **Fix:** `removeKeys` (e.g. Backspace) now trigger `onTagRemoved` [#94](https://github.com/agustinl/svelte-tags-input/issues/94)
+* **Fix:** Placeholder display when `maxTags` reached now uses derived value
+
+Migration: If you're on Svelte 3 or 4, upgrade your project to Svelte 5 first. The component API is unchanged.
+
 ## 6.0.2
 
 * **Add:** Support for `autoCompleteStartFocused` [#101](https://github.com/agustinl/svelte-tags-input/issues/101)

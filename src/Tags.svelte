@@ -1,587 +1,582 @@
 <script>
+	let {
+		tags = $bindable([]),
+		addKeys = [13],
+		maxTags = false,
+		onlyUnique = false,
+		removeKeys = [8],
+		placeholder = '',
+		allowPaste = false,
+		allowDrop = false,
+		splitWith = ',',
+		autoComplete = false,
+		autoCompleteFilter = true,
+		autoCompleteKey = false,
+		autoCompleteMarkupKey = false,
+		autoCompleteStartFocused = false,
+		name = 'svelte-tags-input',
+		id: idProp,
+		allowBlur = false,
+		disable = false,
+		minChars = 1,
+		onlyAutocomplete = false,
+		labelText,
+		labelShow = false,
+		readonly = false,
+		onTagClick = () => {},
+		autoCompleteShowKey,
+		onTagAdded = () => {},
+		onTagRemoved = () => {},
+		cleanOnBlur = false,
+		customValidation = false,
+	} = $props();
 
-let tag = "";
-let arrelementsmatch = [];
+	let tagInput = $state('');
+	let arrelementsmatch = $state([]);
+	let layoutElement = $state(null);
+	let generatedId = $state('sti_' + Math.random().toString(36).substring(2, 11));
 
-let regExpEscape = (s) => {
-  return s.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&")
-}
+	let id = $derived(idProp || generatedId);
+	let matchsID = $derived(id + '_matchs');
+	let autoCompleteIndexStart = $derived(autoCompleteStartFocused ? 0 : -1);
+	let autoCompleteIndex = $state(-1);
+	let displayPlaceholder = $derived(maxTags && tags.length >= maxTags ? '' : placeholder);
+	let resolvedLabelText = $derived(labelText ?? name);
+	let resolvedAutoCompleteShowKey = $derived(autoCompleteShowKey ?? autoCompleteKey);
 
-export let tags;
-export let addKeys;
-export let maxTags;
-export let onlyUnique;
-export let removeKeys;
-export let placeholder;
-export let allowPaste;
-export let allowDrop;
-export let splitWith;
-export let autoComplete;
-export let autoCompleteFilter;
-export let autoCompleteKey;
-export let autoCompleteMarkupKey;
-export let autoCompleteStartFocused;
-export let name;
-export let id;
-export let allowBlur;
-export let disable;
-export let minChars;
-export let onlyAutocomplete;
-export let labelText;
-export let labelShow;
-export let readonly;
-export let onTagClick;
-export let autoCompleteShowKey;
-export let onTagAdded;
-export let onTagRemoved;
-export let cleanOnBlur;
-export let customValidation;
+	const keyCodeMap = { Enter: 13, Backspace: 8, Escape: 27, ArrowDown: 40, ArrowUp: 38 };
 
-let layoutElement;
+	/**
+	 * Escapes regex special chars for safe RegExp use.
+	 * @param {string} s - String to escape
+	 * @returns {string} Escaped string
+	 */
+	let regExpEscape = (s) => {
+		return s.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
+	};
 
-$: tags = tags || [];
-$: addKeys = addKeys || [13];
-$: maxTags = maxTags || false;
-$: onlyUnique = onlyUnique || false;
-$: removeKeys = removeKeys || [8];
-$: placeholder = placeholder || "";
-$: allowPaste = allowPaste || false;
-$: allowDrop = allowDrop || false;
-$: splitWith = splitWith || ",";
-$: autoComplete = autoComplete || false;
-$: autoCompleteFilter = typeof autoCompleteFilter == "undefined" ? true : false;
-$: autoCompleteKey = autoCompleteKey || false;
-$: autoCompleteMarkupKey = autoCompleteMarkupKey || false;
-$: autoCompleteIndexStart = autoCompleteStartFocused ? 0 : -1
-$: name = name || "svelte-tags-input";
-$: id = id || uniqueID();
-$: allowBlur = allowBlur || false;
-$: disable = disable || false;
-$: minChars = minChars ?? 1;
-$: onlyAutocomplete = onlyAutocomplete || false;
-$: labelText = labelText || name;
-$: labelShow = labelShow || false;
-$: readonly = readonly || false;
-$: onTagClick = onTagClick || function(){};
-$: autoCompleteShowKey = autoCompleteShowKey || autoCompleteKey;
-$: onTagAdded = onTagAdded || function(){};
-$: onTagRemoved = onTagRemoved || function(){};
-$: cleanOnBlur = cleanOnBlur || false;
-$: customValidation = customValidation || false;
+	/**
+	 * Handles keydown: add tag (Enter), remove (Backspace),
+	 * autocomplete nav (ArrowUp/Down), close (Escape).
+	 * @param {KeyboardEvent} e - Key event
+	 * @returns {void}
+	 */
+	function setTag(e) {
+		const matches = document.getElementById(matchsID);
+		const focusedElement = matches?.querySelector('li.focus')?.textContent;
+		const currentTag = focusedElement ?? e.target.value;
+		const keyCode = e.keyCode ?? keyCodeMap[e.key];
 
-$: autoCompleteIndex = autoCompleteIndexStart;
+		if (addKeys) {
+			addKeys.forEach(function (key) {
+				if (key === keyCode) {
+					if (currentTag) e.preventDefault();
+					if (autoComplete && onlyAutocomplete && document.getElementById(matchsID)) {
+						addTag(arrelementsmatch?.[autoCompleteIndex]?.label);
+					} else {
+						addTag(currentTag);
+					}
+				}
+			});
+		}
 
-$: matchsID = id + "_matchs";
-
-let storePlaceholder = placeholder;
-
-function setTag(e) {
-	const matches = document.getElementById(matchsID);
-	// Get the focused tag from the autocomplete list, if there is one
-	const focusedElement = matches?.querySelector('li.focus')?.textContent;
-
-	// Set the current tag to the focused tag if there is one, otherwise use the input value
-	const currentTag = focusedElement ?? e.target.value;
-
-    if (addKeys) {
-        addKeys.forEach(function(key) {
-            if (key === e.keyCode) {
-
-                if (currentTag) e.preventDefault();
-
-                /* switch (input.keyCode) {
-                case 9:
-                    // TAB add first element on the autoComplete list
-                    if (autoComplete && document.getElementById(matchsID)) {
-                        addTag(document.getElementById(matchsID).querySelectorAll("li")[0].textContent);
-                    } else {
-                        addTag(currentTag);
-                    }
-                    break;
-                default:
-                    addTag(currentTag);
-                    break;
-                } */
-
-				/*
-				 * Fix https://github.com/agustinl/svelte-tags-input/issues/87
-				 * If autocomplete = true
-				 * If onlyAutocomplete = true: You cannot add random tags
-				 * If input element with ID
-				 */
-                if (autoComplete && onlyAutocomplete && document.getElementById(matchsID)) {
-                    addTag(arrelementsmatch?.[autoCompleteIndex]?.label);
-                } else {
-                    addTag(currentTag);
-                }
-            }
-        });
-    }
-
-    if (removeKeys) {
-        removeKeys.forEach(function(key) {
-            if (key === e.keyCode && tag === "") {
-                tags.pop();
-                tags = tags;
-
-                arrelementsmatch = [];
-                document.getElementById(id).readOnly = false;
-                placeholder = storePlaceholder;
-                document.getElementById(id).focus();
-            }
-        });
-    }
-
-    // ArrowDown : focus on first element of the autocomplete
-    if (e.keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
-        autoCompleteIndex++
-        // Went off the list ? Go to the first
-        if (autoCompleteIndex >= arrelementsmatch.length || autoCompleteIndex < 0) {
-          autoCompleteIndex = 0
-        }
-    } else if (e.keyCode === 38) {
-        // ArrowUp
-        autoCompleteIndex--
-        // Went off the list ? Go to the last
-        if (autoCompleteIndex < 0 || autoCompleteIndex >= arrelementsmatch.length) {
-          autoCompleteIndex = arrelementsmatch.length - 1
-        }
-    } else if (e.keyCode === 27) {
-        // Escape
-        arrelementsmatch = [];
-        document.getElementById(id).focus();
-    }
-
-}
-
-function addTag(currentTag) {
-
-    if (typeof currentTag === 'object' && currentTag !== null) {
-        if (!autoCompleteKey) {
-            return console.error("'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects");
-        }
-
-        if (onlyUnique) {
-            let found = tags?.find(elem => elem[autoCompleteKey] === currentTag[autoCompleteKey]);
-
-            if (found) return;
-        }
-
-        var currentObjTags = currentTag;
-        currentTag = currentTag[autoCompleteKey].trim();
-
-    } else {
-        currentTag = currentTag.trim();
-    }
-
-    if (currentTag == "") return;
-    if (maxTags && tags.length == maxTags) return;
-    if (onlyUnique && tags.includes(currentTag)) return;
-    if (onlyAutocomplete && arrelementsmatch.length === 0) return;
-
-	if (customValidation && !customValidation(currentTag)) return;
-
-    tags.push(currentObjTags ? currentObjTags : currentTag)
-    tags = tags;
-    tag = "";
-
-	onTagAdded(currentTag, tags)
-
-    // Hide autocomplete list
-    // Focus on svelte tags input
-    arrelementsmatch = [];
-    autoCompleteIndex = autoCompleteIndexStart;
-    document.getElementById(id).focus();
-
-    if (maxTags && tags.length == maxTags) {
-        document.getElementById(id).readOnly = true;
-        placeholder = "";
-    };
-
-}
-
-function removeTag(i) {
-
-	tags.splice(i, 1);
-	onTagRemoved(tags[i], tags);
-    tags = tags;
-
-    // Hide autocomplete list
-    // Focus on svelte tags input
-    arrelementsmatch = [];
-    document.getElementById(id).readOnly = false;
-    placeholder = storePlaceholder;
-    document.getElementById(id).focus();
-
-}
-
-function onPaste(e) {
-
-    if(!allowPaste) return;
-    e.preventDefault();
-
-    const data = getClipboardData(e);
-    splitTags(data).map(tag => addTag(tag));
-}
-
-function onDrop(e) {
-
-    if(!allowDrop) return;
-    e.preventDefault();
-
-    const data = e.dataTransfer.getData("Text");
-    splitTags(data).map(tag => addTag(tag));
-}
-
-function onFocus() {
-    layoutElement.classList.add('focus');
-}
-
-function onBlur(e, currentTag) {
-    layoutElement.classList.remove('focus');
-
-    if (allowBlur) {
-        // A match is highlighted
-        if (arrelementsmatch.length && autoCompleteIndex > -1) {
-            addTag(arrelementsmatch?.[autoCompleteIndex]?.label)
-        }
-        // There is no match, but we may add a new tag
-        else if (!arrelementsmatch.length) {
-            e.preventDefault()
-            addTag(currentTag)
-        }
-    }
-
-	// Clean input on
-	if (cleanOnBlur) {
-		tag = "";
+		if (removeKeys) {
+			removeKeys.forEach(function (key) {
+				if (key === keyCode && tagInput === '' && tags.length > 0) {
+					removeTag(tags.length - 1);
+				}
+			});
+		}
+		
+		if (keyCode === 40 && autoComplete && document.getElementById(matchsID)) {
+			autoCompleteIndex++;
+			if (autoCompleteIndex >= arrelementsmatch.length || autoCompleteIndex < 0) {
+				autoCompleteIndex = 0;
+			}
+		} else if (keyCode === 38) {
+			autoCompleteIndex--;
+			if (autoCompleteIndex < 0 || autoCompleteIndex >= arrelementsmatch.length) {
+				autoCompleteIndex = arrelementsmatch.length - 1;
+			}
+		} else if (keyCode === 27) {
+			arrelementsmatch = [];
+			document.getElementById(id).focus();
+		}
 	}
 
-    arrelementsmatch = []
-    autoCompleteIndex = autoCompleteIndexStart
-}
+	/**
+	 * Adds tag if valid: checks empty, maxTags, onlyUnique,
+	 * onlyAutocomplete, customValidation. Supports string or object tags.
+	 * @param {string | Record<string, unknown>} currentTag - Tag to add
+	 * @returns {void}
+	 */
+	function addTag(currentTag) {
+		let currentObjTags = null;
 
-function onClick() {
-    minChars == 0 && getMatchElements();
-}
+		if (typeof currentTag === 'object' && currentTag !== null) {
+			if (!autoCompleteKey) {
+				return console.error(
+					"'autoCompleteKey' is necessary if 'autoComplete' result is an array of objects"
+				);
+			}
+			if (onlyUnique) {
+				let found = tags?.find((elem) => elem[autoCompleteKey] === currentTag[autoCompleteKey]);
+				if (found) return;
+			}
+			currentObjTags = currentTag;
+			currentTag = currentTag[autoCompleteKey].trim();
+		} else {
+			currentTag = (currentTag ?? '').trim();
+		}
 
-function getClipboardData(e) {
+		if (currentTag == '') return;
+		if (maxTags && tags.length == maxTags) return;
+		if (onlyUnique && tags.includes(currentTag)) return;
+		if (onlyAutocomplete && arrelementsmatch.length === 0) return;
+		if (customValidation && !customValidation(currentTag)) return;
 
-    if (window.clipboardData) {
-        return window.clipboardData.getData('Text')
-    }
+		tags = [...tags, currentObjTags ? currentObjTags : currentTag];
+		tagInput = '';
+		onTagAdded(currentTag, tags);
 
-    if (e.clipboardData) {
-        return e.clipboardData.getData('text/plain')
-    }
+		arrelementsmatch = [];
+		autoCompleteIndex = autoCompleteIndexStart;
+		document.getElementById(id).focus();
 
-    return ''
-}
+		if (maxTags && tags.length == maxTags) {
+			document.getElementById(id).readOnly = true;
+		}
+	}
 
-function splitTags(data) {
-    return data.split(splitWith).map(tag => tag.trim());
-}
+	/**
+	 * Removes tag at index, calls onTagRemoved with the removed tag.
+	 * @param {number} i - Index of tag to remove
+	 * @returns {void}
+	 */
+	function removeTag(i) {
+		const removed = tags[i];
+		tags = tags.filter((_, idx) => idx !== i);
+		onTagRemoved(removed, tags);
 
-function escapeHTML(string) {
-    const htmlEscapes = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#x27;',
-        '/': '&#x2F;'
-    };
-    return ('' + string).replace(/[&<>"'\/]/g, match => htmlEscapes[match]);
-}
+		arrelementsmatch = [];
+		document.getElementById(id).readOnly = false;
+		document.getElementById(id).focus();
+	}
 
-function buildMatchMarkup(search, value) {
-    return escapeHTML(value).replace(RegExp(regExpEscape(search.toLowerCase()), 'i'), "<strong>$&</strong>")
-}
+	/**
+	 * Handles paste: splits by splitWith and adds each tag (if allowPaste).
+	 * @param {ClipboardEvent} e - Paste event
+	 * @returns {void}
+	 */
+	function onPaste(e) {
+		if (!allowPaste) return;
+		e.preventDefault();
+		const data = getClipboardData(e);
+		splitTags(data).map((t) => addTag(t));
+	}
 
-async function getMatchElements(input) {
+	/**
+	 * Handles drop: splits dragged text and adds tags (if allowDrop).
+	 * @param {DragEvent} e - Drop event
+	 * @returns {void}
+	 */
+	function onDrop(e) {
+		if (!allowDrop) return;
+		e.preventDefault();
+		const data = e.dataTransfer.getData('Text');
+		splitTags(data).map((t) => addTag(t));
+	}
 
-    if (!autoComplete) return;
-    if (maxTags && tags.length >= maxTags) return;
+	/**
+	 * Adds focus class to layout on input focus.
+	 * @returns {void}
+	 */
+	function onFocus() {
+		layoutElement?.classList.add('focus');
+	}
 
-    let value = input ? input.target.value : "";
-    let autoCompleteValues = [];
+	/**
+	 * Handles blur: optionally adds tag (allowBlur), clears input (cleanOnBlur).
+	 * @param {FocusEvent} e - Blur event
+	 * @param {string} currentTag - Current input value
+	 * @returns {void}
+	 */
+	function onBlur(e, currentTag) {
+		layoutElement?.classList.remove('focus');
 
-    if (Array.isArray(autoComplete)) {
-        autoCompleteValues = autoComplete
-    }
+		if (allowBlur) {
+			if (arrelementsmatch.length && autoCompleteIndex > -1) {
+				addTag(arrelementsmatch?.[autoCompleteIndex]?.label);
+			} else if (!arrelementsmatch.length) {
+				e.preventDefault();
+				addTag(currentTag);
+			}
+		}
+		if (cleanOnBlur) {
+			tagInput = '';
+		}
+		arrelementsmatch = [];
+		autoCompleteIndex = autoCompleteIndexStart;
+	}
 
-    if (typeof autoComplete === 'function') {
-        if(autoComplete.constructor.name === 'AsyncFunction') {
-            autoCompleteValues = await autoComplete(value)
-        } else {
-            autoCompleteValues = autoComplete(value)
-        }
-    }
+	/**
+	 * On input click: shows all autocomplete matches when minChars is 0.
+	 * @returns {void}
+	 */
+	function onClick() {
+		if (minChars == 0) getMatchElements();
+	}
 
-    if(autoCompleteValues.constructor.name === 'Promise') {
-        autoCompleteValues = await autoCompleteValues;
-    }
-    // Escape
-    if ((minChars > 0 && value == "") || (input && input.keyCode === 27) || value.length < minChars ) {
-        arrelementsmatch = [];
-        return;
-    }
+	/**
+	 * Gets plain text from clipboard (clipboardData or clipboardData API).
+	 * @param {ClipboardEvent} e - Clipboard event
+	 * @returns {string} Clipboard text or empty string
+	 */
+	function getClipboardData(e) {
+		if (window.clipboardData) {
+			return window.clipboardData.getData('Text');
+		}
+		if (e.clipboardData) {
+			return e.clipboardData.getData('text/plain');
+		}
+		return '';
+	}
 
-    let matchs = autoCompleteValues;
+	/**
+	 * Splits string by splitWith and trims each part.
+	 * @param {string} data - String to split
+	 * @returns {string[]} Array of trimmed tag strings
+	 */
+	function splitTags(data) {
+		return data.split(splitWith).map((t) => t.trim());
+	}
 
-    if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
+	/**
+	 * Escapes HTML entities for safe display.
+	 * @param {string} string - Raw string
+	 * @returns {string} HTML-escaped string
+	 */
+	function escapeHTML(string) {
+		const htmlEscapes = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;',
+			"'": '&#x27;',
+			'/': '&#x2F;',
+		};
+		return ('' + string).replace(/[&<>"'\/]/g, (match) => htmlEscapes[match]);
+	}
 
-        if (!autoCompleteKey) {
-            return console.error("'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects");
-        }
+	/**
+	 * Wraps matching search substring in <strong> within escaped value.
+	 * @param {string} search - Search term (case-insensitive)
+	 * @param {string} value - Full string to highlight
+	 * @returns {string} HTML with match wrapped in <strong>
+	 */
+	function buildMatchMarkup(search, value) {
+		return escapeHTML(value).replace(
+			RegExp(regExpEscape(search.toLowerCase()), 'i'),
+			'<strong>$&</strong>'
+		);
+	}
 
-        if(autoCompleteFilter !== false) {
-            matchs = autoCompleteValues.filter(e => e[autoCompleteKey].toLowerCase().includes(value.toLowerCase()))
-        }
-        matchs = matchs.map(matchTag => {
-            return {
-                label: matchTag,
-                search: autoCompleteMarkupKey ? matchTag[autoCompleteMarkupKey] : buildMatchMarkup(value, matchTag[autoCompleteKey])
-            }
-        });
+	/**
+	 * Fetches autocomplete matches from array or fn, filters, builds match objects.
+	 * Updates arrelementsmatch and autoCompleteIndex.
+	 * @param {KeyboardEvent} [input] - Keyup event (optional)
+	 * @returns {Promise<void>}
+	 */
+	async function getMatchElements(input) {
+		if (!autoComplete) return;
+		if (maxTags && tags.length >= maxTags) return;
 
+		let value = input ? input.target.value : '';
+		let autoCompleteValues = [];
 
-    } else {
-        if(autoCompleteFilter !== false) {
-            matchs = autoCompleteValues.filter(e => e.toLowerCase().includes(value.toLowerCase()))
-        }
-        matchs = matchs.map(matchTag => {
-            return {
-                label: matchTag,
-                search: buildMatchMarkup(value, matchTag)
-            }
-        });
-    }
+		if (Array.isArray(autoComplete)) {
+			autoCompleteValues = autoComplete;
+		}
+		if (typeof autoComplete === 'function') {
+			if (autoComplete.constructor.name === 'AsyncFunction') {
+				autoCompleteValues = await autoComplete(value);
+			} else {
+				autoCompleteValues = autoComplete(value);
+			}
+		}
+		if (autoCompleteValues.constructor.name === 'Promise') {
+			autoCompleteValues = await autoCompleteValues;
+		}
 
-    if (onlyUnique === true && !autoCompleteKey) {
-        matchs = matchs.filter(tag => !tags.includes(tag.label));
-    }
+		const keyCode = input?.keyCode ?? keyCodeMap[input?.key];
+		if (
+			(minChars > 0 && value == '') ||
+			(input && keyCode === 27) ||
+			value.length < minChars
+		) {
+			arrelementsmatch = [];
+			return;
+		}
 
-    arrelementsmatch = matchs;
-}
+		let matchs = autoCompleteValues;
 
-function uniqueID() {
-    return 'sti_' + Math.random().toString(36).substring(2, 11);
-};
+		if (typeof autoCompleteValues[0] === 'object' && autoCompleteValues !== null) {
+			if (!autoCompleteKey) {
+				return console.error(
+					"'autoCompleteValue' is necessary if 'autoComplete' result is an array of objects"
+				);
+			}
+			if (autoCompleteFilter !== false) {
+				matchs = autoCompleteValues.filter((e) =>
+					e[autoCompleteKey].toLowerCase().includes(value.toLowerCase())
+				);
+			}
+			matchs = matchs.map((matchTag) => ({
+				label: matchTag,
+				search: autoCompleteMarkupKey
+					? matchTag[autoCompleteMarkupKey]
+					: buildMatchMarkup(value, matchTag[autoCompleteKey]),
+			}));
+		} else {
+			if (autoCompleteFilter !== false) {
+				matchs = autoCompleteValues.filter((e) =>
+					e.toLowerCase().includes(value.toLowerCase())
+				);
+			}
+			matchs = matchs.map((matchTag) => ({
+				label: matchTag,
+				search: buildMatchMarkup(value, matchTag),
+			}));
+		}
 
+		if (onlyUnique === true && !autoCompleteKey) {
+			matchs = matchs.filter((t) => !tags.includes(t.label));
+		}
+
+		arrelementsmatch = matchs;
+		// Don't reset navigation index on ArrowUp/Down - keyup runs after keydown and would overwrite it
+		if (keyCode !== 38 && keyCode !== 40) {
+			autoCompleteIndex = autoCompleteIndexStart;
+		}
+	}
 </script>
 
-<div class="svelte-tags-input-layout" class:sti-layout-disable={disable} class:sti-layout-readonly={readonly} bind:this={layoutElement}>
-    <label for={id} class={labelShow ? "" : "sr-only"}>{labelText}</label>
+<div
+	class="svelte-tags-input-layout"
+	class:sti-layout-disable={disable}
+	class:sti-layout-readonly={readonly}
+	bind:this={layoutElement}
+>
+	<label for={id} class={labelShow ? '' : 'sr-only'}>{resolvedLabelText}</label>
 
-    {#if tags.length > 0}
-        {#each tags as tag, i}
-            <button type="button" class="svelte-tags-input-tag" on:click={() => onTagClick(tag)}>
-                {#if typeof tag === 'string'}
-                    {tag}
-                {:else}
-                    {tag[autoCompleteShowKey]}
-                {/if}
-                {#if !disable && !readonly}
-                    <span class="svelte-tags-input-tag-remove" on:pointerdown={() => removeTag(i)}> &#215;</span>
-                {/if}
-            </button>
-        {/each}
-    {/if}
-    <input
-        type="text"
-        id={id}
-        name={name}
-        bind:value={tag}
-        on:keydown={setTag}
-        on:keyup={getMatchElements}
-        on:paste={onPaste}
-        on:drop={onDrop}
-        on:focus={onFocus}
-        on:blur={(e) => onBlur(e, tag)}
-        on:pointerdown={onClick}
-        class="svelte-tags-input"
-        placeholder={placeholder}
-        disabled={disable || readonly}
-        autocomplete="off"
-    >
+	{#if tags.length > 0}
+		{#each tags as tagItem, i}
+			<button type="button" class="svelte-tags-input-tag" onclick={() => onTagClick(tagItem)}>
+				{#if typeof tagItem === 'string'}
+					{tagItem}
+				{:else}
+					{tagItem[resolvedAutoCompleteShowKey]}
+				{/if}
+				{#if !disable && !readonly}
+					<span
+						role="button"
+						tabindex="-1"
+						class="svelte-tags-input-tag-remove"
+						onpointerdown={(e) => {
+							e.preventDefault();
+							removeTag(i);
+						}}
+					>
+						&#215;
+					</span>
+				{/if}
+			</button>
+		{/each}
+	{/if}
+	<input
+		type="text"
+		id={id}
+		name={name}
+		bind:value={tagInput}
+		onkeydown={setTag}
+		onkeyup={getMatchElements}
+		onpaste={onPaste}
+		ondrop={onDrop}
+		onfocus={onFocus}
+		onblur={(e) => onBlur(e, tagInput)}
+		onpointerdown={onClick}
+		class="svelte-tags-input"
+		placeholder={displayPlaceholder}
+		disabled={disable || readonly}
+		autocomplete="off"
+	/>
 </div>
 
 {#if autoComplete && arrelementsmatch.length > 0}
-    <div class="svelte-tags-input-matchs-parent">
-        <ul id="{id}_matchs" class="svelte-tags-input-matchs">
-            {#each arrelementsmatch as element, index}
-                <li
-                    tabindex="-1"
-                    class:focus={index === autoCompleteIndex}
-                    on:pointerdown|preventDefault={() => addTag(element.label)}>
-                        {@html element.search}
-                    </li>
-            {/each}
-        </ul>
-    </div>
+	<div class="svelte-tags-input-matchs-parent">
+		<ul id="{id}_matchs" class="svelte-tags-input-matchs">
+			{#each arrelementsmatch as element, index}
+				<li
+					tabindex="-1"
+					class:focus={index === autoCompleteIndex}
+					onpointerdown={(e) => {
+						e.preventDefault();
+						addTag(element.label);
+					}}
+				>
+					{@html element.search}
+				</li>
+			{/each}
+		</ul>
+	</div>
 {/if}
 
 <style>
-/* CSS svelte-tags-input */
+	/* CSS svelte-tags-input */
 
-.svelte-tags-input,
-.svelte-tags-input-tag,
-.svelte-tags-input-matchs,
-.svelte-tags-input-layout label {
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
-    font-size: 14px;
-    padding: 2px 5px;
-}
+	.svelte-tags-input,
+	.svelte-tags-input-tag,
+	.svelte-tags-input-matchs,
+	.svelte-tags-input-layout label {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+			'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+		font-size: 14px;
+		padding: 2px 5px;
+	}
 
-.svelte-tags-input-layout label {
-    margin: 4px 5px 0 0;
-    padding:0;
-    font-weight:500;
-}
+	.svelte-tags-input-layout label {
+		margin: 4px 5px 0 0;
+		padding: 0;
+		font-weight: 500;
+	}
 
-/* svelte-tags-input-layout */
+	.svelte-tags-input-layout {
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+		-webkit-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+		padding: 0px 5px 5px 5px;
+		border: solid 1px #ccc;
+		background: #fff;
+		border-radius: 2px;
+	}
 
-.svelte-tags-input-layout {
-    display:-webkit-box;
-    display:-ms-flexbox;
-    display:flex;
-    -ms-flex-wrap:wrap;
-        flex-wrap:wrap;
-    -webkit-box-align:center;
-        -ms-flex-align:center;
-            align-items:center;
-    padding: 0px 5px 5px 5px;
-    border: solid 1px #CCC;
-    background: #FFF;
-    border-radius: 2px;
-}
+	.svelte-tags-input-layout:focus,
+	.svelte-tags-input-layout:hover {
+		border: solid 1px #000;
+	}
 
-.svelte-tags-input-layout:focus,
-.svelte-tags-input-layout:hover {
-    border: solid 1px #000;
-}
+	.svelte-tags-input-layout:focus-within {
+		outline: 5px auto -webkit-focus-ring-color;
+	}
 
-.svelte-tags-input-layout:focus-within {
-    outline: 5px auto -webkit-focus-ring-color;
-}
+	.svelte-tags-input {
+		background: unset;
+		-webkit-box-flex: 1;
+		-ms-flex: 1;
+		flex: 1;
+		margin: 0;
+		margin-top: 5px;
+		border: none;
+	}
 
-/* svelte-tags-input */
+	.svelte-tags-input:focus {
+		outline: 0;
+	}
 
-.svelte-tags-input {
-    /* Parent handles background */
-    background: unset;
-    -webkit-box-flex: 1;
-        -ms-flex: 1;
-            flex: 1;
-    margin: 0;
-    margin-top: 5px;
-    border:none;
-}
+	.svelte-tags-input-tag {
+		cursor: text;
+		display: -webkit-box;
+		display: -ms-flexbox;
+		display: flex;
+		white-space: nowrap;
+		user-select: text;
+		list-style: none;
+		background: #000;
+		border: none;
+		color: #fff;
+		border-radius: 2px;
+		margin-right: 5px;
+		margin-top: 5px;
+		font-weight: 400;
+	}
 
-.svelte-tags-input:focus {
-    outline:0;
-}
+	.svelte-tags-input-tag-remove {
+		cursor: pointer;
+		margin-left: 5px;
+	}
 
-/* svelte-tags-input-tag */
+	.svelte-tags-input-matchs-parent {
+		position: relative;
+	}
 
-.svelte-tags-input-tag {
-    cursor: text;
-    display:-webkit-box;
-    display:-ms-flexbox;
-    display:flex;
-    white-space: nowrap;
-    user-select: text;
-    list-style:none;
-    background: #000;
-    border: none;
-    color: #FFF;
-    border-radius: 2px;
-    margin-right: 5px;
-    margin-top: 5px;
-    font-weight: 400;
-}
+	.svelte-tags-input-matchs {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		margin: 3px 0;
+		padding: 0px;
+		background: #fff;
+		border: solid 1px #ccc;
+		border-radius: 2px;
+		max-height: 310px;
+		overflow: scroll;
+		overflow-x: auto;
+	}
 
-/*.svelte-tags-input-tag:hover {
-    background: #CCC;
-}*/
+	.svelte-tags-input-matchs li {
+		list-style: none;
+		padding: 5px;
+		border-radius: 2px;
+		cursor: pointer;
+	}
 
-.svelte-tags-input-tag-remove {
-    cursor:pointer;
-    margin-left: 5px;
-}
+	.svelte-tags-input-matchs li:hover,
+	.svelte-tags-input-matchs li.focus {
+		background: #000;
+		color: #fff;
+		outline: none;
+	}
 
-/* svelte-tags-input-matchs */
+	.svelte-tags-input:disabled {
+		background: transparent;
+	}
 
-.svelte-tags-input-matchs-parent {
-    position:relative;
-}
+	.svelte-tags-input-layout.sti-layout-disable,
+	.svelte-tags-input-layout.sti-layout-disable input {
+		cursor: not-allowed;
+		background: #eaeaea;
+	}
 
-.svelte-tags-input-matchs {
-    position:absolute;
-    top:0;
-    left:0;
-    right:0;
-    margin:3px 0;
-    padding: 0px;
-    background:#FFF;
-    border: solid 1px #CCC;
-    border-radius: 2px;
-    max-height:310px;
-    overflow:scroll;
-    overflow-x:auto;
-}
+	.svelte-tags-input-layout.sti-layout-disable:hover,
+	.svelte-tags-input-layout.sti-layout-disable:focus,
+	.svelte-tags-input-layout.sti-layout-readonly:hover,
+	.svelte-tags-input-layout.sti-layout-readonly:focus {
+		border-color: #ccc;
+	}
 
-.svelte-tags-input-matchs li {
-    list-style:none;
-    padding:5px;
-    border-radius: 2px;
-    cursor:pointer;
-}
+	.svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag {
+		background: #aeaeae;
+	}
 
-.svelte-tags-input-matchs li:hover,
-.svelte-tags-input-matchs li.focus {
-    background:#000;
-    color:#FFF;
-    outline:none;
-}
+	.svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag-remove {
+		cursor: not-allowed;
+	}
 
-/* svelte-tags-input disabled */
-
-.svelte-tags-input:disabled {
-    background: transparent;
-}
-
-.svelte-tags-input-layout.sti-layout-disable,
-.svelte-tags-input-layout.sti-layout-disable input {
-    cursor: not-allowed;
-    background: #EAEAEA;
-}
-
-.svelte-tags-input-layout.sti-layout-disable:hover,
-.svelte-tags-input-layout.sti-layout-disable:focus,
-.svelte-tags-input-layout.sti-layout-readonly:hover,
-.svelte-tags-input-layout.sti-layout-readonly:focus {
-    border-color:#CCC;
-}
-
-.svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag {
-    background: #AEAEAE;
-}
-
-.svelte-tags-input-layout.sti-layout-disable .svelte-tags-input-tag-remove {
-    cursor: not-allowed;
-}
-
-.svelte-tags-input-layout label.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
+	.svelte-tags-input-layout label.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
 </style>

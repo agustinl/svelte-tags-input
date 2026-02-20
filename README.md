@@ -1,152 +1,175 @@
-<p align="center"><a href="https://svelte-tags-input.vercel.app"><img src="https://svelte-tags-input.vercel.app/readme-image.png" alt="Svelte Tags Input"/></a></p>
-<h1 align="center">
-    svelte-tags-input
-</h1>
-<div align="center">Svelte tags input is a component to use with Svelte and easily enter tags and customize some options</div>
-<br />
 <p align="center">
-<a href="https://www.npmjs.com/package/svelte-tags-input"><img src="https://img.shields.io/npm/v/svelte-tags-input.svg"/></a>
-<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg"/></a>
-<a href="https://madewithsvelte.com/p/svelte-tags-input/shield-link"><img src="https://madewithsvelte.com/storage/repo-shields/2151-shield.svg"/></a>
+  <a href="https://svelte-tags-input.vercel.app">
+    <img src="https://svelte-tags-input.vercel.app/readme-image.png" alt="Svelte Tags Input" width="600" />
+  </a>
 </p>
 
-## [Live Demo](https://svelte-tags-input.vercel.app/)
+<h1 align="center">svelte-tags-input</h1>
 
-## Install & Usage
+<p align="center">
+  <strong>A fully customizable tags input component for Svelte 5</strong>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/svelte-tags-input"><img src="https://img.shields.io/npm/v/svelte-tags-input.svg" alt="npm version" /></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" /></a>
+  <a href="https://madewithsvelte.com/p/svelte-tags-input/shield-link"><img src="https://madewithsvelte.com/storage/repo-shields/2151-shield.svg" alt="Made with Svelte" /></a>
+</p>
+
+<p align="center">
+  <a href="https://svelte-tags-input.vercel.app">Live Demo</a> ·
+  <a href="https://svelte-tags-input.vercel.app">FAQs</a> ·
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
+
+---
+
+## Features
+
+- **Keyboard-driven** — Add tags with Enter/Tab, remove with Backspace, navigate autocomplete with Arrow keys
+- **Autocomplete** — Array or async function, with filtering and custom display keys
+- **Paste & drop** — Paste comma-separated text or drag-and-drop tags
+- **Accessible** — ARIA-friendly, screen reader labels, keyboard navigation
+- **Flexible** — Max tags, unique-only, custom validation, blur behavior
+- **Svelte 5** — Built with runes (`$props`, `$state`, `$derived`, `$bindable`)
+
+## Requirements
+
+- **Svelte 5.x** — This package requires Svelte 5 (peer dependency)
+
+## Install
 
 ```bash
 npm install svelte-tags-input
 ```
 
-```javascript
-import Tags from "svelte-tags-input";
+## Quick Start
 
-<Tags />
+```svelte
+<script>
+  import Tags from 'svelte-tags-input';
+
+  let tags = $state([]);
+</script>
+
+<Tags bind:tags placeholder="Type and press Enter..." />
 ```
 
 ## Options
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| bind:tags | `Array` | `[]` | To get the values |
-| addKeys | `Array` | <kbd>ENTER</kbd> 13 | Set which keys add new values |
-| removeKeys | `Array` | <kbd>BACKSPACE</kbd> 8 | Set which keys remove new values |
-| allowPaste | `Boolean` | `false` | Enable pasting of a tag or tag group |
-| allowDrop | `Boolean` | `false` | Enable drag and drop of a tag or tag group |
-| splitWith | `String` | <kbd>,</kbd> | Choose what character split you group of tags<br>_Work only if allowDrop or allowPaste are true_ |
-| maxTags | `Number` | `false` | Set maximum number of tags |
-| onlyUnique | `Boolean` | `false` | Set the entered tags to be unique |
-| placeholder | `String` | `false` | Set a placeholder |
-| autoComplete | `Array` or `fn()` | `false` | Set an array of elements to create a auto-complete dropdown |
-| autoCompleteKey | `String` | `false` | Set a key to search on `autoComplete` array of objects |
-| autoCompleteStartFocused | `Boolean` | `false` | Set the autocomplete focus to the first result without user input |
-| autoCompleteFilter | `Boolean` | `true` | If `false` disable auto complete filter and return endpoint response without filter |
-| onlyAutocomplete | `Boolean` | `false` | Only accept tags inside the auto complete list |
-| name | `String` | `svelte-tags-input` | Set a `name` attribute |
-| id | `String` | Random Unique ID | Set a `id` attribute |
-| allowBlur | `Boolean` | `false` | Enable add tag when input blur |
-| disable | `Boolean` | `false` | Disable input |
-| minChars | `Number` | `1` | Minimum length of search text to show autoComplete list. If 0, autoComplete list shows all results when click on input |
-| labelText | `String` | `svelte-tags-input` | Custom text for input label |
-| labelShow | `Boolean` | `false` | If `true` the label will be visible |
-| readonly | `Boolean` | `false` | If `true` the input show in display mode |
-| onTagClick | `Function` | `empty` | A function to fire when a tag is clicked |
-| autoCompleteShowKey | `String` | `autoCompleteKey` | A key string to show a different value from auto complete list object returned |
-| onTagAdded | `Function` | `empty` | Get a function to execute when tag added |
-| onTagRemoved | `Function` | `empty` | Get a function to execute when tag removed |
-| cleanOnBlur | `Boolean` | `false` | Clear input on blur (tags keeped) |
-| customValidation | `Function` | `empty` | Create a custom validation when tag is added |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `bind:tags` | `Array` | `[]` | Two-way bound array of tags |
+| `addKeys` | `number[]` | `[13]` (Enter) | Keys that add a tag |
+| `removeKeys` | `number[]` | `[8]` (Backspace) | Keys that remove the last tag |
+| `placeholder` | `string` | `''` | Input placeholder text |
+| `maxTags` | `number \| false` | `false` | Maximum number of tags allowed |
+| `onlyUnique` | `boolean` | `false` | Reject duplicate tags |
+| `allowPaste` | `boolean` | `false` | Enable pasting tags (split by `splitWith`) |
+| `allowDrop` | `boolean` | `false` | Enable drag-and-drop of tags |
+| `splitWith` | `string` | `','` | Character to split pasted/dropped text |
+| `autoComplete` | `Array \| (value: string) => any` | `false` | Suggestions array or async fetcher |
+| `autoCompleteKey` | `string` | `false` | Key for object items in `autoComplete` |
+| `autoCompleteShowKey` | `string` | `autoCompleteKey` | Key to display (when different from search key) |
+| `autoCompleteFilter` | `boolean` | `true` | Filter suggestions client-side (disable for API responses) |
+| `autoCompleteStartFocused` | `boolean` | `false` | Focus first suggestion without typing |
+| `onlyAutocomplete` | `boolean` | `false` | Only accept tags from the autocomplete list |
+| `minChars` | `number` | `1` | Min chars before showing autocomplete (0 = show all on click) |
+| `allowBlur` | `boolean` | `false` | Add tag on input blur |
+| `cleanOnBlur` | `boolean` | `false` | Clear input on blur (tags kept) |
+| `disable` | `boolean` | `false` | Disable the input |
+| `readonly` | `boolean` | `false` | Read-only display mode |
+| `name` | `string` | `'svelte-tags-input'` | Input `name` attribute |
+| `id` | `string` | random | Input `id` attribute |
+| `labelText` | `string` | `name` | Accessible label text |
+| `labelShow` | `boolean` | `false` | Show visible label |
+| `onTagAdded` | `(tag, tags) => void` | `() => {}` | Called when a tag is added |
+| `onTagRemoved` | `(tag, tags) => void` | `() => {}` | Called when a tag is removed |
+| `onTagClick` | `(tag) => void` | `() => {}` | Called when a tag is clicked |
+| `customValidation` | `(tag) => boolean` | `false` | Custom validation before adding |
 
-##### [A complete list of key codes](https://keycode.info/)
+[Key codes reference](https://keycode.info/)
 
-## Full example
-### [Live Demo](https://svelte-tags-input.vercel.app/)  
+## Examples
 
-```javascript
-import Tags from "svelte-tags-input";
+### Basic with autocomplete
 
-let tags = [];
+```svelte
+<script>
+  import Tags from 'svelte-tags-input';
 
-const countryList = [
-    "Afghanistan",
-    "Albania",
-    "Algeria",
-    "American Samoa",
-    "Andorra",
-    "Angola",
-    "Anguilla",
-    "Antarctica",
-    "Antigua and Barbuda",
-    "Argentina"
-    ...
-];
+  let tags = $state([]);
+  const suggestions = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'];
+</script>
 
 <Tags
-    bind:tags={tags}
-    addKeys={[9]} // TAB Key
-    maxTags={3}
-    allowPaste={true}
-    allowDrop={true}
-    splitWith={"/"}
-    onlyUnique={true}
-    removeKeys={[27]} // ESC Key
-    placeholder={"Svelte Tags Input full example"}
-    autoComplete={countryList}
-    name={"custom-name"}
-    id={"custom-id"}
-    allowBlur={true}
-    disable={false} // Just to illustrate. No need to declare it if it's false.
-    readonly={false} // Just to illustrate. No need to declare it if it's false.
-    minChars={3}
-    onlyAutocomplete
-    labelText="Label"
-    labelShow
-    onTagClick={tag => console.log(tag)}
-    onTagAdded={(tag, tags) => console.log(tag, tags)}
-    onTagRemoved={(tag, tags) => console.log(tag, tags)}
-	cleanOnBlur={true}
-	customValidation={(tag) => tag === "Argentina" ? true : false }
+  bind:tags
+  placeholder="Pick a fruit..."
+  autoComplete={suggestions}
+  onlyUnique
 />
 ```
 
-## Example with `autoComplete` function
-### [Live Demo](https://svelte-tags-input.vercel.app/)  
+### Full configuration
 
-```javascript
-import Tags from "svelte-tags-input";
+```svelte
+<script>
+  import Tags from 'svelte-tags-input';
 
-let tags = [];
-
-const customAutocomplete = async () => {
-    const list = await fetch('https://restcountries.com/v2/all?fields=name,alpha3Code,flag');
-    const res = await list.json();
-
-    return res;
-}
+  let tags = $state([]);
+  const countries = ['Argentina', 'Brazil', 'Chile', 'Colombia', 'Mexico'];
+</script>
 
 <Tags
-    bind:tags={tags}
-    autoComplete={customAutocomplete}
-    autoCompleteKey={"name"}
-    autoCompleteShowKey={"alpha3Code"}
+  bind:tags
+  addKeys={[9]}
+  removeKeys={[27]}
+  maxTags={5}
+  allowPaste
+  allowDrop
+  splitWith="/"
+  onlyUnique
+  placeholder="Add a country..."
+  autoComplete={countries}
+  minChars={2}
+  onlyAutocomplete
+  allowBlur
+  cleanOnBlur
+  labelText="Countries"
+  labelShow
+  onTagAdded={(tag, t) => console.log('Added:', tag, t)}
+  onTagRemoved={(tag, t) => console.log('Removed:', tag, t)}
+  onTagClick={(tag) => console.log('Clicked:', tag)}
+  customValidation={(tag) => tag.length >= 3}
 />
-
-{#each tags as country, index}
-    <p>{index} - {country.name} - {country.alpha3Code} </p>
-    <img src={country.flag} />
-{/each}
 ```
 
-## [FAQs](https://svelte-tags-input.vercel.app)
+### Async autocomplete (API)
 
-## [CHANGELOG](CHANGELOG.md)
+```svelte
+<script>
+  import Tags from 'svelte-tags-input';
+
+  let tags = $state([]);
+
+  async function fetchCountries(query) {
+    const res = await fetch(
+	    `https://restcountries.com/v2/name/${query}?fields=name,alpha3Code,flag`
+    );
+    const data = await res.json();
+    return data;
+  }
+</script>
+
+<Tags
+  bind:tags
+  autoComplete={fetchCountries}
+  autoCompleteKey="name"
+  autoCompleteShowKey="alpha3Code"
+  autoCompleteFilter={false}
+/>
+```
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
-
-## Author
-
-[Agustín](https://twitter.com/agustinlautaro)
-
-##### 2024
+MIT © [Agustín](https://twitter.com/agustinlautaro)
