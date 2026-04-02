@@ -9,8 +9,8 @@
 	"files": ["dist", "src", "types"],
 	"exports": {
 		".": {
-			"types": "types/index.d.ts",
-			"svelte": "src/Tags.svelte",
+			"types": "./types/index.d.ts",
+			"svelte": "./src/Tags.svelte",
 			"import": "./dist/index.mjs",
 			"default": "./dist/index.mjs"
 		}
