@@ -1,5 +1,13 @@
 # svelte-tags-input changelog
 
+## 7.0.2
+
+- Dependabot security patchs [#111](https://github.com/agustinl/svelte-tags-input/pull/111).
+
+## 7.0.1
+
+- Dependabot security patchs.
+
 ## 7.0.0
 
 **Breaking:** Requires Svelte 5.x (no longer supports Svelte 3/4)

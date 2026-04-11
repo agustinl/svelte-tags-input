@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "svelte-tags-input",
-	"version": "7.0.1",
+	"version": "7.0.2",
 	"description": "Fully customizable Svelte component to enter tags.",
 	"main": "dist/index.mjs",
 	"module": "dist/index.mjs",
