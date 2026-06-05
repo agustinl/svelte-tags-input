@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://svelte-tags-input.vercel.app">
-    <img src="https://svelte-tags-input.vercel.app/readme-image.png" alt="Svelte Tags Input" width="600" />
+    <img src="https://svelte-tags-input.vercel.app/og-banner.jpg" alt="Svelte Tags Input" width="600" />
   </a>
 </p>
 
