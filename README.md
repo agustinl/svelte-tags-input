@@ -12,13 +12,13 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/svelte-tags-input"><img src="https://img.shields.io/npm/v/svelte-tags-input.svg" alt="npm version" /></a>
+  <a href="https://github.com/agustinl/svelte-tags-input/actions/workflows/ci.yml"><img src="https://github.com/agustinl/svelte-tags-input/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" /></a>
   <a href="https://madewithsvelte.com/p/svelte-tags-input/shield-link"><img src="https://madewithsvelte.com/storage/repo-shields/2151-shield.svg" alt="Made with Svelte" /></a>
 </p>
 
 <p align="center">
   <a href="https://svelte-tags-input.vercel.app">Live Demo</a> ·
-  <a href="https://svelte-tags-input.vercel.app">FAQs</a> ·
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
@@ -26,12 +26,13 @@
 
 ## Features
 
-- **Keyboard-driven** — Add tags with Enter/Tab, remove with Backspace, navigate autocomplete with Arrow keys
+- **Keyboard-driven** — Add tags with Enter (configurable), remove with Backspace, navigate autocomplete with Arrow keys
 - **Autocomplete** — Array or async function, with filtering and custom display keys
-- **Paste & drop** — Paste comma-separated text or drag-and-drop tags
-- **Accessible** — ARIA-friendly, screen reader labels, keyboard navigation
+- **Paste & drop** — Paste or drop comma-separated text to add several tags at once
+- **Keyboard & screen reader basics** — Keyboard navigation and an accessible (optionally visually hidden) label
 - **Flexible** — Max tags, unique-only, custom validation, blur behavior
 - **Svelte 5** — Built with runes (`$props`, `$state`, `$derived`, `$bindable`)
+- **TypeScript** — Type definitions included (`TagsProps`)
 
 ## Requirements
 
@@ -68,9 +69,10 @@ npm install svelte-tags-input
 | `allowPaste` | `boolean` | `false` | Enable pasting tags (split by `splitWith`) |
 | `allowDrop` | `boolean` | `false` | Enable drag-and-drop of tags |
 | `splitWith` | `string` | `','` | Character to split pasted/dropped text |
-| `autoComplete` | `Array \| (value: string) => any` | `false` | Suggestions array or async fetcher |
-| `autoCompleteKey` | `string` | `false` | Key for object items in `autoComplete` |
+| `autoComplete` | `Array \| (value: string) => any \| false` | `false` | Suggestions array or async fetcher |
+| `autoCompleteKey` | `string \| false` | `false` | Key for object items in `autoComplete` |
 | `autoCompleteShowKey` | `string` | `autoCompleteKey` | Key to display (when different from search key) |
+| `autoCompleteMarkupKey` | `string \| false` | `false` | Key whose value is rendered as HTML in each suggestion (⚠️ not escaped — sanitize untrusted data) |
 | `autoCompleteFilter` | `boolean` | `true` | Filter suggestions client-side (disable for API responses) |
 | `autoCompleteStartFocused` | `boolean` | `false` | Focus first suggestion without typing |
 | `onlyAutocomplete` | `boolean` | `false` | Only accept tags from the autocomplete list |
@@ -86,9 +88,22 @@ npm install svelte-tags-input
 | `onTagAdded` | `(tag, tags) => void` | `() => {}` | Called when a tag is added |
 | `onTagRemoved` | `(tag, tags) => void` | `() => {}` | Called when a tag is removed |
 | `onTagClick` | `(tag) => void` | `() => {}` | Called when a tag is clicked |
-| `customValidation` | `(tag) => boolean` | `false` | Custom validation before adding |
+| `customValidation` | `((tag) => boolean) \| false` | `false` | Custom validation before adding |
 
-[Key codes reference](https://keycode.info/)
+### Key codes
+
+`addKeys` and `removeKeys` take numeric key codes. Common values:
+
+| Key | Code |
+|-----|------|
+| Enter | `13` |
+| Tab | `9` |
+| Backspace | `8` |
+| Escape | `27` |
+| Comma | `188` |
+| Space | `32` |
+
+See the [MDN `keyCode` reference](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/keyCode) for others.
 
 ## Examples
 
@@ -144,6 +159,32 @@ npm install svelte-tags-input
 />
 ```
 
+### Autocomplete with objects
+
+```svelte
+<script>
+  import Tags from 'svelte-tags-input';
+
+  let tags = $state([]);
+  const users = [
+    { name: 'Ada Lovelace', username: 'ada' },
+    { name: 'Alan Turing', username: 'alan' },
+    { name: 'Grace Hopper', username: 'grace' }
+  ];
+</script>
+
+<!-- Search by `name`, show `username` in the selected tag -->
+<Tags
+  bind:tags
+  autoComplete={users}
+  autoCompleteKey="name"
+  autoCompleteShowKey="username"
+  onlyAutocomplete
+/>
+```
+
+When `autoComplete` returns objects, `autoCompleteKey` is required and `tags` will contain the selected objects.
+
 ### Async autocomplete (API)
 
 ```svelte
@@ -154,7 +195,7 @@ npm install svelte-tags-input
 
   async function fetchCountries(query) {
     const res = await fetch(
-	    `https://restcountries.com/v2/name/${query}?fields=name,alpha3Code,flag`
+      `https://restcountries.com/v2/name/${query}?fields=name,alpha3Code,flag`
     );
     const data = await res.json();
     return data;
@@ -169,6 +210,47 @@ npm install svelte-tags-input
   autoCompleteFilter={false}
 />
 ```
+
+## Styling
+
+The component ships with default styles scoped to it. To override them, target its classes with `:global()` from a wrapper element:
+
+| Class | Element |
+|-------|---------|
+| `.svelte-tags-input-layout` | Outer container (tags + input) |
+| `.svelte-tags-input-tag` | Each tag |
+| `.svelte-tags-input-tag-remove` | The × remove button inside a tag |
+| `.svelte-tags-input` | The text input |
+| `.svelte-tags-input-matchs` | Autocomplete list (`li.focus` is the highlighted item) |
+| `.sti-layout-disable` | Added to the container when `disable` is set |
+| `.sti-layout-readonly` | Added to the container when `readonly` is set |
+
+```svelte
+<div class="my-tags">
+  <Tags bind:tags />
+</div>
+
+<style>
+  .my-tags :global(.svelte-tags-input-layout .svelte-tags-input-tag) {
+    background: #4f46e5;
+    border-radius: 999px;
+  }
+
+  .my-tags :global(.svelte-tags-input-layout:focus-within) {
+    border-color: #4f46e5;
+  }
+</style>
+```
+
+## Development
+
+```bash
+npm install
+npm test            # run the test suite
+npm run build       # build to dist/
+```
+
+Issues and pull requests are welcome.
 
 ## License
 

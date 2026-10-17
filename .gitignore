@@ -2,3 +2,4 @@ node_modules/
 dist/
 dev/
 index.html
+.claude/settings.local.json
