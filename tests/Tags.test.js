@@ -425,5 +425,25 @@ describe('Tags', () => {
 
 			expect(autoComplete).toHaveBeenCalledTimes(2);
 		});
+
+		it('with minChars 0, the list reopens after adding a tag with Enter (multi-select)', async () => {
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete: ['Apple', 'Banana', 'Cherry'], minChars: 0, onlyUnique: true },
+			});
+			const input = container.querySelector('.svelte-tags-input');
+			const items = () =>
+				[...container.querySelectorAll('.svelte-tags-input-matchs li')].map((li) => li.textContent.trim());
+
+			await fireEvent.pointerDown(input);
+			await waitFor(() => expect(items()).toEqual(['Apple', 'Banana', 'Cherry']));
+
+			await fireEvent.keyDown(input, keys.ArrowDown);
+			await fireEvent.keyUp(input, keys.ArrowDown);
+			await fireEvent.keyDown(input, keys.Enter);
+			await fireEvent.keyUp(input, keys.Enter);
+
+			expect(screen.getByText('Apple', { selector: '.svelte-tags-input-tag' })).toBeTruthy();
+			await waitFor(() => expect(items()).toEqual(['Banana', 'Cherry']));
+		});
 	});
 });

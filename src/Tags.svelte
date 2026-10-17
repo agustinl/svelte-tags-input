@@ -130,7 +130,9 @@
 	function onKeyUp(e) {
 		const keyCode = e.keyCode ?? keyCodeMap[e.key];
 
-		if (keyCode === 13 || keyCode === 27) return;
+		if (keyCode === 27) return;
+		// With minChars 0 the list works as a multi-select: keep reopening it after Enter adds a tag
+		if (keyCode === 13 && minChars !== 0) return;
 		// keydown already moved the highlight; refetching would reset the list
 		if ((keyCode === 38 || keyCode === 40) && arrelementsmatch.length > 0) return;
 
