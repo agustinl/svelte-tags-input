@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/svelte';
+import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import TagsWrapper from './TagsWrapper.svelte';
 
@@ -289,6 +289,161 @@ describe('Tags', () => {
 			pressEnter(input);
 
 			expect(screen.getByText('valid')).toBeTruthy();
+		});
+	});
+
+	describe('Async autoComplete requests', () => {
+		const keys = {
+			a: { key: 'a', keyCode: 65, which: 65 },
+			ArrowDown: { key: 'ArrowDown', keyCode: 40, which: 40 },
+			Enter: { key: 'Enter', keyCode: 13, which: 13 },
+			Escape: { key: 'Escape', keyCode: 27, which: 27 },
+		};
+
+		async function type(input, value) {
+			await fireEvent.input(input, { target: { value } });
+			await fireEvent.keyUp(input, keys.a);
+		}
+
+		function deferred() {
+			let resolve;
+			const promise = new Promise((r) => (resolve = r));
+			return { promise, resolve };
+		}
+
+		it('does not call autoComplete below minChars', async () => {
+			const autoComplete = vi.fn(async () => ['Argentina']);
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete, minChars: 3 },
+			});
+			const input = container.querySelector('.svelte-tags-input');
+
+			await type(input, 'ar');
+			expect(autoComplete).not.toHaveBeenCalled();
+
+			await type(input, 'arg');
+			expect(autoComplete).toHaveBeenCalledTimes(1);
+			expect(autoComplete).toHaveBeenCalledWith('arg');
+		});
+
+		it('does not refetch on arrow, Enter or Escape keyup while the list is open', async () => {
+			const autoComplete = vi.fn(async () => ['Argentina', 'Armenia']);
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete, autoCompleteFilter: false },
+			});
+			const input = container.querySelector('.svelte-tags-input');
+
+			await type(input, 'ar');
+			await waitFor(() => expect(container.querySelectorAll('.svelte-tags-input-matchs li')).toHaveLength(2));
+
+			await fireEvent.keyDown(input, keys.ArrowDown);
+			await fireEvent.keyUp(input, keys.ArrowDown);
+			await fireEvent.keyDown(input, keys.ArrowDown);
+			await fireEvent.keyUp(input, keys.ArrowDown);
+			expect(container.querySelector('.svelte-tags-input-matchs li.focus').textContent).toContain('Armenia');
+
+			await fireEvent.keyDown(input, keys.Escape);
+			await fireEvent.keyUp(input, keys.Escape);
+			await fireEvent.keyUp(input, keys.Enter);
+
+			expect(autoComplete).toHaveBeenCalledTimes(1);
+		});
+
+		it('ArrowDown still opens the list when it is closed', async () => {
+			const autoComplete = vi.fn(async () => ['Argentina']);
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete, autoCompleteFilter: false },
+			});
+			const input = container.querySelector('.svelte-tags-input');
+
+			await type(input, 'ar');
+			await waitFor(() => expect(container.querySelector('.svelte-tags-input-matchs li')).toBeTruthy());
+			await fireEvent.keyDown(input, keys.Escape);
+			expect(container.querySelector('.svelte-tags-input-matchs')).toBeNull();
+
+			await fireEvent.keyDown(input, keys.ArrowDown);
+			await fireEvent.keyUp(input, keys.ArrowDown);
+			await waitFor(() => expect(container.querySelector('.svelte-tags-input-matchs li')).toBeTruthy());
+		});
+
+		it('ignores responses from outdated searches', async () => {
+			const pending = {};
+			const autoComplete = vi.fn((query) => {
+				pending[query] = deferred();
+				return pending[query].promise;
+			});
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete, autoCompleteFilter: false },
+			});
+			const input = container.querySelector('.svelte-tags-input');
+
+			await type(input, 'ar');
+			await type(input, 'arg');
+
+			pending['arg'].resolve(['Argentina']);
+			await waitFor(() => expect(container.textContent).toContain('Argentina'));
+
+			// The slower, older response arrives last and must not replace the list
+			pending['ar'].resolve(['Armenia', 'Aruba']);
+			await new Promise((r) => setTimeout(r, 0));
+
+			const items = [...container.querySelectorAll('.svelte-tags-input-matchs li')];
+			expect(items.map((li) => li.textContent.trim())).toEqual(['Argentina']);
+		});
+
+		it('debounces requests with autoCompleteDebounce', async () => {
+			vi.useFakeTimers();
+			try {
+				const autoComplete = vi.fn(async () => ['Argentina']);
+				const { container } = render(TagsWrapper, {
+					props: { tags: [], autoComplete, autoCompleteDebounce: 300 },
+				});
+				const input = container.querySelector('.svelte-tags-input');
+
+				await type(input, 'a');
+				await type(input, 'ar');
+				await type(input, 'arg');
+				expect(autoComplete).not.toHaveBeenCalled();
+
+				await vi.advanceTimersByTimeAsync(300);
+				expect(autoComplete).toHaveBeenCalledTimes(1);
+				expect(autoComplete).toHaveBeenCalledWith('arg');
+			} finally {
+				vi.useRealTimers();
+			}
+		});
+
+		it('calls autoComplete on every keyup when autoCompleteDebounce is 0 (default)', async () => {
+			const autoComplete = vi.fn(async () => ['Argentina']);
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete },
+			});
+			const input = container.querySelector('.svelte-tags-input');
+
+			await type(input, 'a');
+			await type(input, 'ar');
+
+			expect(autoComplete).toHaveBeenCalledTimes(2);
+		});
+
+		it('with minChars 0, the list reopens after adding a tag with Enter (multi-select)', async () => {
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete: ['Apple', 'Banana', 'Cherry'], minChars: 0, onlyUnique: true },
+			});
+			const input = container.querySelector('.svelte-tags-input');
+			const items = () =>
+				[...container.querySelectorAll('.svelte-tags-input-matchs li')].map((li) => li.textContent.trim());
+
+			await fireEvent.pointerDown(input);
+			await waitFor(() => expect(items()).toEqual(['Apple', 'Banana', 'Cherry']));
+
+			await fireEvent.keyDown(input, keys.ArrowDown);
+			await fireEvent.keyUp(input, keys.ArrowDown);
+			await fireEvent.keyDown(input, keys.Enter);
+			await fireEvent.keyUp(input, keys.Enter);
+
+			expect(screen.getByText('Apple', { selector: '.svelte-tags-input-tag' })).toBeTruthy();
+			await waitFor(() => expect(items()).toEqual(['Banana', 'Cherry']));
 		});
 	});
 });

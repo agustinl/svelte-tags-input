@@ -14,6 +14,7 @@
 		autoCompleteKey = false,
 		autoCompleteMarkupKey = false,
 		autoCompleteStartFocused = false,
+		autoCompleteDebounce = 0,
 		name = 'svelte-tags-input',
 		id: idProp,
 		allowBlur = false,
@@ -45,6 +46,21 @@
 	let resolvedAutoCompleteShowKey = $derived(autoCompleteShowKey ?? autoCompleteKey);
 
 	const keyCodeMap = { Enter: 13, Backspace: 8, Escape: 27, ArrowDown: 40, ArrowUp: 38 };
+
+	let debounceTimer;
+	// Incremented on every search; responses from older searches are discarded
+	let latestSearch = 0;
+
+	$effect(() => () => clearTimeout(debounceTimer));
+
+	/**
+	 * Cancels a debounced search and invalidates any in-flight response.
+	 * @returns {void}
+	 */
+	function cancelPendingSearch() {
+		clearTimeout(debounceTimer);
+		latestSearch++;
+	}
 
 	/**
 	 * Escapes regex special chars for safe RegExp use.
@@ -99,8 +115,32 @@
 				autoCompleteIndex = arrelementsmatch.length - 1;
 			}
 		} else if (keyCode === 27) {
+			cancelPendingSearch();
 			arrelementsmatch = [];
 			document.getElementById(id).focus();
+		}
+	}
+
+	/**
+	 * Handles keyup: (re)fetches autocomplete matches, debounced if autoCompleteDebounce > 0.
+	 * Skips keys that only act on the current list (Enter, Escape, arrows while it is open).
+	 * @param {KeyboardEvent} e - Key event
+	 * @returns {void}
+	 */
+	function onKeyUp(e) {
+		const keyCode = e.keyCode ?? keyCodeMap[e.key];
+
+		if (keyCode === 27) return;
+		// With minChars 0 the list works as a multi-select: keep reopening it after Enter adds a tag
+		if (keyCode === 13 && minChars !== 0) return;
+		// keydown already moved the highlight; refetching would reset the list
+		if ((keyCode === 38 || keyCode === 40) && arrelementsmatch.length > 0) return;
+
+		clearTimeout(debounceTimer);
+		if (autoCompleteDebounce > 0) {
+			debounceTimer = setTimeout(() => getMatchElements(e), autoCompleteDebounce);
+		} else {
+			getMatchElements(e);
 		}
 	}
 
@@ -139,6 +179,7 @@
 		tagInput = '';
 		onTagAdded(currentTag, tags);
 
+		cancelPendingSearch();
 		arrelementsmatch = [];
 		autoCompleteIndex = autoCompleteIndexStart;
 		document.getElementById(id).focus();
@@ -158,6 +199,7 @@
 		tags = tags.filter((_, idx) => idx !== i);
 		onTagRemoved(removed, tags);
 
+		cancelPendingSearch();
 		arrelementsmatch = [];
 		document.getElementById(id).readOnly = false;
 		document.getElementById(id).focus();
@@ -215,6 +257,7 @@
 		if (cleanOnBlur) {
 			tagInput = '';
 		}
+		cancelPendingSearch();
 		arrelementsmatch = [];
 		autoCompleteIndex = autoCompleteIndexStart;
 	}
@@ -292,6 +335,15 @@
 		if (maxTags && tags.length >= maxTags) return;
 
 		let value = input ? input.target.value : '';
+		const keyCode = input?.keyCode ?? keyCodeMap[input?.key];
+		const search = ++latestSearch;
+
+		// Check minChars before calling autoComplete, so no request is made for short input
+		if ((minChars > 0 && value == '') || value.length < minChars) {
+			arrelementsmatch = [];
+			return;
+		}
+
 		let autoCompleteValues = [];
 
 		if (Array.isArray(autoComplete)) {
@@ -308,15 +360,8 @@
 			autoCompleteValues = await autoCompleteValues;
 		}
 
-		const keyCode = input?.keyCode ?? keyCodeMap[input?.key];
-		if (
-			(minChars > 0 && value == '') ||
-			(input && keyCode === 27) ||
-			value.length < minChars
-		) {
-			arrelementsmatch = [];
-			return;
-		}
+		// A newer search started (or the list was closed) while this one was pending
+		if (search !== latestSearch) return;
 
 		let matchs = autoCompleteValues;
 
@@ -399,7 +444,7 @@
 		name={name}
 		bind:value={tagInput}
 		onkeydown={setTag}
-		onkeyup={getMatchElements}
+		onkeyup={onKeyUp}
 		onpaste={onPaste}
 		ondrop={onDrop}
 		onfocus={onFocus}
