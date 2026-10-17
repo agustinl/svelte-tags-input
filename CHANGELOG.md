@@ -2,7 +2,7 @@
 
 ## 7.0.3
 
-- Dependabot security patches: `form-data` [#116](https://github.com/agustinl/svelte-tags-input/pull/116), `postcss` [#118](https://github.com/agustinl/svelte-tags-input/pull/118), `vitest` [#121](https://github.com/agustinl/svelte-tags-input/pull/121).
+- Dependabot security patches: `form-data` [#116](https://github.com/agustinl/svelte-tags-input/pull/116), `postcss` [#118](https://github.com/agustinl/svelte-tags-input/pull/118), `nanoid` [#120](https://github.com/agustinl/svelte-tags-input/pull/120), `vitest` [#121](https://github.com/agustinl/svelte-tags-input/pull/121).
 - **Add:** CI workflow running build and tests on every PR [#122](https://github.com/agustinl/svelte-tags-input/pull/122).
 - **Docs:** README updated (missing `autoCompleteMarkupKey` prop, prop types, key codes table, styling guide, objects autocomplete example).
 
