@@ -205,6 +205,85 @@ When `autoComplete` returns objects, `autoCompleteKey` is required and `tags` wi
 />
 ```
 
+### Inside a form
+
+The `name` prop is applied to the visible text input, so a native form submit only sends whatever is currently typed — not the tags. To submit the tags, render a hidden input for each one:
+
+```svelte
+<script>
+  import Tags from 'svelte-tags-input';
+
+  let tags = $state([]);
+</script>
+
+<form method="POST" action="/save">
+  <Tags bind:tags name="tags-text" placeholder="Add tags..." />
+
+  {#each tags as tag}
+    <input type="hidden" name="tags" value={tag} />
+  {/each}
+
+  <button type="submit">Save</button>
+</form>
+```
+
+On the server, read them with `formData.getAll('tags')`. Any text still typed in the input arrives separately as `tags-text`.
+
+If your tags are objects (from an `autoComplete` list of objects), serialize them instead:
+
+```svelte
+<input type="hidden" name="tags" value={JSON.stringify(tags)} />
+```
+
+### As a custom element (Lit, vanilla JS, other frameworks)
+
+The package doesn't ship a custom element build, but you can wrap it in your own Svelte component and compile that as a [custom element](https://svelte.dev/docs/svelte/custom-elements):
+
+```svelte
+<!-- TagsInputElement.svelte -->
+<svelte:options
+  customElement={{
+    tag: 'tags-input',
+    props: {
+      tags: { type: 'Array', reflect: false },
+      placeholder: { type: 'String' },
+      autoComplete: { type: 'Array', attribute: 'auto-complete' }
+    }
+  }}
+/>
+
+<script>
+  import Tags from 'svelte-tags-input';
+
+  let { tags = [], placeholder = '', autoComplete = false } = $props();
+
+  const host = $host();
+  const emit = (type, detail) =>
+    host.dispatchEvent(new CustomEvent(type, { detail, bubbles: true, composed: true }));
+</script>
+
+<Tags
+  bind:tags
+  {placeholder}
+  {autoComplete}
+  onTagAdded={(tag, all) => emit('tag-added', { tag, tags: all })}
+  onTagRemoved={(tag, all) => emit('tag-removed', { tag, tags: all })}
+/>
+```
+
+Compile it with the Svelte compiler options `customElement: true` and `css: 'injected'` (so the component styles are included in the shadow DOM), then use it anywhere:
+
+```html
+<tags-input placeholder="Add tags..."></tags-input>
+
+<script type="module">
+  const el = document.querySelector('tags-input');
+  el.addEventListener('tag-added', (e) => console.log(e.detail.tag, e.detail.tags));
+</script>
+```
+
+Expose any other props you need the same way, adding them to `props` and passing them through to `<Tags>`.
+
 ## Styling
 
 The component ships with default styles scoped to it. To override them, target its classes with `:global()` from a wrapper element:
