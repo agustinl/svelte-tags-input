@@ -189,10 +189,10 @@ When `autoComplete` returns objects, `autoCompleteKey` is required and `tags` wi
 
   async function fetchCountries(query) {
     const res = await fetch(
-      `https://restcountries.com/v2/name/${query}?fields=name,alpha3Code,flag`
+      `https://countries.dev/name/${encodeURIComponent(query)}?fields=name,alpha3Code`
     );
-    const data = await res.json();
-    return data;
+    if (!res.ok) return []; // 404 when no country matches
+    return res.json();
   }
 </script>
 
