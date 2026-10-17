@@ -14,6 +14,7 @@
 		autoCompleteKey = false,
 		autoCompleteMarkupKey = false,
 		autoCompleteStartFocused = false,
+		autoCompleteDebounce = 0,
 		name = 'svelte-tags-input',
 		id: idProp,
 		allowBlur = false,
@@ -29,7 +30,6 @@
 		onTagRemoved = () => {},
 		cleanOnBlur = false,
 		customValidation = false,
-		autoCompleteDebounce = 0,
 	} = $props();
 
 	let tagInput = $state('');
