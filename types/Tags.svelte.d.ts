@@ -75,6 +75,12 @@ export interface TagsProps {
 	autoCompleteStartFocused?: boolean;
 
 	/**
+	 * Milliseconds to wait after the last keystroke before calling autoComplete
+	 * @default 0
+	 */
+	autoCompleteDebounce?: number;
+
+	/**
 	 * @default "svelte-tags-input"
 	 */
 	name?: string;

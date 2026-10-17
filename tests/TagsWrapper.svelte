@@ -18,6 +18,7 @@
 		onTagAdded = () => {},
 		onTagRemoved = () => {},
 		onTagClick = () => {},
+		...rest
 	} = $props();
 </script>
 
@@ -38,4 +39,5 @@
 	{onTagAdded}
 	{onTagRemoved}
 	{onTagClick}
+	{...rest}
 />

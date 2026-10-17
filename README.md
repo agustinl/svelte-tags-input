@@ -71,6 +71,7 @@ npm install svelte-tags-input
 | `autoCompleteStartFocused` | `boolean` | `false` | Focus first suggestion without typing |
 | `onlyAutocomplete` | `boolean` | `false` | Only accept tags from the autocomplete list |
 | `minChars` | `number` | `1` | Min chars before showing autocomplete (0 = show all on click) |
+| `autoCompleteDebounce` | `number` | `0` | Wait this many ms after the last keystroke before calling `autoComplete` (useful for API fetchers) |
 | `allowBlur` | `boolean` | `false` | Add tag on input blur |
 | `cleanOnBlur` | `boolean` | `false` | Clear input on blur (tags kept) |
 | `disable` | `boolean` | `false` | Disable the input |
@@ -202,6 +203,7 @@ When `autoComplete` returns objects, `autoCompleteKey` is required and `tags` wi
   autoCompleteKey="name"
   autoCompleteShowKey="alpha3Code"
   autoCompleteFilter={false}
+  autoCompleteDebounce={300}
 />
 ```
 
