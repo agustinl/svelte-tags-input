@@ -29,6 +29,7 @@
 		onTagRemoved = () => {},
 		cleanOnBlur = false,
 		customValidation = false,
+		enterKeyHint = 'enter',
 	} = $props();
 
 	let tagInput = $state('');
@@ -62,17 +63,18 @@
 	 * @returns {void}
 	 */
 	function setTag(e) {
-		const matches = document.getElementById(matchsID);
-		const focusedElement = matches?.querySelector('li.focus')?.textContent;
-		const currentTag = focusedElement ?? e.target.value;
+		const matchesOpen = autoComplete && arrelementsmatch.length > 0;
+		// Use the highlighted suggestion itself (string or object), not its rendered text
+		const focusedMatch = matchesOpen ? arrelementsmatch[autoCompleteIndex] : undefined;
+		const currentTag = focusedMatch ? focusedMatch.label : e.target.value;
 		const keyCode = e.keyCode ?? keyCodeMap[e.key];
 
 		if (addKeys) {
 			addKeys.forEach(function (key) {
 				if (key === keyCode) {
 					if (currentTag) e.preventDefault();
-					if (autoComplete && onlyAutocomplete && document.getElementById(matchsID)) {
-						addTag(arrelementsmatch?.[autoCompleteIndex]?.label);
+					if (matchesOpen && onlyAutocomplete) {
+						addTag(focusedMatch?.label);
 					} else {
 						addTag(currentTag);
 					}
@@ -409,6 +411,7 @@
 		placeholder={displayPlaceholder}
 		disabled={disable || readonly}
 		autocomplete="off"
+		enterkeyhint={enterKeyHint}
 	/>
 </div>
 

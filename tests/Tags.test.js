@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/svelte';
+import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import TagsWrapper from './TagsWrapper.svelte';
 
@@ -219,6 +219,77 @@ describe('Tags', () => {
 			pressEnter(input);
 
 			expect(container.textContent).toContain('Apple');
+		});
+
+		const countries = [
+			{ name: 'Argentina', alpha3Code: 'ARG' },
+			{ name: 'Armenia', alpha3Code: 'ARM' },
+		];
+
+		async function typeAndSelectFirstWithKeyboard(container, value) {
+			const input = container.querySelector('.svelte-tags-input');
+			await fireEvent.input(input, { target: { value } });
+			await fireEvent.keyUp(input, { key: 'a', keyCode: 65, which: 65 });
+			await waitFor(() => expect(container.querySelector('.svelte-tags-input-matchs li')).toBeTruthy());
+			await fireEvent.keyDown(input, { key: 'ArrowDown', keyCode: 40, which: 40 });
+			await fireEvent.keyUp(input, { key: 'ArrowDown', keyCode: 40, which: 40 });
+			await fireEvent.keyDown(input, { key: 'Enter', keyCode: 13, which: 13 });
+		}
+
+		it('keyboard selection keeps the full object (array of objects)', async () => {
+			const onTagAdded = vi.fn();
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete: countries, autoCompleteKey: 'name', onTagAdded },
+			});
+
+			await typeAndSelectFirstWithKeyboard(container, 'ar');
+
+			expect(onTagAdded).toHaveBeenCalledTimes(1);
+			expect(onTagAdded.mock.calls[0][1]).toEqual([countries[0]]);
+		});
+
+		it('keyboard selection keeps the full object (async autoComplete)', async () => {
+			const onTagAdded = vi.fn();
+			const { container } = render(TagsWrapper, {
+				props: {
+					tags: [],
+					autoComplete: async () => countries,
+					autoCompleteKey: 'name',
+					autoCompleteFilter: false,
+					onTagAdded,
+				},
+			});
+
+			await typeAndSelectFirstWithKeyboard(container, 'ar');
+
+			expect(onTagAdded.mock.calls[0][1]).toEqual([countries[0]]);
+		});
+
+		it('keyboard selection adds the suggestion string, not the typed text', async () => {
+			const onTagAdded = vi.fn();
+			const { container } = render(TagsWrapper, {
+				props: { tags: [], autoComplete: ['Apple', 'Apricot'], onTagAdded },
+			});
+
+			await typeAndSelectFirstWithKeyboard(container, 'ap');
+
+			expect(onTagAdded.mock.calls[0][1]).toEqual(['Apple']);
+		});
+	});
+
+	describe('enterKeyHint', () => {
+		it('sets enterkeyhint="enter" by default', () => {
+			const { container } = render(TagsWrapper, { props: { tags: [] } });
+
+			const input = container.querySelector('.svelte-tags-input');
+			expect(input.getAttribute('enterkeyhint')).toBe('enter');
+		});
+
+		it('accepts a custom enterKeyHint', () => {
+			const { container } = render(TagsWrapper, { props: { tags: [], enterKeyHint: 'done' } });
+
+			const input = container.querySelector('.svelte-tags-input');
+			expect(input.getAttribute('enterkeyhint')).toBe('done');
 		});
 	});
 

@@ -83,6 +83,7 @@ npm install svelte-tags-input
 | `onTagRemoved` | `(tag, tags) => void` | `() => {}` | Called when a tag is removed |
 | `onTagClick` | `(tag) => void` | `() => {}` | Called when a tag is clicked |
 | `customValidation` | `((tag) => boolean) \| false` | `false` | Custom validation before adding |
+| `enterKeyHint` | `string` | `'enter'` | [`enterkeyhint`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/enterkeyhint) for mobile keyboards. The default keeps Android from showing "Next" (which moves focus instead of adding the tag) when another input follows |
 
 ### Key codes
 

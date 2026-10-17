@@ -148,6 +148,12 @@ export interface TagsProps {
 	 * @default false
 	 */
 	customValidation?: ((tag: string) => boolean) | false;
+
+	/**
+	 * Label of the Enter key on mobile virtual keyboards
+	 * @default 'enter'
+	 */
+	enterKeyHint?: 'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send';
 }
 
 declare const Tags: Component<TagsProps>;
