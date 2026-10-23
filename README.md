@@ -23,6 +23,7 @@
 - **Keyboard-driven** — Add tags with Enter (configurable), remove with Backspace, navigate autocomplete with Arrow keys
 - **Autocomplete** — Array or async function, with filtering and custom display keys
 - **Paste & drop** — Paste or drop comma-separated text to add several tags at once
+- **Reorder** — Drag tags to change their order
 - **Keyboard & screen reader basics** — Keyboard navigation and an accessible (optionally visually hidden) label
 - **Flexible** — Max tags, unique-only, custom validation, blur behavior
 - **Svelte 5** — Built with runes (`$props`, `$state`, `$derived`, `$bindable`)
@@ -62,6 +63,7 @@ npm install svelte-tags-input
 | `onlyUnique` | `boolean` | `false` | Reject duplicate tags |
 | `allowPaste` | `boolean` | `false` | Enable pasting tags (split by `splitWith`) |
 | `allowDrop` | `boolean` | `false` | Enable drag-and-drop of tags |
+| `allowReorder` | `boolean` | `false` | Reorder tags by dragging them |
 | `splitWith` | `string` | `','` | Character to split pasted/dropped text |
 | `autoComplete` | `Array \| (value: string) => any \| false` | `false` | Suggestions array or async fetcher |
 | `autoCompleteKey` | `string \| false` | `false` | Key for object items in `autoComplete` |
@@ -82,6 +84,7 @@ npm install svelte-tags-input
 | `onTagAdded` | `(tag, tags) => void` | `() => {}` | Called when a tag is added |
 | `onTagRemoved` | `(tag, tags) => void` | `() => {}` | Called when a tag is removed |
 | `onTagClick` | `(tag) => void` | `() => {}` | Called when a tag is clicked |
+| `onTagReordered` | `(tag, tags, fromIndex, toIndex) => void` | `() => {}` | Called when a tag is dropped at a new position |
 | `customValidation` | `((tag) => boolean) \| false` | `false` | Custom validation before adding |
 
 ### Key codes
@@ -205,6 +208,24 @@ When `autoComplete` returns objects, `autoCompleteKey` is required and `tags` wi
 />
 ```
 
+### Reorder by dragging
+
+```svelte
+<script>
+  import Tags from 'svelte-tags-input';
+
+  let tags = $state(['First', 'Second', 'Third']);
+</script>
+
+<Tags
+  bind:tags
+  allowReorder
+  onTagReordered={(tag, t, from, to) => console.log(`Moved ${tag} from ${from} to ${to}`, t)}
+/>
+```
+
+Tags are reordered by position, so duplicate and object tags work too. The new order previews while dragging, but `tags` only updates (and `onTagReordered` only fires) when the tag is dropped inside the component. Dropping it elsewhere or pressing Escape restores the original order. Reordering is turned off when `disable` or `readonly` is set.
+
 ### Inside a form
 
 The `name` prop is applied to the visible text input, so a native form submit only sends whatever is currently typed — not the tags. To submit the tags, render a hidden input for each one:
@@ -295,6 +316,8 @@ The component ships with default styles scoped to it. To override them, target i
 | `.svelte-tags-input-tag-remove` | The × remove button inside a tag |
 | `.svelte-tags-input` | The text input |
 | `.svelte-tags-input-matchs` | Autocomplete list (`li.focus` is the highlighted item) |
+| `.sti-tag-reorderable` | Added to each tag when `allowReorder` is set |
+| `.sti-tag-dragging` | Added to the tag being dragged |
 | `.sti-layout-disable` | Added to the container when `disable` is set |
 | `.sti-layout-readonly` | Added to the container when `readonly` is set |
 

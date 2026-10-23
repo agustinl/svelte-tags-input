@@ -29,6 +29,8 @@
 		onTagRemoved = () => {},
 		cleanOnBlur = false,
 		customValidation = false,
+		allowReorder = false,
+		onTagReordered = () => {},
 	} = $props();
 
 	let tagInput = $state('');
@@ -44,6 +46,14 @@
 	let resolvedLabelText = $derived(labelText ?? name);
 	let resolvedAutoCompleteShowKey = $derived(autoCompleteShowKey ?? autoCompleteKey);
 
+	let dragIndex = $state(null);
+	let dragOrder = $state(null);
+	let canReorder = $derived(allowReorder && !disable && !readonly);
+	let renderedTags = $derived(
+		dragOrder && dragOrder.length === tags.length ? dragOrder.map((k) => tags[k]) : tags
+	);
+
+	const REORDER_MIME = 'application/x-svelte-tags-input';
 	const keyCodeMap = { Enter: 13, Backspace: 8, Escape: 27, ArrowDown: 40, ArrowUp: 38 };
 
 	/**
@@ -181,7 +191,7 @@
 	 * @returns {void}
 	 */
 	function onDrop(e) {
-		if (!allowDrop) return;
+		if (!allowDrop || dragIndex !== null) return;
 		e.preventDefault();
 		const data = e.dataTransfer.getData('Text');
 		splitTags(data).map((t) => addTag(t));
@@ -249,6 +259,96 @@
 	 */
 	function splitTags(data) {
 		return data.split(splitWith).map((t) => t.trim());
+	}
+
+	/**
+	 * Returns the original `tags` index of the tag rendered at position `p`.
+	 * @param {number} p - Rendered position
+	 * @returns {number} Index in `tags`
+	 */
+	function sourceIndex(p) {
+		return dragOrder ? dragOrder[p] : p;
+	}
+
+	/**
+	 * Starts reordering a tag (if allowReorder).
+	 * @param {DragEvent} e - Dragstart event
+	 * @param {number} i - Index of the dragged tag
+	 * @returns {void}
+	 */
+	function onTagDragStart(e, i) {
+		if (!canReorder) return;
+		dragIndex = i;
+		dragOrder = tags.map((_, k) => k);
+		e.dataTransfer.effectAllowed = 'move';
+		// Firefox needs data to start a drag; a custom type stops it dropping as text
+		e.dataTransfer.setData(REORDER_MIME, String(i));
+	}
+
+	/**
+	 * Moves the dragged tag to the hovered tag's position once the pointer passes its midpoint.
+	 * @param {DragEvent} e - Dragover event
+	 * @param {number} p - Rendered position of the hovered tag
+	 * @returns {void}
+	 */
+	function onTagDragOver(e, p) {
+		if (dragIndex === null) return;
+		e.preventDefault();
+		e.dataTransfer.dropEffect = 'move';
+
+		const from = dragOrder.indexOf(dragIndex);
+		if (from === p) return;
+
+		const rect = e.currentTarget.getBoundingClientRect();
+		const middle = rect.left + rect.width / 2;
+		if (rect.width && (p > from ? e.clientX < middle : e.clientX > middle)) return;
+
+		const order = [...dragOrder];
+		order.splice(from, 1);
+		order.splice(p, 0, dragIndex);
+		dragOrder = order;
+	}
+
+	/**
+	 * Allows dropping anywhere in the layout while reordering.
+	 * @param {DragEvent} e - Dragover event
+	 * @returns {void}
+	 */
+	function onLayoutDragOver(e) {
+		if (dragIndex === null) return;
+		e.preventDefault();
+		e.dataTransfer.dropEffect = 'move';
+	}
+
+	/**
+	 * Commits the preview order to `tags` and calls onTagReordered.
+	 * @param {DragEvent} e - Drop event
+	 * @returns {void}
+	 */
+	function onLayoutDrop(e) {
+		if (dragIndex === null) return;
+		e.preventDefault();
+
+		if (dragOrder.length !== tags.length) return resetDrag();
+
+		const from = dragIndex;
+		const to = dragOrder.indexOf(from);
+		const tag = tags[from];
+		const reordered = renderedTags;
+		resetDrag();
+		if (from === to) return;
+
+		tags = reordered;
+		onTagReordered(tag, tags, from, to);
+	}
+
+	/**
+	 * Clears drag state, discarding the preview if the tag wasn't dropped.
+	 * @returns {void}
+	 */
+	function resetDrag() {
+		dragIndex = null;
+		dragOrder = null;
 	}
 
 	/**
@@ -361,17 +461,30 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="svelte-tags-input-layout"
 	class:sti-layout-disable={disable}
 	class:sti-layout-readonly={readonly}
 	bind:this={layoutElement}
+	ondragover={onLayoutDragOver}
+	ondrop={onLayoutDrop}
 >
 	<label for={id} class={labelShow ? '' : 'sr-only'}>{resolvedLabelText}</label>
 
-	{#if tags.length > 0}
-		{#each tags as tagItem, i}
-			<button type="button" class="svelte-tags-input-tag" onclick={() => onTagClick(tagItem)}>
+	{#if renderedTags.length > 0}
+		{#each renderedTags as tagItem, i}
+			<button
+				type="button"
+				class="svelte-tags-input-tag"
+				class:sti-tag-reorderable={canReorder}
+				class:sti-tag-dragging={dragIndex !== null && sourceIndex(i) === dragIndex}
+				draggable={canReorder ? 'true' : undefined}
+				onclick={() => onTagClick(tagItem)}
+				ondragstart={(e) => onTagDragStart(e, i)}
+				ondragover={(e) => onTagDragOver(e, i)}
+				ondragend={resetDrag}
+			>
 				{#if typeof tagItem === 'string'}
 					{tagItem}
 				{:else}
@@ -503,6 +616,15 @@
 		margin-right: 5px;
 		margin-top: 5px;
 		font-weight: 400;
+	}
+
+	.svelte-tags-input-tag.sti-tag-reorderable {
+		cursor: grab;
+		user-select: none;
+	}
+
+	.svelte-tags-input-tag.sti-tag-dragging {
+		opacity: 0.5;
 	}
 
 	.svelte-tags-input-tag-remove {

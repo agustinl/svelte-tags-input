@@ -18,6 +18,8 @@
 		onTagAdded = () => {},
 		onTagRemoved = () => {},
 		onTagClick = () => {},
+		allowReorder = false,
+		onTagReordered = () => {},
 	} = $props();
 </script>
 
@@ -38,4 +40,6 @@
 	{onTagAdded}
 	{onTagRemoved}
 	{onTagClick}
+	{allowReorder}
+	{onTagReordered}
 />

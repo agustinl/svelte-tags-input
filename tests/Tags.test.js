@@ -11,6 +11,34 @@ function pressBackspace(element) {
 	fireEvent.keyDown(element, { key: 'Backspace', keyCode: 8, which: 8 });
 }
 
+function createDataTransfer() {
+	const data = {};
+	return {
+		dropEffect: 'none',
+		effectAllowed: 'all',
+		setData: (type, value) => (data[type] = value),
+		getData: (type) => data[type] ?? '',
+	};
+}
+
+function tagTexts(container) {
+	return [...container.querySelectorAll('.svelte-tags-input-tag')].map((el) =>
+		el.firstChild.textContent.trim()
+	);
+}
+
+/** Drags the tag at `from` over the tag at `to`, then drops (or cancels) the drag. */
+async function dragTag(container, from, to, { drop = true } = {}) {
+	const dataTransfer = createDataTransfer();
+	const tagAt = (i) => container.querySelectorAll('.svelte-tags-input-tag')[i];
+	const source = tagAt(from);
+
+	await fireEvent.dragStart(source, { dataTransfer });
+	await fireEvent.dragOver(tagAt(to), { dataTransfer });
+	if (drop) await fireEvent.drop(tagAt(to), { dataTransfer });
+	await fireEvent.dragEnd(source, { dataTransfer });
+}
+
 describe('Tags', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -266,6 +294,96 @@ describe('Tags', () => {
 			await user.click(tagButton);
 
 			expect(onTagClick).toHaveBeenCalledWith('tag1');
+		});
+	});
+
+	describe('allowReorder', () => {
+		it('tags are not draggable by default', () => {
+			const { container } = render(TagsWrapper, {
+				props: { tags: ['a', 'b'], placeholder: '' },
+			});
+
+			const tag = container.querySelector('.svelte-tags-input-tag');
+			expect(tag.getAttribute('draggable')).toBeNull();
+		});
+
+		it('moves a tag forward when dropped on a later tag', async () => {
+			const { container } = render(TagsWrapper, {
+				props: { tags: ['a', 'b', 'c'], allowReorder: true, placeholder: '' },
+			});
+
+			await dragTag(container, 0, 2);
+
+			expect(tagTexts(container)).toEqual(['b', 'c', 'a']);
+		});
+
+		it('moves a tag backward when dropped on an earlier tag', async () => {
+			const { container } = render(TagsWrapper, {
+				props: { tags: ['a', 'b', 'c'], allowReorder: true, placeholder: '' },
+			});
+
+			await dragTag(container, 2, 0);
+
+			expect(tagTexts(container)).toEqual(['c', 'a', 'b']);
+		});
+
+		it('restores the original order when the drag is cancelled', async () => {
+			const onTagReordered = vi.fn();
+			const { container } = render(TagsWrapper, {
+				props: { tags: ['a', 'b', 'c'], allowReorder: true, onTagReordered, placeholder: '' },
+			});
+
+			await dragTag(container, 0, 2, { drop: false });
+
+			expect(tagTexts(container)).toEqual(['a', 'b', 'c']);
+			expect(onTagReordered).not.toHaveBeenCalled();
+		});
+
+		it('reorders by position, so duplicate tags work without onlyUnique', async () => {
+			const onTagReordered = vi.fn();
+			const { container } = render(TagsWrapper, {
+				props: { tags: ['x', 'y', 'x'], allowReorder: true, onTagReordered, placeholder: '' },
+			});
+
+			await dragTag(container, 1, 2);
+
+			expect(tagTexts(container)).toEqual(['x', 'x', 'y']);
+			expect(onTagReordered).toHaveBeenCalledWith('y', ['x', 'x', 'y'], 1, 2);
+		});
+
+		it('onTagReordered receives the tag, new tags and indexes', async () => {
+			const onTagReordered = vi.fn();
+			const { container } = render(TagsWrapper, {
+				props: { tags: ['a', 'b', 'c'], allowReorder: true, onTagReordered, placeholder: '' },
+			});
+
+			await dragTag(container, 0, 1);
+
+			expect(onTagReordered).toHaveBeenCalledWith('a', ['b', 'a', 'c'], 0, 1);
+		});
+
+		it('does not add the dragged tag as text when dropped on the input', async () => {
+			const { container } = render(TagsWrapper, {
+				props: { tags: ['a', 'b'], allowReorder: true, allowDrop: true, placeholder: '' },
+			});
+
+			const dataTransfer = createDataTransfer();
+			const source = container.querySelector('.svelte-tags-input-tag');
+			const input = container.querySelector('.svelte-tags-input');
+			await fireEvent.dragStart(source, { dataTransfer });
+			await fireEvent.drop(input, { dataTransfer });
+			await fireEvent.dragEnd(source, { dataTransfer });
+
+			expect(tagTexts(container)).toEqual(['a', 'b']);
+		});
+
+		it('tags are not draggable when disabled or readonly', () => {
+			const { container } = render(TagsWrapper, {
+				props: { tags: ['a'], allowReorder: true, readonly: true, placeholder: '' },
+			});
+
+			const tag = container.querySelector('.svelte-tags-input-tag');
+			expect(tag.getAttribute('draggable')).toBeNull();
 		});
 	});
 
