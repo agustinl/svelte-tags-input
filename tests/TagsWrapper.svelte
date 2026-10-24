@@ -11,6 +11,7 @@
 		disable = false,
 		readonly = false,
 		autoComplete = false,
+		autoCompleteKey = false,
 		autoCompleteStartFocused = false,
 		onlyAutocomplete = false,
 		minChars = 1,
@@ -33,6 +34,7 @@
 	{disable}
 	{readonly}
 	{autoComplete}
+	{autoCompleteKey}
 	{autoCompleteStartFocused}
 	{onlyAutocomplete}
 	{minChars}

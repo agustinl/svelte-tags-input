@@ -49,9 +49,9 @@
 	let dragIndex = $state(null);
 	let dragOrder = $state(null);
 	let canReorder = $derived(allowReorder && !disable && !readonly);
-	let renderedTags = $derived(
-		dragOrder && dragOrder.length === tags.length ? dragOrder.map((k) => tags[k]) : tags
-	);
+	let dragSource = null;
+	let dragElement = null;
+	let renderedTags = $derived(isDragCurrent() ? dragOrder.map((k) => tags[k]) : tags);
 
 	const REORDER_MIME = 'application/x-svelte-tags-input';
 	const keyCodeMap = { Enter: 13, Backspace: 8, Escape: 27, ArrowDown: 40, ArrowUp: 38 };
@@ -271,6 +271,14 @@
 	}
 
 	/**
+	 * Whether a drag is in progress and `tags` hasn't changed since it started.
+	 * @returns {boolean}
+	 */
+	function isDragCurrent() {
+		return dragOrder !== null && tags === dragSource && dragOrder.length === tags.length;
+	}
+
+	/**
 	 * Starts reordering a tag (if allowReorder).
 	 * @param {DragEvent} e - Dragstart event
 	 * @param {number} i - Index of the dragged tag
@@ -278,6 +286,8 @@
 	 */
 	function onTagDragStart(e, i) {
 		if (!canReorder) return;
+		dragSource = tags;
+		dragElement = e.currentTarget;
 		dragIndex = i;
 		dragOrder = tags.map((_, k) => k);
 		e.dataTransfer.effectAllowed = 'move';
@@ -287,6 +297,7 @@
 
 	/**
 	 * Moves the dragged tag to the hovered tag's position once the pointer passes its midpoint.
+	 * Tags on another row move right away, since their horizontal midpoint isn't meaningful.
 	 * @param {DragEvent} e - Dragover event
 	 * @param {number} p - Rendered position of the hovered tag
 	 * @returns {void}
@@ -300,8 +311,10 @@
 		if (from === p) return;
 
 		const rect = e.currentTarget.getBoundingClientRect();
+		const dragRect = dragElement?.getBoundingClientRect();
+		const sameRow = !dragRect || Math.abs(rect.top - dragRect.top) < rect.height / 2;
 		const middle = rect.left + rect.width / 2;
-		if (rect.width && (p > from ? e.clientX < middle : e.clientX > middle)) return;
+		if (rect.width && sameRow && (p > from ? e.clientX < middle : e.clientX > middle)) return;
 
 		const order = [...dragOrder];
 		order.splice(from, 1);
@@ -329,7 +342,7 @@
 		if (dragIndex === null) return;
 		e.preventDefault();
 
-		if (dragOrder.length !== tags.length) return resetDrag();
+		if (!isDragCurrent()) return resetDrag();
 
 		const from = dragIndex;
 		const to = dragOrder.indexOf(from);
@@ -349,6 +362,8 @@
 	function resetDrag() {
 		dragIndex = null;
 		dragOrder = null;
+		dragSource = null;
+		dragElement = null;
 	}
 
 	/**
@@ -473,7 +488,7 @@
 	<label for={id} class={labelShow ? '' : 'sr-only'}>{resolvedLabelText}</label>
 
 	{#if renderedTags.length > 0}
-		{#each renderedTags as tagItem, i}
+		{#each renderedTags as tagItem, i (sourceIndex(i))}
 			<button
 				type="button"
 				class="svelte-tags-input-tag"
