@@ -11,6 +11,7 @@
 		disable = false,
 		readonly = false,
 		autoComplete = false,
+		autoCompleteKey = false,
 		autoCompleteStartFocused = false,
 		onlyAutocomplete = false,
 		minChars = 1,
@@ -18,6 +19,8 @@
 		onTagAdded = () => {},
 		onTagRemoved = () => {},
 		onTagClick = () => {},
+		allowReorder = false,
+		onTagReordered = () => {},
 	} = $props();
 </script>
 
@@ -31,6 +34,7 @@
 	{disable}
 	{readonly}
 	{autoComplete}
+	{autoCompleteKey}
 	{autoCompleteStartFocused}
 	{onlyAutocomplete}
 	{minChars}
@@ -38,4 +42,6 @@
 	{onTagAdded}
 	{onTagRemoved}
 	{onTagClick}
+	{allowReorder}
+	{onTagReordered}
 />

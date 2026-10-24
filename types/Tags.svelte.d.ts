@@ -148,6 +148,18 @@ export interface TagsProps {
 	 * @default false
 	 */
 	customValidation?: ((tag: string) => boolean) | false;
+
+	/**
+	 * Reorder tags by dragging them
+	 * @default false
+	 */
+	allowReorder?: boolean;
+
+	/**
+	 * Called after a tag is dropped at a new position
+	 * @default () => {}
+	 */
+	onTagReordered?: (tag: string | object, tags: any[], fromIndex: number, toIndex: number) => void;
 }
 
 declare const Tags: Component<TagsProps>;

@@ -1,5 +1,9 @@
 # svelte-tags-input changelog
 
+## Unreleased
+
+- **Add:** `allowReorder` prop to reorder tags by dragging, and `onTagReordered(tag, tags, fromIndex, toIndex)` callback.
+
 ## 7.0.3
 
 - Dependabot security patches: `form-data` [#116](https://github.com/agustinl/svelte-tags-input/pull/116), `postcss` [#118](https://github.com/agustinl/svelte-tags-input/pull/118), `nanoid` [#120](https://github.com/agustinl/svelte-tags-input/pull/120), `vitest` [#121](https://github.com/agustinl/svelte-tags-input/pull/121), `devalue` [#123](https://github.com/agustinl/svelte-tags-input/pull/123), `source-map-js` [#124](https://github.com/agustinl/svelte-tags-input/pull/124), `ws` [#125](https://github.com/agustinl/svelte-tags-input/pull/125), `vite` [#126](https://github.com/agustinl/svelte-tags-input/pull/126).
