@@ -1,8 +1,8 @@
 # svelte-tags-input changelog
 
-## Unreleased
+## 7.1.0
 
-- **Add:** `allowReorder` prop to reorder tags by dragging, and `onTagReordered(tag, tags, fromIndex, toIndex)` callback.
+- **Add:** `allowReorder` prop to reorder tags by dragging, and `onTagReordered(tag, tags, fromIndex, toIndex)` callback [#139](https://github.com/agustinl/svelte-tags-input/pull/139). Thanks [@milansimek](https://github.com/milansimek)!
 
 ## 7.0.3
 
